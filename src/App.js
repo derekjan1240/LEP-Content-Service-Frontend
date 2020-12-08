@@ -1,23 +1,48 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import Typography from "@material-ui/core/Typography";
+import Grid from "@material-ui/core/Grid";
+import Button from "@material-ui/core/Button";
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Grid container spacing={3}>
+        <Grid item xs={12}>
+          <Typography variant="h3" gutterBottom>
+            Connection test
+          </Typography>
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <Button variant="contained" color="primary" href="#contained-buttons">
+            Auth svc check
+          </Button>
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <Button variant="contained" color="primary" href="#contained-buttons">
+            Assistant svc check
+          </Button>
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <Button variant="contained" color="primary" href="#contained-buttons">
+            Content svc check
+          </Button>
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <Button variant="contained" color="primary" href="#contained-buttons">
+            Special Content svc check
+          </Button>
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <Button variant="contained" color="primary" href="#contained-buttons">
+            Questionnaire svc check
+          </Button>
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <Button variant="contained" color="primary" href="#contained-buttons">
+            Visualization svc check
+          </Button>
+        </Grid>
+      </Grid>
     </div>
   );
 }
