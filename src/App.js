@@ -1,48 +1,48 @@
 import React from "react";
-import Typography from "@material-ui/core/Typography";
-import Grid from "@material-ui/core/Grid";
-import Button from "@material-ui/core/Button";
+import { Switch, Route } from "react-router-dom";
+import { Container } from "@material-ui/core";
+import Header from "./components/Header";
+import Dashboard from "./components/Dashboard";
+import Questionaires from "./components/Questionaire/Questionaires";
+import Contents from "./components/Content/Contents";
 
 function App() {
   return (
     <div className="App">
-      <Grid container spacing={3}>
-        <Grid item xs={12}>
-          <Typography variant="h3" gutterBottom>
-            Connection test
-          </Typography>
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <Button variant="contained" color="primary" href="#contained-buttons">
-            Auth svc check
-          </Button>
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <Button variant="contained" color="primary" href="#contained-buttons">
-            Assistant svc check
-          </Button>
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <Button variant="contained" color="primary" href="#contained-buttons">
-            Content svc check
-          </Button>
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <Button variant="contained" color="primary" href="#contained-buttons">
-            Special Content svc check
-          </Button>
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <Button variant="contained" color="primary" href="#contained-buttons">
-            Questionnaire svc check
-          </Button>
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <Button variant="contained" color="primary" href="#contained-buttons">
-            Visualization svc check
-          </Button>
-        </Grid>
-      </Grid>
+      <Header />
+      <Switch>
+        <Route exact path="/">
+          <Contents />
+        </Route>
+        <Route path="/exercises">
+          {/* <Exercises /> */}
+          <h1>習題系統</h1>
+        </Route>
+        <Route path="/misssions">
+          <h1>任務系統</h1>
+          {/* <Missions /> */}
+        </Route>
+        <Route path="/classroom">
+          <h1>班級系統</h1>
+        </Route>
+        <Route path="/account">
+          <h1>帳號系統</h1>
+        </Route>
+        <Route path="/questionnaire">
+          <Questionaires />
+        </Route>
+        <Route path="/visualization">
+          <h1>資料視覺化系統</h1>
+        </Route>
+        <Route path="/special-contents">
+          <h1>主題式課程系統</h1>
+        </Route>
+        <Route exact path="/dashboard">
+          <Container maxWidth="xl">
+            <Dashboard />
+          </Container>
+        </Route>
+      </Switch>
     </div>
   );
 }
