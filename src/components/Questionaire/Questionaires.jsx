@@ -1,15 +1,10 @@
-import NavTabs from "./NavTabs";
-import { Container, Grid, Box, Typography } from "@material-ui/core";
+import NavTabs from "./components/NavTabs";
+import { Container, Grid, Box } from "@material-ui/core";
 
 export default function Questionaire() {
   return (
     <Container maxWidth="xl">
       <Grid container spacing={3}>
-        <Grid item xs={12}>
-          <Box p={5}>
-            <Typography variant="h5">評估學生特質</Typography>
-          </Box>
-        </Grid>
         <Grid item xs={12}>
           <Box p={5}>
             <NavTabs />

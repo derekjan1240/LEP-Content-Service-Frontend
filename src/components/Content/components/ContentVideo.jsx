@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useParams } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   Grid,
@@ -12,6 +13,7 @@ import {
   CardMedia,
   CardContent,
 } from "@material-ui/core";
+import AppBreadcrumbs from "../../AppBreadcrumbs";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -111,10 +113,7 @@ function ImageButton() {
   return (
     <Card>
       <CardActionArea>
-        <CardMedia
-          className={classes.media}
-          image={`${process.env.PUBLIC_URL}ThemeEntryLogo.svg`}
-        />
+        <CardMedia className={classes.media} image="/ThemeEntryLogo.svg" />
         <CardContent>
           <Typography variant="h4" align="center">
             相關操作
@@ -265,65 +264,6 @@ function ChaptersTabs() {
         },
       ],
     },
-    {
-      youtube_id: "lBcPPnl1pew",
-      title: "万能青年旅店《冀西南林路行》",
-      description: `章節一的相關介紹: 國民中學階段每節上課時間為45分鐘，學校須依據規範的各領域及彈性學習的學習節數進行課程規劃，各校可以視課程實施及學生學習進度需求，經學校課程發展委員會通過後，彈性調節每節分鐘數與年級、班級的組合。
-      在符合相關規範與原則下，學校可彈性調整或重組領域學習節數，實施各種學習形式的跨領域統整課程，並可進行不同教師間的協同教學，此類跨領域統整課程最多可佔領域學習課程總節數五分之一。
-      部分領域含數個科目，除了實施領域教學外，也可以在經學校課程發展委員會通過後，進行分科教學，學生可在不同年級修習安排不同科目，不必每個科目在每學期都修習。`,
-      tags: [
-        {
-          title: "泥河",
-          time: 84,
-        },
-        {
-          title: "平等云雾",
-          time: 433,
-        },
-        {
-          title: "采石",
-          time: 517,
-        },
-        {
-          title: "河北墨麒麟",
-          time: 1416,
-        },
-      ],
-    },
-    {
-      youtube_id: "QQng1OScuco",
-      title: "透明雜誌 - 時空裂縫",
-      description: `章節二的相關介紹: 國民中學階段每節上課時間為45分鐘，學校須依據規範的各領域及彈性學習的學習節數進行課程規劃，各校可以視課程實施及學生學習進度需求，經學校課程發展委員會通過後，彈性調節每節分鐘數與年級、班級的組合。
-      在符合相關規範與原則下，學校可彈性調整或重組領域學習節數，實施各種學習形式的跨領域統整課程，並可進行不同教師間的協同教學，此類跨領域統整課程最多可佔領域學習課程總節數五分之一。
-      部分領域含數個科目，除了實施領域教學外，也可以在經學校課程發展委員會通過後，進行分科教學，學生可在不同年級修習安排不同科目，不必每個科目在每學期都修習。`,
-      tags: [
-        {
-          title: "凌晨晚餐",
-          time: 100,
-        },
-        {
-          title: "時速160公里的吉他、貝斯和鼓",
-          time: 625,
-        },
-        {
-          title: "Young Heart Guitar",
-          time: 2051,
-        },
-        {
-          title: "透明雜誌FOREVER",
-          time: 2336,
-        },
-      ],
-    },
-    {
-      youtube_id: "O4jU1LWu_Mc",
-      title: "一大片的風景",
-      description: `盪在空中，台北獨立樂團，成軍於96年地下社會，前身為追麻雀吉他手賴Q、Digihai貝斯手沐謙與1976鼓手大師兄對於日本90年代樂團fishmans以及雷鬼、Dub等節奏音樂的喜愛而組成。
-      盪在空中團員現為主唱&吉他手賴Q、貝斯手愛吹倫 (無政府/Taimaica Soundsystem)、吉他手陳顥 (88 balaz/表兒)、鼓手隆 (雀斑/花不拉屎)，96年至今參與各大小獨立音樂祭並定期在live house演出。
-      盪在空中企圖在搖滾樂中加強對於黑人等節奏音樂的探索，音樂在正拍與反拍之間遊走，重視grooving與情緒的律動，主唱賴Q以台語老調吟唱新島國浪子之聲，企圖探索老調與新時代音樂之實驗性。
-      99 年秋，盪在空中由音樂喜好者獨立出資，發行首發迷你專輯《一大片的風景》，至台灣首席藍調樂團賽璐璐的阿義錄音室錄製，由Green!eyes樂團首腦王昱辰錄音製作，並重金送至日本製作曾我部惠一、Audio Active等樂團之mastering studio做聲音後製，並於2010年秋天展開全島巡迴演出，誠摯歡迎音樂同好者到場一同共襄盛舉。`,
-      tags: [],
-    },
   ];
 
   return (
@@ -348,21 +288,36 @@ function ChaptersTabs() {
   );
 }
 
-export default function ContentVideoLayer(props) {
+export default function ContentVideo() {
+  let { video_id } = useParams();
+  const breadcrumbs = [
+    {
+      title: "Stages",
+      href: "/content/stages",
+    },
+    {
+      title: "Lectures",
+      href: "/content/stage/0",
+    },
+    {
+      title: "Current > Video_id:" + video_id,
+      href: null,
+    },
+  ];
+
   return (
     <Grid container spacing={3} justify="center">
       <Grid item xs={12}>
-        <Box mx={5} mt={5}>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => props.setPageLayer(1)}
-          >
-            回上一層
-          </Button>
+        <Box mx={5}>
+          <AppBreadcrumbs breadcrumbs={breadcrumbs} />
         </Box>
       </Grid>
       <Grid item xs={12}>
+        <Box mx={5}>
+          <Typography gutterBottom variant="h5" component="h2">
+            Video ID: {video_id}
+          </Typography>
+        </Box>
         <Box mx={5}>
           <Typography gutterBottom variant="h5" component="h2">
             <ChaptersTabs />

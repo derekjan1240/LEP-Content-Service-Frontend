@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useParams } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   Typography,
@@ -14,6 +15,7 @@ import {
   CardContent,
   CardActions,
 } from "@material-ui/core";
+import AppBreadcrumbs from "../../AppBreadcrumbs";
 
 const fakeData = [
   {
@@ -1546,46 +1548,37 @@ function TabPanel(props) {
   );
 }
 
-function getSubjectTabPanelsContent(grades, setPageLayer, value, classes) {
+function getSubjectTabPanelsContent(grades, value, classes) {
   return grades.map((grade, index) => {
     return (
       <TabPanel className={classes.tabPanel} value={value} index={index}>
-        <SubjectsTabs
-          subjectData={grade.subjects}
-          setPageLayer={setPageLayer}
-        />
+        <SubjectsTabs subjectData={grade.subjects} />
       </TabPanel>
     );
   });
 }
 
-function getUnitTabPanelsContent(subjects, setPageLayer, value) {
+function getUnitTabPanelsContent(subjects, value) {
   return subjects.map((subject, index) => {
     return (
       <TabPanel value={value} index={index} type={0}>
         <Grid container spacing={3} justify="flex-start">
-          {getMediaCards(subject.units, setPageLayer)}
+          <MediaCards units={subject.units} />
         </Grid>
       </TabPanel>
     );
   });
 }
 
-function getMediaCards(units, setPageLayer) {
-  return units.map((unit) => {
-    return (
-      <MediaCard
-        title={unit.title}
-        description={unit.description}
-        setPageLayer={setPageLayer}
-      />
-    );
+function MediaCards(props) {
+  return props.units.map((unit) => {
+    return <MediaCard title={unit.title} description={unit.description} />;
   });
 }
 
 function toVideoLayer(props) {
   console.log(props);
-  props.setPageLayer(2);
+  // window.location.href = "/content/video/123";
 }
 
 function MediaCard(props) {
@@ -1596,7 +1589,7 @@ function MediaCard(props) {
         <CardActionArea onClick={() => toVideoLayer(props)}>
           <CardMedia
             className={classes.media}
-            image={`${process.env.PUBLIC_URL}Book.svg`}
+            image="/Book.svg"
             title={props.title}
           />
           <CardContent>
@@ -1642,12 +1635,7 @@ function GradesTabs(props) {
       >
         {getTabsContent(props.stageData.grades, 1)}
       </Tabs>
-      {getSubjectTabPanelsContent(
-        props.stageData.grades,
-        props.setPageLayer,
-        value,
-        classes
-      )}
+      {getSubjectTabPanelsContent(props.stageData.grades, value, classes)}
     </div>
   );
 }
@@ -1676,31 +1664,33 @@ function SubjectsTabs(props) {
           {getTabsContent(props.subjectData, 0)}
         </Tabs>
       </AppBar>
-      {getUnitTabPanelsContent(props.subjectData, props.setPageLayer, value)}
+      {getUnitTabPanelsContent(props.subjectData, value)}
     </div>
   );
 }
 
-export default function ContentLectureLayer(props) {
+export default function ContentLecture() {
+  let { stage_id } = useParams();
+  const breadcrumbs = [
+    {
+      title: "Stages",
+      href: "/content/stages",
+    },
+    {
+      title: "Current > Stage:" + stage_id,
+      href: null,
+    },
+  ];
   return (
     <Grid container spacing={3} justify="center">
       <Grid item xs={12}>
-        <Box p={5}>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => props.setPageLayer(0)}
-          >
-            回上一層
-          </Button>
+        <Box mx={5}>
+          <AppBreadcrumbs breadcrumbs={breadcrumbs} />
         </Box>
       </Grid>
       <Grid item xs={12}>
         <Box p={5}>
-          <GradesTabs
-            stageData={fakeData[props.contentStage - 1]}
-            setPageLayer={props.setPageLayer}
-          />
+          <GradesTabs stageData={fakeData[stage_id]} />
         </Box>
       </Grid>
     </Grid>
