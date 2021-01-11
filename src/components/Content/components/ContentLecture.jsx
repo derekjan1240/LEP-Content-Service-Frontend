@@ -41,6 +41,7 @@ const fakeData = [
                     title: "章節三",
                   },
                 ],
+                video_id: "01",
               },
               {
                 title: "單元二",
@@ -59,6 +60,7 @@ const fakeData = [
                     title: "章節四",
                   },
                 ],
+                video_id: "02",
               },
               {
                 title: "單元三",
@@ -80,6 +82,8 @@ const fakeData = [
                     title: "章節五",
                   },
                 ],
+                video_id: "03",
+                video_id: "",
               },
             ],
           },
@@ -94,6 +98,7 @@ const fakeData = [
                     title: "章節一",
                   },
                 ],
+                video_id: "01",
               },
             ],
           },
@@ -108,6 +113,7 @@ const fakeData = [
                     title: "章節一",
                   },
                 ],
+                video_id: "01",
               },
             ],
           },
@@ -122,6 +128,7 @@ const fakeData = [
                     title: "章節一",
                   },
                 ],
+                video_id: "01",
               },
             ],
           },
@@ -196,7 +203,56 @@ const fakeData = [
                   {
                     title: "章節一",
                   },
+                  {
+                    title: "章節二",
+                  },
+                  {
+                    title: "章節三",
+                  },
                 ],
+                video_id: "01",
+              },
+              {
+                title: "單元二",
+                description: "單元二的相關介紹",
+                chapters: [
+                  {
+                    title: "章節一",
+                  },
+                  {
+                    title: "章節二",
+                  },
+                  {
+                    title: "章節三",
+                  },
+                  {
+                    title: "章節四",
+                  },
+                ],
+                video_id: "02",
+              },
+              {
+                title: "單元三",
+                description: "單元三的相關介紹",
+                chapters: [
+                  {
+                    title: "章節一",
+                  },
+                  {
+                    title: "章節二",
+                  },
+                  {
+                    title: "章節三",
+                  },
+                  {
+                    title: "章節四",
+                  },
+                  {
+                    title: "章節五",
+                  },
+                ],
+                video_id: "03",
+                video_id: "",
               },
             ],
           },
@@ -211,6 +267,7 @@ const fakeData = [
                     title: "章節一",
                   },
                 ],
+                video_id: "01",
               },
             ],
           },
@@ -225,6 +282,7 @@ const fakeData = [
                     title: "章節一",
                   },
                 ],
+                video_id: "01",
               },
             ],
           },
@@ -239,6 +297,7 @@ const fakeData = [
                     title: "章節一",
                   },
                 ],
+                video_id: "01",
               },
             ],
           },
@@ -313,7 +372,56 @@ const fakeData = [
                   {
                     title: "章節一",
                   },
+                  {
+                    title: "章節二",
+                  },
+                  {
+                    title: "章節三",
+                  },
                 ],
+                video_id: "01",
+              },
+              {
+                title: "單元二",
+                description: "單元二的相關介紹",
+                chapters: [
+                  {
+                    title: "章節一",
+                  },
+                  {
+                    title: "章節二",
+                  },
+                  {
+                    title: "章節三",
+                  },
+                  {
+                    title: "章節四",
+                  },
+                ],
+                video_id: "02",
+              },
+              {
+                title: "單元三",
+                description: "單元三的相關介紹",
+                chapters: [
+                  {
+                    title: "章節一",
+                  },
+                  {
+                    title: "章節二",
+                  },
+                  {
+                    title: "章節三",
+                  },
+                  {
+                    title: "章節四",
+                  },
+                  {
+                    title: "章節五",
+                  },
+                ],
+                video_id: "03",
+                video_id: "",
               },
             ],
           },
@@ -328,6 +436,7 @@ const fakeData = [
                     title: "章節一",
                   },
                 ],
+                video_id: "01",
               },
             ],
           },
@@ -342,6 +451,7 @@ const fakeData = [
                     title: "章節一",
                   },
                 ],
+                video_id: "01",
               },
             ],
           },
@@ -356,6 +466,7 @@ const fakeData = [
                     title: "章節一",
                   },
                 ],
+                video_id: "01",
               },
             ],
           },
@@ -430,7 +541,56 @@ const fakeData = [
                   {
                     title: "章節一",
                   },
+                  {
+                    title: "章節二",
+                  },
+                  {
+                    title: "章節三",
+                  },
                 ],
+                video_id: "01",
+              },
+              {
+                title: "單元二",
+                description: "單元二的相關介紹",
+                chapters: [
+                  {
+                    title: "章節一",
+                  },
+                  {
+                    title: "章節二",
+                  },
+                  {
+                    title: "章節三",
+                  },
+                  {
+                    title: "章節四",
+                  },
+                ],
+                video_id: "02",
+              },
+              {
+                title: "單元三",
+                description: "單元三的相關介紹",
+                chapters: [
+                  {
+                    title: "章節一",
+                  },
+                  {
+                    title: "章節二",
+                  },
+                  {
+                    title: "章節三",
+                  },
+                  {
+                    title: "章節四",
+                  },
+                  {
+                    title: "章節五",
+                  },
+                ],
+                video_id: "03",
+                video_id: "",
               },
             ],
           },
@@ -445,6 +605,7 @@ const fakeData = [
                     title: "章節一",
                   },
                 ],
+                video_id: "01",
               },
             ],
           },
@@ -459,6 +620,7 @@ const fakeData = [
                     title: "章節一",
                   },
                 ],
+                video_id: "01",
               },
             ],
           },
@@ -473,6 +635,7 @@ const fakeData = [
                     title: "章節一",
                   },
                 ],
+                video_id: "01",
               },
             ],
           },
@@ -547,7 +710,56 @@ const fakeData = [
                   {
                     title: "章節一",
                   },
+                  {
+                    title: "章節二",
+                  },
+                  {
+                    title: "章節三",
+                  },
                 ],
+                video_id: "01",
+              },
+              {
+                title: "單元二",
+                description: "單元二的相關介紹",
+                chapters: [
+                  {
+                    title: "章節一",
+                  },
+                  {
+                    title: "章節二",
+                  },
+                  {
+                    title: "章節三",
+                  },
+                  {
+                    title: "章節四",
+                  },
+                ],
+                video_id: "02",
+              },
+              {
+                title: "單元三",
+                description: "單元三的相關介紹",
+                chapters: [
+                  {
+                    title: "章節一",
+                  },
+                  {
+                    title: "章節二",
+                  },
+                  {
+                    title: "章節三",
+                  },
+                  {
+                    title: "章節四",
+                  },
+                  {
+                    title: "章節五",
+                  },
+                ],
+                video_id: "03",
+                video_id: "",
               },
             ],
           },
@@ -562,6 +774,7 @@ const fakeData = [
                     title: "章節一",
                   },
                 ],
+                video_id: "01",
               },
             ],
           },
@@ -576,6 +789,7 @@ const fakeData = [
                     title: "章節一",
                   },
                 ],
+                video_id: "01",
               },
             ],
           },
@@ -590,6 +804,7 @@ const fakeData = [
                     title: "章節一",
                   },
                 ],
+                video_id: "01",
               },
             ],
           },
@@ -664,7 +879,56 @@ const fakeData = [
                   {
                     title: "章節一",
                   },
+                  {
+                    title: "章節二",
+                  },
+                  {
+                    title: "章節三",
+                  },
                 ],
+                video_id: "01",
+              },
+              {
+                title: "單元二",
+                description: "單元二的相關介紹",
+                chapters: [
+                  {
+                    title: "章節一",
+                  },
+                  {
+                    title: "章節二",
+                  },
+                  {
+                    title: "章節三",
+                  },
+                  {
+                    title: "章節四",
+                  },
+                ],
+                video_id: "02",
+              },
+              {
+                title: "單元三",
+                description: "單元三的相關介紹",
+                chapters: [
+                  {
+                    title: "章節一",
+                  },
+                  {
+                    title: "章節二",
+                  },
+                  {
+                    title: "章節三",
+                  },
+                  {
+                    title: "章節四",
+                  },
+                  {
+                    title: "章節五",
+                  },
+                ],
+                video_id: "03",
+                video_id: "",
               },
             ],
           },
@@ -679,6 +943,7 @@ const fakeData = [
                     title: "章節一",
                   },
                 ],
+                video_id: "01",
               },
             ],
           },
@@ -693,6 +958,7 @@ const fakeData = [
                     title: "章節一",
                   },
                 ],
+                video_id: "01",
               },
             ],
           },
@@ -707,6 +973,7 @@ const fakeData = [
                     title: "章節一",
                   },
                 ],
+                video_id: "01",
               },
             ],
           },
@@ -1142,7 +1409,56 @@ const fakeData = [
                   {
                     title: "章節一",
                   },
+                  {
+                    title: "章節二",
+                  },
+                  {
+                    title: "章節三",
+                  },
                 ],
+                video_id: "01",
+              },
+              {
+                title: "單元二",
+                description: "單元二的相關介紹",
+                chapters: [
+                  {
+                    title: "章節一",
+                  },
+                  {
+                    title: "章節二",
+                  },
+                  {
+                    title: "章節三",
+                  },
+                  {
+                    title: "章節四",
+                  },
+                ],
+                video_id: "02",
+              },
+              {
+                title: "單元三",
+                description: "單元三的相關介紹",
+                chapters: [
+                  {
+                    title: "章節一",
+                  },
+                  {
+                    title: "章節二",
+                  },
+                  {
+                    title: "章節三",
+                  },
+                  {
+                    title: "章節四",
+                  },
+                  {
+                    title: "章節五",
+                  },
+                ],
+                video_id: "03",
+                video_id: "",
               },
             ],
           },
@@ -1157,6 +1473,7 @@ const fakeData = [
                     title: "章節一",
                   },
                 ],
+                video_id: "01",
               },
             ],
           },
@@ -1171,6 +1488,7 @@ const fakeData = [
                     title: "章節一",
                   },
                 ],
+                video_id: "01",
               },
             ],
           },
@@ -1185,6 +1503,7 @@ const fakeData = [
                     title: "章節一",
                   },
                 ],
+                video_id: "01",
               },
             ],
           },
@@ -1259,7 +1578,56 @@ const fakeData = [
                   {
                     title: "章節一",
                   },
+                  {
+                    title: "章節二",
+                  },
+                  {
+                    title: "章節三",
+                  },
                 ],
+                video_id: "01",
+              },
+              {
+                title: "單元二",
+                description: "單元二的相關介紹",
+                chapters: [
+                  {
+                    title: "章節一",
+                  },
+                  {
+                    title: "章節二",
+                  },
+                  {
+                    title: "章節三",
+                  },
+                  {
+                    title: "章節四",
+                  },
+                ],
+                video_id: "02",
+              },
+              {
+                title: "單元三",
+                description: "單元三的相關介紹",
+                chapters: [
+                  {
+                    title: "章節一",
+                  },
+                  {
+                    title: "章節二",
+                  },
+                  {
+                    title: "章節三",
+                  },
+                  {
+                    title: "章節四",
+                  },
+                  {
+                    title: "章節五",
+                  },
+                ],
+                video_id: "03",
+                video_id: "",
               },
             ],
           },
@@ -1274,6 +1642,7 @@ const fakeData = [
                     title: "章節一",
                   },
                 ],
+                video_id: "01",
               },
             ],
           },
@@ -1288,6 +1657,7 @@ const fakeData = [
                     title: "章節一",
                   },
                 ],
+                video_id: "01",
               },
             ],
           },
@@ -1302,6 +1672,7 @@ const fakeData = [
                     title: "章節一",
                   },
                 ],
+                video_id: "01",
               },
             ],
           },
@@ -1376,7 +1747,56 @@ const fakeData = [
                   {
                     title: "章節一",
                   },
+                  {
+                    title: "章節二",
+                  },
+                  {
+                    title: "章節三",
+                  },
                 ],
+                video_id: "01",
+              },
+              {
+                title: "單元二",
+                description: "單元二的相關介紹",
+                chapters: [
+                  {
+                    title: "章節一",
+                  },
+                  {
+                    title: "章節二",
+                  },
+                  {
+                    title: "章節三",
+                  },
+                  {
+                    title: "章節四",
+                  },
+                ],
+                video_id: "02",
+              },
+              {
+                title: "單元三",
+                description: "單元三的相關介紹",
+                chapters: [
+                  {
+                    title: "章節一",
+                  },
+                  {
+                    title: "章節二",
+                  },
+                  {
+                    title: "章節三",
+                  },
+                  {
+                    title: "章節四",
+                  },
+                  {
+                    title: "章節五",
+                  },
+                ],
+                video_id: "03",
+                video_id: "",
               },
             ],
           },
@@ -1391,6 +1811,7 @@ const fakeData = [
                     title: "章節一",
                   },
                 ],
+                video_id: "01",
               },
             ],
           },
@@ -1405,6 +1826,7 @@ const fakeData = [
                     title: "章節一",
                   },
                 ],
+                video_id: "01",
               },
             ],
           },
@@ -1419,6 +1841,7 @@ const fakeData = [
                     title: "章節一",
                   },
                 ],
+                video_id: "01",
               },
             ],
           },
@@ -1572,13 +1995,12 @@ function getUnitTabPanelsContent(subjects, value) {
 
 function MediaCards(props) {
   return props.units.map((unit) => {
-    return <MediaCard title={unit.title} description={unit.description} />;
+    return <MediaCard unitData={unit} />;
   });
 }
 
-function toVideoLayer(props) {
-  console.log(props);
-  // window.location.href = "/content/video/123";
+function toVideoLayer(videoId) {
+  window.location.href = "/content/video/" + videoId;
 }
 
 function MediaCard(props) {
@@ -1586,18 +2008,18 @@ function MediaCard(props) {
   return (
     <Grid item xs={12} md={3}>
       <Card>
-        <CardActionArea onClick={() => toVideoLayer(props)}>
+        <CardActionArea onClick={() => toVideoLayer(props.unitData.video_id)}>
           <CardMedia
             className={classes.media}
             image="/Book.svg"
-            title={props.title}
+            title={props.unitData.title}
           />
           <CardContent>
             <Typography gutterBottom variant="h5" component="h2">
-              {props.title}
+              {props.unitData.title}
             </Typography>
             <Typography variant="body2" color="textSecondary">
-              {props.description}
+              {props.unitData.description}
             </Typography>
           </CardContent>
         </CardActionArea>
