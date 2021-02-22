@@ -4,9 +4,7 @@
   "private": true,
   "dependencies": {
     "@material-ui/core": "^4.11.2",
-    "@material-ui/data-grid": "^4.0.0-alpha.13",
     "@material-ui/icons": "^4.11.2",
-    "@material-ui/lab": "^4.0.0-alpha.57",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
@@ -17,7 +15,11 @@
     "react-router-dom": "6.0.0-beta.0",
     "react-scripts": "4.0.0",
     "sweetalert2": "^10.12.6",
-    "web-vitals": "^0.2.4"
+    "web-vitals": "^0.2.4",
+    "redux": "^4.0.5",
+    "redux-devtools-extension": "^2.13.8",
+    "redux-observable": "^1.2.0",
+    "rxjs": "^6.6.3"
   },
   "scripts": {
     "start": "react-scripts start",
