@@ -20,6 +20,7 @@ import ContentLecture from "./components/Content/components/ContentLecture";
 import ContentVideo from "./components/Content/components/ContentVideo";
 
 import LoginForm from "./components/Auth/LoginForm";
+import Profile from "./components/Auth/Profile";
 
 export default function Routes() {
   return useRoutes([
@@ -27,6 +28,10 @@ export default function Routes() {
     {
       path: "/login",
       element: <LoginForm />,
+    },
+    {
+      path: "/profile",
+      element: <Profile />,
     },
     { path: "/content/stages", element: <ContentStage /> },
     { path: "/content/stage/:stage_id", element: <ContentLecture /> },

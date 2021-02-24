@@ -1,7 +1,9 @@
 import React, { useState } from "react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 import clsx from "clsx";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
+import { Button } from "@material-ui/core";
 import Drawer from "@material-ui/core/Drawer";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -22,6 +24,8 @@ import MailIcon from "@material-ui/icons/Mail";
 import FaceIcon from "@material-ui/icons/Face";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import CachedIcon from "@material-ui/icons/Cached";
+
+import { userLogout } from "../actions/UtilActions";
 
 const drawerWidth = 240;
 
@@ -94,6 +98,8 @@ export default function UserMenu() {
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = useState(false);
+  const userState = useSelector((state) => state.userState);
+  const dispatch = useDispatch();
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -149,20 +155,32 @@ export default function UserMenu() {
           })}
         >
           <Toolbar>
-            <RouterLink to="/" className={classes.titleWrapper}>
+            <Link
+              className={classes.titleWrapper}
+              to="/"
+              variant="contained"
+              color="primary"
+            >
               <Typography variant="h6" component="h1" className={classes.title}>
                 APP
               </Typography>
-            </RouterLink>
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              edge="end"
-              onClick={handleDrawerOpen}
-              className={clsx(open && classes.hide)}
-            >
-              <MenuIcon />
-            </IconButton>
+            </Link>
+
+            {userState.isLogin ? (
+              <IconButton
+                color="inherit"
+                aria-label="open drawer"
+                edge="end"
+                onClick={handleDrawerOpen}
+                className={clsx(open && classes.hide)}
+              >
+                <MenuIcon />
+              </IconButton>
+            ) : (
+              <Button component={Link} to="/login" color="inherit">
+                登入
+              </Button>
+            )}
           </Toolbar>
         </AppBar>
       </ClickAwayListener>
@@ -200,7 +218,7 @@ export default function UserMenu() {
             <ListItemIcon>
               <FaceIcon />
             </ListItemIcon>
-            <ListItemText primary={"Kai"} />
+            <ListItemText primary={userState?.user?.username} />
           </ListItem>
           {fakeData.map((headersData, index) => (
             <ListItem
@@ -217,14 +235,18 @@ export default function UserMenu() {
         </List>
         <Divider />
         <List>
-          {["身分切換", "登出"].map((text, index) => (
-            <ListItem button key={text}>
-              <ListItemIcon>
-                {index % 2 === 0 ? <CachedIcon /> : <ExitToAppIcon />}
-              </ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItem>
-          ))}
+          <ListItem button>
+            <ListItemIcon>
+              <CachedIcon />
+            </ListItemIcon>
+            <ListItemText primary="身分切換" />
+          </ListItem>
+          <ListItem button onClick={() => dispatch(userLogout())}>
+            <ListItemIcon>
+              <ExitToAppIcon />
+            </ListItemIcon>
+            <ListItemText primary="登出" />
+          </ListItem>
         </List>
       </Drawer>
     </div>
