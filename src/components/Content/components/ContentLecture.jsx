@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   Typography,
@@ -2005,10 +2005,19 @@ function toVideoLayer(videoId) {
 
 function MediaCard(props) {
   const classes = useStyles();
+  const navigate = useNavigate();
+  const handleNavigate = (herf) => {
+    navigate(herf);
+  };
+
   return (
     <Grid item xs={12} md={3}>
       <Card>
-        <CardActionArea onClick={() => toVideoLayer(props.unitData.video_id)}>
+        <CardActionArea
+          onClick={() =>
+            handleNavigate("/content/video/" + props.unitData.video_id)
+          }
+        >
           <CardMedia
             className={classes.media}
             image="/Book.svg"

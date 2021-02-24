@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   Grid,
@@ -19,10 +20,18 @@ const useStyles = makeStyles({
 
 const EntryButton = (props) => {
   const classes = useStyles();
+  const navigate = useNavigate();
+
+  const handleNavigate = (herf) => {
+    navigate(herf);
+  };
+
   return (
     <Grid item xs={12} md={props.type ? 6 : 4}>
       <Card>
-        <CardActionArea href={"/content/stage/" + props.stage}>
+        <CardActionArea
+          onClick={() => handleNavigate("/content/stage/" + props.stage)}
+        >
           <CardMedia
             className={classes.media}
             image={props.type ? `/ThemeEntryLogo.svg` : `/BasicEntryLogo.svg`}

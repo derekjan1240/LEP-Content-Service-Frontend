@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import clsx from "clsx";
-import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import {
   AppBar,
@@ -103,6 +103,7 @@ export default function UserMenu() {
   const [open, setOpen] = useState(false);
   const userState = useSelector((state) => state.userState);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -113,7 +114,7 @@ export default function UserMenu() {
   };
 
   const handleOnClick = (herf) => {
-    window.location.href = herf;
+    navigate(herf);
   };
 
   const fakeData = [
@@ -158,7 +159,7 @@ export default function UserMenu() {
           })}
         >
           <Toolbar>
-            <Link
+            <RouterLink
               className={classes.titleWrapper}
               to="/"
               variant="contained"
@@ -167,7 +168,7 @@ export default function UserMenu() {
               <Typography variant="h6" component="h1" className={classes.title}>
                 APP
               </Typography>
-            </Link>
+            </RouterLink>
 
             {userState.isLogin ? (
               <IconButton
@@ -180,7 +181,7 @@ export default function UserMenu() {
                 <MenuIcon />
               </IconButton>
             ) : (
-              <Button component={Link} to="/login" color="inherit">
+              <Button component={RouterLink} to="/login" color="inherit">
                 登入
               </Button>
             )}
