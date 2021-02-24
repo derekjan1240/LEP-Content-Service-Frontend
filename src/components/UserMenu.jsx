@@ -1,21 +1,24 @@
 import React, { useState } from "react";
+import clsx from "clsx";
 import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import clsx from "clsx";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
-import { Button } from "@material-ui/core";
-import Drawer from "@material-ui/core/Drawer";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import List from "@material-ui/core/List";
-import Typography from "@material-ui/core/Typography";
-import Divider from "@material-ui/core/Divider";
-import IconButton from "@material-ui/core/IconButton";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
-import ClickAwayListener from "@material-ui/core/ClickAwayListener";
+import {
+  AppBar,
+  Button,
+  Typography,
+  Drawer,
+  Toolbar,
+  CssBaseline,
+  Divider,
+  IconButton,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  ClickAwayListener,
+} from "@material-ui/core";
+// Icons
 import InboxIcon from "@material-ui/icons/MoveToInbox";
 import MenuIcon from "@material-ui/icons/Menu";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
@@ -24,7 +27,7 @@ import MailIcon from "@material-ui/icons/Mail";
 import FaceIcon from "@material-ui/icons/Face";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import CachedIcon from "@material-ui/icons/Cached";
-
+// Actions
 import { userLogout } from "../actions/UtilActions";
 
 const drawerWidth = 240;
