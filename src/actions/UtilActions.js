@@ -1,20 +1,20 @@
 import {
   LOGIN_SITE,
   LOGOUT_SITE,
-  LOGIN_SITE_SUCCESS,
+  SET_USER_STATE,
   LOGIN_SITE_FAIL,
 } from "../actiontypes";
 
-export function userLogin() {
+export function userLogin(payload) {
   return {
     type: LOGIN_SITE,
+    payload,
   };
 }
 
-export function userLoginSuccess(payload) {
-  console.log(payload);
+export function setUserState(payload) {
   return {
-    type: LOGIN_SITE_SUCCESS,
+    type: SET_USER_STATE,
     payload,
   };
 }

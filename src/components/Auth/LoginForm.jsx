@@ -32,6 +32,11 @@ function Copyright() {
   );
 }
 
+function getFormData() {
+  const $Form = document.querySelector("#From_Login");
+  return Object.fromEntries(new FormData($Form));
+}
+
 const useStyles = makeStyles((theme) => ({
   paper: {
     marginTop: theme.spacing(8),
@@ -59,7 +64,7 @@ export default function LoginForm() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (userState.isLogin) {
+    if (userState?.user) {
       navigate("/profile");
     }
   }, [userState]);
@@ -74,7 +79,7 @@ export default function LoginForm() {
         <Typography component="h1" variant="h5">
           Sign in
         </Typography>
-        <form className={classes.form} noValidate>
+        <form id="From_Login" className={classes.form}>
           <TextField
             variant="outlined"
             margin="normal"
@@ -102,11 +107,12 @@ export default function LoginForm() {
             label="Remember me"
           />
           <Button
-            type="submit"
+            type="button"
             fullWidth
             variant="contained"
             color="primary"
             className={classes.submit}
+            onClick={() => dispatch(userLogin(getFormData()))}
           >
             Sign In
           </Button>
@@ -122,17 +128,6 @@ export default function LoginForm() {
               </Link>
             </Grid>
           </Grid>
-
-          {/* 暫時測試用 */}
-          <Button
-            type="button"
-            fullWidth
-            variant="contained"
-            color="secondary"
-            onClick={() => dispatch(userLogin())}
-          >
-            Test Sign In
-          </Button>
         </form>
       </div>
 

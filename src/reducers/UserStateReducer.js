@@ -1,24 +1,19 @@
-import { LOGOUT_SITE, LOGIN_SITE_SUCCESS } from "../actiontypes";
+import { LOGOUT_SITE, SET_USER_STATE } from "../actiontypes";
 
-const INITIAL_USER_STATE = {
-  isLogin: false,
-  authority: "0000",
-  currentType: null,
-};
+const INITIAL_USER_STATE = null;
 
 const userStateReducer = (state = INITIAL_USER_STATE, action) => {
   switch (action.type) {
     case LOGOUT_SITE:
+      localStorage.removeItem("jwt");
       return {
         ...state,
-        isLogin: false,
-        user: {},
+        user: null,
       };
-    case LOGIN_SITE_SUCCESS:
+    case SET_USER_STATE:
       return {
         ...state,
-        isLogin: true,
-        user: action.payload,
+        user: action.payload?.data?.user,
       };
     default:
       return state;

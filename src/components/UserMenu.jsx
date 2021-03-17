@@ -5,7 +5,6 @@ import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import {
   AppBar,
-  Button,
   Typography,
   Drawer,
   Toolbar,
@@ -97,26 +96,42 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function UserMenu() {
-  const classes = useStyles();
-  const theme = useTheme();
-  const [open, setOpen] = useState(false);
-  const userState = useSelector((state) => state.userState);
-  const dispatch = useDispatch();
+const DefaultMenu = () => {
+  const fakeData = [
+    {
+      title: "課程影片",
+      href: "/content/stages",
+    },
+    {
+      title: "Dashboard",
+      href: "/dashboard",
+    },
+  ];
+
   const navigate = useNavigate();
-
-  const handleDrawerOpen = () => {
-    setOpen(true);
-  };
-
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
-
   const handleOnClick = (herf) => {
     navigate(herf);
   };
 
+  return (
+    <List>
+      {fakeData.map((headersData, index) => (
+        <ListItem
+          button
+          key={headersData.title}
+          onClick={() => handleOnClick(headersData.href)}
+        >
+          <ListItemIcon>
+            {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+          </ListItemIcon>
+          <ListItemText primary={headersData.title} />
+        </ListItem>
+      ))}
+    </List>
+  );
+};
+
+const LoginedMenu = () => {
   const fakeData = [
     {
       title: "課程影片",
@@ -148,6 +163,56 @@ export default function UserMenu() {
     },
   ];
 
+  const navigate = useNavigate();
+  const userState = useSelector((state) => state.userState);
+  const handleOnClick = (herf) => {
+    navigate(herf);
+  };
+
+  return (
+    <List>
+      <ListItem>
+        <ListItemIcon>
+          <FaceIcon />
+        </ListItemIcon>
+        <ListItemText primary={userState?.user?.userName} />
+      </ListItem>
+      {fakeData.map((headersData, index) => (
+        <ListItem
+          button
+          key={headersData.title}
+          onClick={() => handleOnClick(headersData.href)}
+        >
+          <ListItemIcon>
+            {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+          </ListItemIcon>
+          <ListItemText primary={headersData.title} />
+        </ListItem>
+      ))}
+    </List>
+  );
+};
+
+export default function UserMenu() {
+  const classes = useStyles();
+  const theme = useTheme();
+  const [open, setOpen] = useState(false);
+  const userState = useSelector((state) => state.userState);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleDrawerOpen = () => {
+    setOpen(true);
+  };
+
+  const handleDrawerClose = () => {
+    setOpen(false);
+  };
+
+  const handleOnClick = (herf) => {
+    navigate(herf);
+  };
+
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -169,22 +234,15 @@ export default function UserMenu() {
                 APP
               </Typography>
             </RouterLink>
-
-            {userState.isLogin ? (
-              <IconButton
-                color="inherit"
-                aria-label="open drawer"
-                edge="end"
-                onClick={handleDrawerOpen}
-                className={clsx(open && classes.hide)}
-              >
-                <MenuIcon />
-              </IconButton>
-            ) : (
-              <Button component={RouterLink} to="/login" color="inherit">
-                登入
-              </Button>
-            )}
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              edge="end"
+              onClick={handleDrawerOpen}
+              className={clsx(open && classes.hide)}
+            >
+              <MenuIcon />
+            </IconButton>
           </Toolbar>
         </AppBar>
       </ClickAwayListener>
@@ -217,41 +275,33 @@ export default function UserMenu() {
           }
         </div>
         <Divider />
-        <List>
-          <ListItem>
-            <ListItemIcon>
-              <FaceIcon />
-            </ListItemIcon>
-            <ListItemText primary={userState?.user?.username} />
-          </ListItem>
-          {fakeData.map((headersData, index) => (
-            <ListItem
-              button
-              key={headersData.title}
-              onClick={() => handleOnClick(headersData.href)}
-            >
-              <ListItemIcon>
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-              </ListItemIcon>
-              <ListItemText primary={headersData.title} />
-            </ListItem>
-          ))}
-        </List>
+        {userState?.user ? <LoginedMenu /> : <DefaultMenu />}
         <Divider />
-        <List>
-          <ListItem button>
-            <ListItemIcon>
-              <CachedIcon />
-            </ListItemIcon>
-            <ListItemText primary="身分切換" />
-          </ListItem>
-          <ListItem button onClick={() => dispatch(userLogout())}>
-            <ListItemIcon>
-              <ExitToAppIcon />
-            </ListItemIcon>
-            <ListItemText primary="登出" />
-          </ListItem>
-        </List>
+        {userState?.user ? (
+          <List>
+            <ListItem button>
+              <ListItemIcon>
+                <CachedIcon />
+              </ListItemIcon>
+              <ListItemText primary="身分切換" />
+            </ListItem>
+            <ListItem button onClick={() => dispatch(userLogout())}>
+              <ListItemIcon>
+                <ExitToAppIcon />
+              </ListItemIcon>
+              <ListItemText primary="登出" />
+            </ListItem>
+          </List>
+        ) : (
+          <List>
+            <ListItem button onClick={() => handleOnClick("/login")}>
+              <ListItemIcon>
+                <ExitToAppIcon />
+              </ListItemIcon>
+              <ListItemText primary="登入" />
+            </ListItem>
+          </List>
+        )}
       </Drawer>
     </div>
   );
