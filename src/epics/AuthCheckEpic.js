@@ -22,6 +22,7 @@ const authCheckEpic = (action$) =>
           return setUserState(response);
         }),
         catchError(() => {
+          // 當前 Token 已過期
           return of(clearExpiredToken());
         })
       );

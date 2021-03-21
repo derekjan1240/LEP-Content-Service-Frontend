@@ -1,19 +1,23 @@
-import React, { useState, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import React, { useEffect } from "react";
+import { useDispatch } from "react-redux";
 import UserMenu from "./components/UserMenu";
 import Routes from "./Routes";
 
+import { setUserState } from "./actions/UtilActions";
 import { userAuthCheck } from "./actions/AuthActions";
 
 function App() {
   const dispatch = useDispatch();
-  const userState = useSelector((state) => state.userState);
 
   useEffect(() => {
     // 確認使用者登入狀態
-    if (!userState) {
-      const token = localStorage.getItem("jwt");
-      token && dispatch(userAuthCheck(token));
+    const token = localStorage.getItem("jwt");
+    if (token) {
+      // 檢查 token 是否過期
+      dispatch(userAuthCheck(token));
+    } else {
+      // 未登入 清除 userState
+      dispatch(setUserState());
     }
   }, []);
 
