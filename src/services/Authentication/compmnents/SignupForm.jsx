@@ -28,14 +28,14 @@ function getFormData() {
 const initialFValues = {
   email: "",
   password: "",
-  role: "1",
+  role: "Student",
 };
 
 const roleItems = [
-  { id: "1", title: "學生" },
-  { id: "2", title: "家長" },
-  { id: "3", title: "老師" },
-  { id: "4", title: "管理員" },
+  { id: "Student", title: "學生" },
+  { id: "Parent", title: "家長" },
+  { id: "Teacher", title: "老師" },
+  { id: "Admin", title: "管理員" },
 ];
 
 export default function SignupForm(props) {
@@ -54,8 +54,11 @@ export default function SignupForm(props) {
     if ("password" in fieldValues)
       temp.password = fieldValues.password ? "" : "密碼為必填項目";
     if ("role" in fieldValues)
-      temp.role =
-        fieldValues.role && !isNaN(fieldValues.role) ? "" : "使用者身分錯誤";
+      temp.role = ["Student", "Parent", "Teacher", "Admin"].includes(
+        fieldValues.role
+      )
+        ? ""
+        : "使用者身分錯誤";
 
     setErrors({
       ...temp,

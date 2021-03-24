@@ -47,6 +47,9 @@ export default function Profile() {
                 E-Mail: {userState?.user?.email}
               </Typography>
               <Typography variant="h5" align="left">
+                當前身分: {userState?.user?.role}
+              </Typography>
+              <Typography variant="h5" align="left">
                 年齡: {userState?.user?.age}
               </Typography>
             </Box>
