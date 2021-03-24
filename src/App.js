@@ -1,10 +1,34 @@
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import UserMenu from "./components/UserMenu";
+import { CssBaseline, createMuiTheme, ThemeProvider } from "@material-ui/core";
+import UserMenu from "./services/Utility/compmnents/UserMenu";
 import Routes from "./Routes";
 
 import { setUserState } from "./actions/UtilActions";
 import { userAuthCheck } from "./actions/AuthActions";
+
+const theme = createMuiTheme({
+  palette: {
+    primary: {
+      main: "#333996",
+      light: "#3c44b126",
+    },
+    secondary: {
+      main: "#f83245",
+      light: "#f8324526",
+    },
+    background: {
+      default: "#f4f5fd",
+    },
+  },
+  overrides: {
+    MuiAppBar: {
+      root: {
+        transform: "translateZ(0)",
+      },
+    },
+  },
+});
 
 function App() {
   const dispatch = useDispatch();
@@ -22,10 +46,11 @@ function App() {
   }, []);
 
   return (
-    <>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
       <UserMenu />
       <Routes />
-    </>
+    </ThemeProvider>
   );
 }
 

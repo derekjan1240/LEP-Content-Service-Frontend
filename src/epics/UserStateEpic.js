@@ -2,19 +2,19 @@ import Axios from "axios";
 import { ofType } from "redux-observable";
 import { of, from } from "rxjs";
 import { switchMap, map, takeUntil, catchError } from "rxjs/operators";
-import { LOGIN_SITE, LOGIN_SITE_CANCELLED, LOGOUT_SITE } from "../actiontypes";
+import { LOGIN_SITE, LOGIN_SITE_CANCELLED, USER_SIGNUP } from "../actiontypes";
 import { setUserState, userLoginFail } from "../actions/UtilActions";
 import { showFailSwal } from "../utilSwal";
 
-const userStateEpic = (action$) =>
+export const userStateLoginEpic = (action$) =>
   action$.pipe(
     ofType(LOGIN_SITE),
     switchMap((action) => {
       return from(
         Axios({
           method: "post",
-          url: `${process.env.REACT_APP_AUTHENTICATION_SERVICE}/auth/jwt/login`,
-          data: action.payload,
+          url: action.payload.route,
+          data: action.payload.data,
           withCredentials: true,
         })
       ).pipe(
@@ -32,5 +32,3 @@ const userStateEpic = (action$) =>
       );
     })
   );
-
-export default userStateEpic;

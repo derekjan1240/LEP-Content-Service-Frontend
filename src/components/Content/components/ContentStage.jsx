@@ -11,6 +11,9 @@ import {
   CardContent,
 } from "@material-ui/core";
 
+// 暫時使用假資料
+import { FAKE_STAGE_DATA } from "./FakeContentData";
+
 const useStyles = makeStyles({
   media: {
     height: 140,
@@ -53,24 +56,7 @@ export default function ContentStage() {
   const [stageData, setStageData] = useState([]);
 
   useEffect(() => {
-    // 取得 Stage 資料
-    const FAKE_STAGE_DATA = [
-      {
-        id: 0,
-        title: "國小",
-        icon_src: "/BasicEntryLogo.svg",
-      },
-      {
-        id: 1,
-        title: "國中",
-        icon_src: "/BasicEntryLogo.svg",
-      },
-      {
-        id: 2,
-        title: "高中",
-        icon_src: "/BasicEntryLogo.svg",
-      },
-    ];
+    // 取得 Stage 資料 ...
     setStageData(FAKE_STAGE_DATA);
   }, []);
 

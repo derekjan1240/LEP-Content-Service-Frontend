@@ -1,6 +1,6 @@
 import { combineEpics } from "redux-observable";
 
-import userStateEpic from "./UserStateEpic";
+import { userStateLoginEpic } from "./UserStateEpic";
 import authCheckEpic from "./AuthCheckEpic";
 
-export const rootEpic = combineEpics(userStateEpic, authCheckEpic);
+export const rootEpic = combineEpics(userStateLoginEpic, authCheckEpic);

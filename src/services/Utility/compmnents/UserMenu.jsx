@@ -18,16 +18,22 @@ import {
   ClickAwayListener,
 } from "@material-ui/core";
 // Icons
-import InboxIcon from "@material-ui/icons/MoveToInbox";
 import MenuIcon from "@material-ui/icons/Menu";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
-import MailIcon from "@material-ui/icons/Mail";
 import FaceIcon from "@material-ui/icons/Face";
-import ExitToAppIcon from "@material-ui/icons/ExitToApp";
+import VideoLibraryIcon from "@material-ui/icons/VideoLibrary";
+import MenuBookIcon from "@material-ui/icons/MenuBook";
+import FlagIcon from "@material-ui/icons/Flag";
+import SupervisedUserCircleIcon from "@material-ui/icons/SupervisedUserCircle";
+import AssignmentIcon from "@material-ui/icons/Assignment";
+import BarChartIcon from "@material-ui/icons/BarChart";
+import DashboardIcon from "@material-ui/icons/Dashboard";
 import CachedIcon from "@material-ui/icons/Cached";
+import ExitToAppIcon from "@material-ui/icons/ExitToApp";
+
 // Actions
-import { userLogout } from "../actions/UtilActions";
+import { userLogout } from "../../../actions/UtilActions";
 
 const drawerWidth = 240;
 
@@ -101,10 +107,12 @@ const DefaultMenu = () => {
     {
       title: "課程影片",
       href: "/content/stages",
+      icon: <VideoLibraryIcon />,
     },
     {
       title: "Dashboard",
       href: "/dashboard",
+      icon: <DashboardIcon />,
     },
   ];
 
@@ -121,9 +129,7 @@ const DefaultMenu = () => {
           key={headersData.title}
           onClick={() => handleOnClick(headersData.href)}
         >
-          <ListItemIcon>
-            {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-          </ListItemIcon>
+          <ListItemIcon>{headersData.icon}</ListItemIcon>
           <ListItemText primary={headersData.title} />
         </ListItem>
       ))}
@@ -136,30 +142,37 @@ const LoginedMenu = () => {
     {
       title: "課程影片",
       href: "/content/stages",
+      icon: <VideoLibraryIcon />,
     },
     {
       title: "習題系統",
       href: "/exercises",
+      icon: <MenuBookIcon />,
     },
     {
       title: "任務系統",
       href: "/misssions",
+      icon: <FlagIcon />,
     },
     {
       title: "班級系統",
       href: "/classroom",
+      icon: <SupervisedUserCircleIcon />,
     },
     {
       title: "問卷系統",
       href: "/questionnaire",
+      icon: <AssignmentIcon />,
     },
     {
       title: "資料視覺化系統",
       href: "/visualization",
+      icon: <BarChartIcon />,
     },
     {
       title: "Dashboard",
       href: "/dashboard",
+      icon: <DashboardIcon />,
     },
   ];
 
@@ -183,9 +196,7 @@ const LoginedMenu = () => {
           key={headersData.title}
           onClick={() => handleOnClick(headersData.href)}
         >
-          <ListItemIcon>
-            {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-          </ListItemIcon>
+          <ListItemIcon>{headersData.icon}</ListItemIcon>
           <ListItemText primary={headersData.title} />
         </ListItem>
       ))}
@@ -211,6 +222,11 @@ export default function UserMenu() {
 
   const handleOnClick = (herf) => {
     navigate(herf);
+  };
+
+  const logout = () => {
+    dispatch(userLogout());
+    navigate("/auth/login");
   };
 
   return (
@@ -275,9 +291,9 @@ export default function UserMenu() {
           }
         </div>
         <Divider />
-        {userState?.user ? <LoginedMenu /> : <DefaultMenu />}
+        {userState.user ? <LoginedMenu /> : <DefaultMenu />}
         <Divider />
-        {userState?.user ? (
+        {userState.user ? (
           <List>
             <ListItem button>
               <ListItemIcon>
@@ -285,7 +301,7 @@ export default function UserMenu() {
               </ListItemIcon>
               <ListItemText primary="身分切換" />
             </ListItem>
-            <ListItem button onClick={() => dispatch(userLogout())}>
+            <ListItem button onClick={() => logout()}>
               <ListItemIcon>
                 <ExitToAppIcon />
               </ListItemIcon>
@@ -294,7 +310,7 @@ export default function UserMenu() {
           </List>
         ) : (
           <List>
-            <ListItem button onClick={() => handleOnClick("/login")}>
+            <ListItem button onClick={() => handleOnClick("/auth/login")}>
               <ListItemIcon>
                 <ExitToAppIcon />
               </ListItemIcon>

@@ -23,7 +23,7 @@ const userStateReducer = (state = INITIAL_USER_STATE, action) => {
       return {
         ...state,
         user: null,
-        isChecking: true,
+        isChecking: false,
       };
     case SET_USER_STATE:
       return {
