@@ -184,7 +184,7 @@ const LoginedMenu = () => {
 
   return (
     <List>
-      <ListItem button onClick={() => handleOnClick("/profile")}>
+      <ListItem button onClick={() => handleOnClick("/auth/profile")}>
         <ListItemIcon>
           <FaceIcon />
         </ListItemIcon>

@@ -50,7 +50,7 @@ export default function Login() {
 
   useEffect(() => {
     if (userState.user && !userState.isChecking) {
-      navigate("/profile");
+      navigate("/auth/profile");
     }
   }, [userState]);
 
