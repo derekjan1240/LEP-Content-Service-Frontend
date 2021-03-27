@@ -29,6 +29,7 @@ export default function Popup(props) {
       open={openPopup}
       maxWidth="md"
       classes={{ paper: classes.dialogWrapper }}
+      fullWidth
     >
       <DialogTitle className={classes.dialogTitle}>
         <div style={{ display: "flex" }}>

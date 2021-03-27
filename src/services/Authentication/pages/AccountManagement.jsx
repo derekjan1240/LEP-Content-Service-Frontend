@@ -43,6 +43,7 @@ const headCells = [
   { id: "fullName", label: "姓名" },
   { id: "age", label: "年齡" },
   { id: "email", label: "Email" },
+  { id: "role", label: "身分" },
   { id: "actions", label: "Actions", disableSorting: true },
 ];
 
@@ -76,8 +77,8 @@ export default function AccountManagement() {
   const [openPopup, setOpenPopup] = useState(false);
   const [confirmDialog, setConfirmDialog] = useState({
     isOpen: false,
-    title: "",
-    subTitle: "",
+    title: "你確定要刪除此帳號嗎?",
+    subTitle: "注意! 刪除後無法復原",
   });
 
   const [records, setRecords] = useState([]);
@@ -172,6 +173,7 @@ export default function AccountManagement() {
                   <TableCell>{item.userName}</TableCell>
                   <TableCell>{item.age}</TableCell>
                   <TableCell>{item.email}</TableCell>
+                  <TableCell>{item.role}</TableCell>
                   <TableCell>
                     <Controls.ActionButton
                       color="primary"
@@ -186,8 +188,8 @@ export default function AccountManagement() {
                       onClick={() => {
                         setConfirmDialog({
                           isOpen: true,
-                          title: "Are you sure to delete this record?",
-                          subTitle: "You can't undo this operation",
+                          title: "你確定要刪除此帳號嗎?",
+                          subTitle: "注意! 刪除後無法復原",
                           onConfirm: () => {
                             onDelete(item.id);
                           },

@@ -9,7 +9,7 @@ import {
   IconButton,
 } from "@material-ui/core";
 import Controls from "./Controls/Controls";
-import NotListedLocationIcon from "@material-ui/icons/NotListedLocation";
+import WarningIcon from "@material-ui/icons/Warning";
 
 const useStyles = makeStyles((theme) => ({
   dialog: {
@@ -44,10 +44,15 @@ export default function ConfirmDialog(props) {
   const classes = useStyles();
 
   return (
-    <Dialog open={confirmDialog.isOpen} classes={{ paper: classes.dialog }}>
+    <Dialog
+      open={confirmDialog.isOpen}
+      classes={{ paper: classes.dialog }}
+      maxWidth="sm"
+      fullWidth
+    >
       <DialogTitle className={classes.dialogTitle}>
         <IconButton disableRipple className={classes.titleIcon}>
-          <NotListedLocationIcon />
+          <WarningIcon />
         </IconButton>
       </DialogTitle>
       <DialogContent className={classes.dialogContent}>
@@ -56,12 +61,12 @@ export default function ConfirmDialog(props) {
       </DialogContent>
       <DialogActions className={classes.dialogAction}>
         <Controls.Button
-          text="No"
+          text="否"
           color="default"
           onClick={() => setConfirmDialog({ ...confirmDialog, isOpen: false })}
         />
         <Controls.Button
-          text="Yes"
+          text="是"
           color="secondary"
           onClick={confirmDialog.onConfirm}
         />
