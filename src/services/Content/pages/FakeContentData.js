@@ -18,7 +18,7 @@ export const FAKE_STAGE_DATA = [
 
 export const FAKE_GRADE_DATA = [
   {
-    id: 0,
+    id: "000",
     title: "一年級",
     subjects: [
       {
@@ -44,7 +44,7 @@ export const FAKE_GRADE_DATA = [
     ],
   },
   {
-    id: 1,
+    id: "111",
     title: "二年級",
     subjects: [
       {
@@ -74,7 +74,7 @@ export const FAKE_GRADE_DATA = [
     ],
   },
   {
-    id: 2,
+    id: "222",
     title: "三年級",
     subjects: [
       {

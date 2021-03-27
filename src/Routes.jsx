@@ -31,18 +31,14 @@ import Exercises from "./services/Content/pages/Exercises";
 import Visualizations from "./services/Visualization/pages/Visualizations";
 
 // 課程系統
-import ContentStage from "./components/Content/components/ContentStage";
-import ContentLecture from "./components/Content/components/ContentLecture";
-import ContentVideo from "./components/Content/components/ContentVideo";
+import Stages from "./services/Content/pages/Stages";
+import Lectures from "./services/Content/pages/Lectures";
+import Units from "./services/Content/pages/Units";
 
 export default function Routes() {
   return useRoutes([
     { path: "/", element: <Home /> },
     { path: "/auth/login", element: <Login /> },
-    {
-      path: "/profile",
-      element: <Profile />,
-    },
     {
       path: "/auth/profile",
       element: <Profile />,
@@ -51,12 +47,9 @@ export default function Routes() {
       path: "/auth/account/management",
       element: <AccountManagement />,
     },
-    {
-      path: "/content/stages",
-      element: <ContentStage />,
-    },
-    { path: "/content/stage/:stage_id", element: <ContentLecture /> },
-    { path: "/content/video/:video_id", element: <ContentVideo /> },
+    { path: "/content/stages", element: <Stages /> },
+    { path: "/content/stages/:stage_id", element: <Lectures /> },
+    { path: "/content/units/:unit_id", element: <Units /> },
     { path: "/questionnaire", element: <Questionaires /> },
     { path: "/misssions", element: <Missions /> },
     { path: "/exercises", element: <Exercises /> },

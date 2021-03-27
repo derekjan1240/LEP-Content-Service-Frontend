@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   Grid,
+  Paper,
   Typography,
   Box,
   Button,
@@ -13,9 +14,12 @@ import {
   CardMedia,
   CardContent,
 } from "@material-ui/core";
-import AppBreadcrumbs from "../../AppBreadcrumbs";
 
 const useStyles = makeStyles((theme) => ({
+  pageContent: {
+    margin: theme.spacing(5),
+    padding: theme.spacing(3),
+  },
   root: {
     flexGrow: 1,
     backgroundColor: theme.palette.background.paper,
@@ -288,42 +292,27 @@ function ChaptersTabs() {
   );
 }
 
-export default function ContentVideo() {
+export default function Units() {
   let { video_id } = useParams();
-  const breadcrumbs = [
-    {
-      title: "Stages",
-      href: "/content/stages",
-    },
-    {
-      title: "Lectures",
-      href: "/content/stage/0",
-    },
-    {
-      title: "Current > Video_id:" + video_id,
-      href: null,
-    },
-  ];
+
+  const classes = useStyles();
 
   return (
-    <Grid container spacing={3} justify="center">
-      <Grid item xs={12}>
-        <Box mx={5}>
-          <AppBreadcrumbs breadcrumbs={breadcrumbs} />
-        </Box>
+    <Paper className={classes.pageContent}>
+      <Grid container spacing={3} justify="center">
+        <Grid item xs={12}>
+          <Box mx={5}>
+            <Typography gutterBottom variant="h5" component="h2">
+              Video ID: {video_id}
+            </Typography>
+          </Box>
+          <Box mx={5}>
+            <Typography gutterBottom variant="h5" component="h2">
+              <ChaptersTabs />
+            </Typography>
+          </Box>
+        </Grid>
       </Grid>
-      <Grid item xs={12}>
-        <Box mx={5}>
-          <Typography gutterBottom variant="h5" component="h2">
-            Video ID: {video_id}
-          </Typography>
-        </Box>
-        <Box mx={5}>
-          <Typography gutterBottom variant="h5" component="h2">
-            <ChaptersTabs />
-          </Typography>
-        </Box>
-      </Grid>
-    </Grid>
+    </Paper>
   );
 }
