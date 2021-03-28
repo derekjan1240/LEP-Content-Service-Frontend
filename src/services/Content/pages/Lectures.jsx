@@ -38,11 +38,7 @@ function SubjectPanel(props) {
       aria-labelledby={`scrollable-auto-tab-${index}`}
       {...other}
     >
-      {value === subject.id && (
-        <Box p={3}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
+      {value === subject.id && <Box p={3}>{children}</Box>}
     </div>
   );
 }
@@ -95,28 +91,34 @@ function GradeContent(props) {
             index={index}
             key={subject.id}
           >
-            {/* 暫時使用假單元 */}
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => handleNavigate("/content/units/1")}
-            >
-              單元 1
-            </Button>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => handleNavigate("/content/units/2")}
-            >
-              單元 2
-            </Button>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => handleNavigate("/content/units/3")}
-            >
-              單元 3
-            </Button>
+            {/* 暫時使用假章節 */}
+            <Box p={3}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => handleNavigate("/content/units/1")}
+              >
+                章節 1
+              </Button>
+            </Box>
+            <Box p={3}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => handleNavigate("/content/units/2")}
+              >
+                章節 2
+              </Button>
+            </Box>
+            <Box p={3}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => handleNavigate("/content/units/3")}
+              >
+                章節 3
+              </Button>
+            </Box>
           </SubjectPanel>
         );
       })}
