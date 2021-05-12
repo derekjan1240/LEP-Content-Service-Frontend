@@ -2,9 +2,17 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
-import { Paper, Typography, Box, Tabs, Tab, Button } from "@material-ui/core";
+import {
+  Paper,
+  CircularProgress,
+  Box,
+  Tabs,
+  Tab,
+  Button,
+} from "@material-ui/core";
+import axios from "axios";
 // 暫時使用假資料
-import { FAKE_GRADE_DATA } from "./FakeContentData";
+// import { FAKE_GRADE_DATA } from "./FakeContentData";
 
 const useStyles = makeStyles((theme) => ({
   pageContent: {
@@ -33,12 +41,12 @@ function SubjectPanel(props) {
   return (
     <div
       role="tabpanel"
-      hidden={value !== subject.id}
+      hidden={value !== index}
       id={`scrollable-auto-tabpanel-${index}`}
       aria-labelledby={`scrollable-auto-tab-${index}`}
       {...other}
     >
-      {value === subject.id && <Box p={3}>{children}</Box>}
+      {value === index && <Box p={3}>{children}</Box>}
     </div>
   );
 }
@@ -50,12 +58,64 @@ SubjectPanel.propTypes = {
   subject: PropTypes.object.isRequired,
 };
 
-function GradeContent(props) {
-  const { subjects } = props;
+function LecturesContent(props) {
   const navigate = useNavigate();
   const handleNavigate = (herf) => {
     navigate(herf);
   };
+  const { selectedGrade, selectedSubject } = props;
+  const [isLoading, setIsLoading] = useState(true);
+  const [lectures, setLectures] = useState([]);
+  useEffect(() => {
+    axios({
+      method: "get",
+      url: `${process.env.REACT_APP_CONTENT_SERVICE}/lectures`,
+      params: {
+        grade: selectedGrade,
+        subject: selectedSubject,
+      },
+    }).then((result) => {
+      setLectures(result.data);
+      setIsLoading(false);
+    });
+  }, []);
+
+  if (!isLoading) {
+    if (lectures.length) {
+      return lectures.map((lecture) => {
+        console.log(lecture);
+        return (
+          <Box key={lecture.id} p={3}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => handleNavigate(`/content/units/${lecture.id}`)}
+            >
+              {lecture.title}
+            </Button>
+          </Box>
+        );
+      });
+    } else {
+      return <h1>本科目暫時無章節</h1>;
+    }
+  } else {
+    return <CircularProgress />;
+  }
+}
+
+function GradeContent(props) {
+  props.subjects.sort((a, b) => {
+    if (a.order < b.order) {
+      return -1;
+    }
+    if (a.order > b.order) {
+      return 1;
+    }
+    return 0;
+  });
+
+  const { grade, subjects } = props;
   const [selectedSubject, setSelectedSubject] = useState(0);
 
   const handleChange = (event, newValue) => {
@@ -75,7 +135,7 @@ function GradeContent(props) {
         {subjects.map((subject, index) => {
           return (
             <Tab
-              value={subject.id}
+              value={index}
               label={subject.title}
               {...a11yProps(index, "subject")}
               key={subject.id}
@@ -91,34 +151,10 @@ function GradeContent(props) {
             index={index}
             key={subject.id}
           >
-            {/* 暫時使用假章節 */}
-            <Box p={3}>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => handleNavigate("/content/units/1")}
-              >
-                章節 1
-              </Button>
-            </Box>
-            <Box p={3}>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => handleNavigate("/content/units/2")}
-              >
-                章節 2
-              </Button>
-            </Box>
-            <Box p={3}>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => handleNavigate("/content/units/3")}
-              >
-                章節 3
-              </Button>
-            </Box>
+            <LecturesContent
+              selectedGrade={grade.id}
+              selectedSubject={subjects[selectedSubject].id}
+            />
           </SubjectPanel>
         );
       })}
@@ -131,12 +167,12 @@ function GradePanel(props) {
   return (
     <div
       role="tabpanel"
-      hidden={value !== grade.id}
+      hidden={value !== index}
       id={`grade-content-tabpanel-${index}`}
       aria-labelledby={`grade-content-tab-${index}`}
       {...other}
     >
-      {value === grade.id && <Box p={3}>{children}</Box>}
+      {<Box p={3}>{children}</Box>}
     </div>
   );
 }
@@ -154,7 +190,6 @@ function GradeContentTabs(props) {
   const [selectedGrade, setSelectedGrade] = useState(0);
 
   const handleChange = (event, newValue) => {
-    console.log(event, newValue);
     setSelectedGrade(newValue);
   };
 
@@ -168,30 +203,17 @@ function GradeContentTabs(props) {
         aria-label="GradeContentTabs"
         className={classes.tabs}
       >
-        <Tab value={0} label={"年級"} />
         {gradeData.map((grade, index) => {
           return (
             <Tab
-              value={grade.id}
+              value={index}
               label={grade.title}
-              {...a11yProps(grade.title, "grade")}
+              {...a11yProps(index, "grade")}
               key={grade.id}
             />
           );
         })}
       </Tabs>
-      <div
-        role="tabpanel"
-        hidden={selectedGrade !== 0}
-        id={`grade-content-tabpanel-intro`}
-        aria-labelledby={`grade-content-tab-intro`}
-      >
-        {selectedGrade === 0 && (
-          <Box p={3}>
-            <Typography variant="h5">我是介紹文字</Typography>
-          </Box>
-        )}
-      </div>
       {gradeData.map((grade, index) => {
         return (
           <GradePanel
@@ -200,7 +222,11 @@ function GradeContentTabs(props) {
             index={index}
             key={grade.id}
           >
-            <GradeContent subjects={grade.subjects} key={grade.id} />
+            <GradeContent
+              grade={grade}
+              subjects={grade.subjects}
+              key={grade.id}
+            />
           </GradePanel>
         );
       })}
@@ -213,10 +239,21 @@ export default function Lectures() {
   const [gradeData, setGradeData] = useState([]);
 
   useEffect(() => {
-    console.log(stage_id);
-    // stage_id: elementary, secondary, highschool
-    // 由 stage 拉 grades & subjects
-    setGradeData(FAKE_GRADE_DATA);
+    axios({
+      method: "get",
+      url: `${process.env.REACT_APP_CONTENT_SERVICE}/stages/${stage_id}`,
+    }).then((result) => {
+      result.data.grades.sort((a, b) => {
+        if (a.order < b.order) {
+          return -1;
+        }
+        if (a.order > b.order) {
+          return 1;
+        }
+        return 0;
+      });
+      setGradeData(result.data.grades);
+    });
   }, []);
 
   const classes = useStyles();

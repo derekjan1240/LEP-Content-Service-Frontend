@@ -66,21 +66,21 @@ export default function Stages() {
             <EntryCard
               title="國小"
               image="/BasicEntryLogo.svg"
-              route="/content/stages/elementary"
+              route="/content/stages/456176c6-fa36-4754-acbf-f3469def5792"
             />
           </Grid>
           <Grid item xs={12} md={4}>
             <EntryCard
               title="國中"
               image="/BasicEntryLogo.svg"
-              route="/content/stages/secondary"
+              route="/content/stages/5ea9924d-2324-457f-8c29-d4258f1423c8"
             />
           </Grid>
           <Grid item xs={12} md={4}>
             <EntryCard
               title="高中"
               image="/BasicEntryLogo.svg"
-              route="/content/stages/highschool"
+              route="/content/stages/9f4c6c96-1d24-45fd-afeb-0c60a743f6d9"
             />
           </Grid>
         </Grid>
