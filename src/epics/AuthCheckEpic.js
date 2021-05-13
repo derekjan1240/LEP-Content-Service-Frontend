@@ -13,7 +13,7 @@ const authCheckEpic = (action$) =>
       return from(
         Axios({
           method: "get",
-          url: `${process.env.REACT_APP_AUTHENTICATION_SERVICE}/auth/me`,
+          url: `${process.env.REACT_APP_AUTHENTICATION_SERVICE}/users`,
           headers: { Authorization: `Bearer ${action.payload}` },
         })
       ).pipe(

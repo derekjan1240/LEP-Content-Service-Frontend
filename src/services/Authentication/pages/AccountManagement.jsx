@@ -62,7 +62,7 @@ export default function AccountManagement() {
 
   useEffect(() => {
     axios
-      .get(`${process.env.REACT_APP_AUTHENTICATION_SERVICE}/users`)
+      .get(`${process.env.REACT_APP_AUTHENTICATION_SERVICE}/users/all`)
       .then((res) => {
         console.log(res);
         setRecords(res.data);
@@ -89,12 +89,8 @@ export default function AccountManagement() {
     },
   });
 
-  const {
-    TblContainer,
-    TblHead,
-    TblPagination,
-    recordsAfterPagingAndSorting,
-  } = useTable(records, headCells, filterFn);
+  const { TblContainer, TblHead, TblPagination, recordsAfterPagingAndSorting } =
+    useTable(records, headCells, filterFn);
 
   const handleSearch = (e) => {
     let target = e.target;

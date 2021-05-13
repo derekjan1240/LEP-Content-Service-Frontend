@@ -53,19 +53,13 @@ export default function Profile() {
   const dispatch = useDispatch();
   const userState = useSelector((state) => state.userState);
 
-  const [role, setRole] = useState(userState?.user?.role || "");
   const [state, setState] = useState({});
-
-  const handleRoleChange = (event) => {
-    setRole(event.target.value);
-  };
 
   useEffect(() => {
     if (!userState.user && !userState.isChecking) {
       navigate("/auth/login");
     }
     if (userState?.user?.role) {
-      // setRole(userState?.user?.role);
       setState({
         userName: userState.user.userName,
         email: userState.user.email,
@@ -75,13 +69,15 @@ export default function Profile() {
     }
   }, [userState]);
 
-  useEffect(() => {
-    console.log(state);
-  }, [state]);
+  const handleStateChange = (event) => {
+    setState({
+      ...state,
+      [event.target.name]: event.target.valueAsNumber || event.target.value,
+    });
+  };
 
   // 更新個人資料 > Redux state 更新
   const updateProfile = () => {
-    console.log("update!", state, localStorage.jwt);
     Axios({
       method: "Put",
       url: `${process.env.REACT_APP_AUTHENTICATION_SERVICE}/users`,
@@ -91,19 +87,11 @@ export default function Profile() {
       },
     })
       .then((res) => {
-        console.log(res.data);
         dispatch(setUserState(res));
       })
       .catch((err) => {
         console.log(err);
       });
-  };
-
-  const handleStateChange = (event) => {
-    setState({
-      ...state,
-      [event.target.name]: event.target.valueAsNumber || event.target.value,
-    });
   };
 
   const classes = useStyles();
