@@ -7,16 +7,17 @@ import {
   Box,
   Typography,
   TextField,
+  Select,
   Button,
   InputLabel,
   MenuItem,
   FormControl,
   makeStyles,
 } from "@material-ui/core";
-import Select from "@material-ui/core/Select";
 import AccountBoxIcon from "@material-ui/icons/AccountBox";
 
 import Axios from "axios";
+import Swal from "sweetalert2";
 
 import { setUserState } from "../../../actions/UtilActions";
 import PageHeader from "../../Utility/compmnents/PageHeader";
@@ -88,6 +89,11 @@ export default function Profile() {
     })
       .then((res) => {
         dispatch(setUserState(res));
+        Swal.fire({
+          icon: "success",
+          title: "基本資料跟新成功!",
+          confirmButtonText: "關閉",
+        });
       })
       .catch((err) => {
         console.log(err);
