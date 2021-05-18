@@ -1,4 +1,4 @@
-import Axios from "axios";
+import axios from "axios";
 import { ofType } from "redux-observable";
 import { of, from } from "rxjs";
 import { switchMap, map, catchError } from "rxjs/operators";
@@ -11,7 +11,7 @@ const authCheckEpic = (action$) =>
     ofType(USER_AUTH_CHECK),
     switchMap((action) => {
       return from(
-        Axios({
+        axios({
           method: "get",
           url: `${process.env.REACT_APP_AUTHENTICATION_SERVICE}/users`,
           headers: { Authorization: `Bearer ${action.payload}` },

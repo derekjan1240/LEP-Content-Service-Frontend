@@ -11,8 +11,6 @@ import {
   Button,
 } from "@material-ui/core";
 import axios from "axios";
-// 暫時使用假資料
-// import { FAKE_GRADE_DATA } from "./FakeContentData";
 
 const useStyles = makeStyles((theme) => ({
   pageContent: {
@@ -25,7 +23,14 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
   },
   tabs: {
+    minWidth: "fit-content",
+  },
+  gradeTabs: {
     borderRight: `1px solid ${theme.palette.divider}`,
+  },
+  gradePanel: {
+    maxWidth: "100%",
+    overflow: "auto",
   },
 }));
 
@@ -58,12 +63,11 @@ SubjectPanel.propTypes = {
   subject: PropTypes.object.isRequired,
 };
 
-function LecturesContent(props) {
+function LecturesContent({ selectedGrade, selectedSubject }) {
   const navigate = useNavigate();
   const handleNavigate = (herf) => {
     navigate(herf);
   };
-  const { selectedGrade, selectedSubject } = props;
   const [isLoading, setIsLoading] = useState(true);
   const [lectures, setLectures] = useState([]);
   useEffect(() => {
@@ -83,7 +87,6 @@ function LecturesContent(props) {
   if (!isLoading) {
     if (lectures.length) {
       return lectures.map((lecture) => {
-        console.log(lecture);
         return (
           <Box key={lecture.id} p={3}>
             <Button
@@ -104,8 +107,11 @@ function LecturesContent(props) {
   }
 }
 
-function GradeContent(props) {
-  props.subjects.sort((a, b) => {
+function GradeContent({ grade, subjects }) {
+  const classes = useStyles();
+
+  // 科目排序
+  subjects.sort((a, b) => {
     if (a.order < b.order) {
       return -1;
     }
@@ -115,7 +121,6 @@ function GradeContent(props) {
     return 0;
   });
 
-  const { grade, subjects } = props;
   const [selectedSubject, setSelectedSubject] = useState(0);
 
   const handleChange = (event, newValue) => {
@@ -131,6 +136,7 @@ function GradeContent(props) {
         textColor="primary"
         variant="scrollable"
         scrollButtons="auto"
+        className={classes.tabs}
       >
         {subjects.map((subject, index) => {
           return (
@@ -184,8 +190,7 @@ GradePanel.propTypes = {
   grade: PropTypes.object.isRequired,
 };
 
-function GradeContentTabs(props) {
-  const { gradeData } = props;
+function GradeContentTabs({ gradeData }) {
   const classes = useStyles();
   const [selectedGrade, setSelectedGrade] = useState(0);
 
@@ -201,7 +206,7 @@ function GradeContentTabs(props) {
         value={selectedGrade}
         onChange={handleChange}
         aria-label="GradeContentTabs"
-        className={classes.tabs}
+        className={`${classes.tabs} ${classes.gradeTabs}`}
       >
         {gradeData.map((grade, index) => {
           return (
@@ -221,12 +226,9 @@ function GradeContentTabs(props) {
             grade={grade}
             index={index}
             key={grade.id}
+            className={classes.gradePanel}
           >
-            <GradeContent
-              grade={grade}
-              subjects={grade.subjects}
-              key={grade.id}
-            />
+            <GradeContent grade={grade} subjects={grade.subjects} />
           </GradePanel>
         );
       })}
@@ -239,10 +241,12 @@ export default function Lectures() {
   const [gradeData, setGradeData] = useState([]);
 
   useEffect(() => {
+    // 依選擇階段取得年級資料
     axios({
       method: "get",
       url: `${process.env.REACT_APP_CONTENT_SERVICE}/stages/${stage_id}`,
     }).then((result) => {
+      // 年級排序
       result.data.grades.sort((a, b) => {
         if (a.order < b.order) {
           return -1;

@@ -61,8 +61,11 @@ export default function AccountManagement() {
   // -------------------------
 
   useEffect(() => {
-    axios
-      .get(`${process.env.REACT_APP_AUTHENTICATION_SERVICE}/users/all`)
+    axios({
+      method: "GET",
+      url: `${process.env.REACT_APP_AUTHENTICATION_SERVICE}/users/all`,
+      headers: { Authorization: `Bearer ${localStorage.jwt}` },
+    })
       .then((res) => {
         console.log(res);
         setRecords(res.data);

@@ -16,7 +16,7 @@ import {
 } from "@material-ui/core";
 import AccountBoxIcon from "@material-ui/icons/AccountBox";
 
-import Axios from "axios";
+import axios from "axios";
 import Swal from "sweetalert2";
 
 import { setUserState } from "../../../actions/UtilActions";
@@ -79,7 +79,7 @@ export default function Profile() {
 
   // 更新個人資料 > Redux state 更新
   const updateProfile = () => {
-    Axios({
+    axios({
       method: "Put",
       url: `${process.env.REACT_APP_AUTHENTICATION_SERVICE}/users`,
       headers: { Authorization: `Bearer ${localStorage.jwt}` },
@@ -88,10 +88,11 @@ export default function Profile() {
       },
     })
       .then((res) => {
+        // 更新 redux store 中的資料
         dispatch(setUserState(res));
         Swal.fire({
           icon: "success",
-          title: "基本資料跟新成功!",
+          title: "基本資料更新成功!",
           confirmButtonText: "關閉",
         });
       })
@@ -170,12 +171,12 @@ export default function Profile() {
                       label="當前身份"
                     >
                       <MenuItem value={""} disabled>
-                        無
+                        請選擇當前身份
                       </MenuItem>
-                      <MenuItem value={"Student"}>Student</MenuItem>
-                      <MenuItem value={"Parent"}>Parent</MenuItem>
-                      <MenuItem value={"Teacher"}>Teacher</MenuItem>
-                      <MenuItem value={"Admin"}>Admin</MenuItem>
+                      <MenuItem value={"Student"}>學生</MenuItem>
+                      <MenuItem value={"Parent"}>家長</MenuItem>
+                      <MenuItem value={"Teacher"}>教師</MenuItem>
+                      <MenuItem value={"Admin"}>管理員</MenuItem>
                     </Select>
                   </FormControl>
                 </Box>
