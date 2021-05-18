@@ -71,6 +71,7 @@ function LecturesContent({ selectedGrade, selectedSubject }) {
   const [isLoading, setIsLoading] = useState(true);
   const [lectures, setLectures] = useState([]);
   useEffect(() => {
+    // 取得該科目章節
     axios({
       method: "get",
       url: `${process.env.REACT_APP_CONTENT_SERVICE}/lectures`,
@@ -79,7 +80,18 @@ function LecturesContent({ selectedGrade, selectedSubject }) {
         subject: selectedSubject,
       },
     }).then((result) => {
-      setLectures(result.data);
+      const lectures = result.data;
+      // 章節排序
+      lectures.sort((a, b) => {
+        if (a.order < b.order) {
+          return -1;
+        }
+        if (a.order > b.order) {
+          return 1;
+        }
+        return 0;
+      });
+      setLectures(lectures);
       setIsLoading(false);
     });
   }, []);
