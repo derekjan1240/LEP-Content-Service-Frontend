@@ -77,10 +77,15 @@ function TabPanel(props) {
   );
 }
 
-function getTabsContent(data, classes) {
-  return data.map((data, index) => {
+function getTabsContent(units, classes) {
+  return units.map((unit, index) => {
     return (
-      <Tab label={data.title} {...setProps(index)} className={classes.tab} />
+      <Tab
+        key={unit.id}
+        label={unit.title}
+        {...setProps(index)}
+        className={classes.tab}
+      />
     );
   });
 }
@@ -104,6 +109,7 @@ function TagButtonGroup(props) {
             color="primary"
             onClick={() => props.setVideoCursor(tag.time)}
             className={classes.tagButton}
+            key={tag.id}
           >
             {tag.title}
           </Button>
@@ -133,7 +139,12 @@ function ChapterTabPanel({ units, value, videoCursor, setVideoCursor }) {
   const classes = useStyles();
   return units.map((unit, index) => {
     return (
-      <TabPanel value={value} index={index} className={classes.tabPanel}>
+      <TabPanel
+        value={value}
+        index={index}
+        className={classes.tabPanel}
+        key={unit.id}
+      >
         <Grid container spacing={3}>
           <Grid item xs={12} xl={8}>
             <div className={classes.videoWrapper}>
@@ -171,7 +182,7 @@ function VideoContent(props) {
         "?autoplay=1&start=" +
         props.videoCursor
       }
-      frameborder="0"
+      frameBorder="0"
       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
       allowFullScreen={true}
     ></iframe>
