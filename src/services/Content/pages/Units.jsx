@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { makeStyles } from "@material-ui/core/styles";
+import axios from "axios";
 import {
   Grid,
   Paper,
@@ -14,6 +14,7 @@ import {
   CardMedia,
   CardContent,
 } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
   pageContent: {
@@ -94,7 +95,7 @@ function TagButtonGroup(props) {
         onClick={() => props.setVideoCursor(0)}
         className={classes.tagButton}
       >
-        Start
+        回起始點
       </Button>
       {props.tags.map((tag) => {
         return (
@@ -112,15 +113,15 @@ function TagButtonGroup(props) {
   );
 }
 
-function ImageButton() {
+function ImageButton({ title }) {
   const classes = useStyles();
   return (
-    <Card>
+    <Card style={{ background: "aliceblue" }}>
       <CardActionArea>
-        <CardMedia className={classes.media} image="/ThemeEntryLogo.svg" />
+        <CardMedia className={classes.media} image="/Test.svg" />
         <CardContent>
           <Typography variant="h4" align="center">
-            相關操作
+            {title}
           </Typography>
         </CardContent>
       </CardActionArea>
@@ -128,29 +129,27 @@ function ImageButton() {
   );
 }
 
-function ChapterTabPanel(props) {
+function ChapterTabPanel({ units, value, videoCursor, setVideoCursor }) {
   const classes = useStyles();
-  return props.data.map((data, index) => {
+  return units.map((unit, index) => {
     return (
-      <TabPanel value={props.value} index={index} className={classes.tabPanel}>
+      <TabPanel value={value} index={index} className={classes.tabPanel}>
         <Grid container spacing={3}>
           <Grid item xs={12} xl={8}>
             <div className={classes.videoWrapper}>
-              <VideoContent videoCursor={props.videoCursor} video={data} />
+              <VideoContent videoCursor={videoCursor} video={unit} />
             </div>
           </Grid>
           <Grid item xs={12} xl={4}>
-            <TagButtonGroup
-              setVideoCursor={props.setVideoCursor}
-              tags={data.tags}
-            />
-            <Box>
-              <ImageButton />
-              <ImageButton />
+            <TagButtonGroup setVideoCursor={setVideoCursor} tags={unit.tags} />
+            <Box py={2}>
+              <ImageButton title="單元練習卷" />
             </Box>
           </Grid>
           <Grid item xs={12} xl={12}>
-            <Typography variant="h6">{data.description}</Typography>
+            <Box p={3}>
+              <Typography variant="h6">{unit.description}</Typography>
+            </Box>
           </Grid>
         </Grid>
       </TabPanel>
@@ -180,7 +179,7 @@ function VideoContent(props) {
 }
 
 // 章節
-function ChaptersTabs() {
+function ChaptersTabs({ units }) {
   const classes = useStyles();
   const [value, setValue] = useState(0);
   const [videoCursor, setVideoCursor] = useState(0);
@@ -189,86 +188,6 @@ function ChaptersTabs() {
     setValue(newValue);
     setVideoCursor(0);
   };
-
-  const fakeData = [
-    {
-      youtube_id: "e9Eds2Rc_x8",
-      title: "CS50 Lecture 1 - C",
-      description: `This is CS50, Harvard University's introduction to the intellectual enterprises of computer science and the art of programming. Demanding, but definitely doable. Social, but educational. A focused topic, but broadly applicable skills. CS50 is the quintessential Harvard course.`,
-      tags: [
-        {
-          title: "C",
-          time: 82,
-        },
-        {
-          title: "CS50 Sandbox",
-          time: 427,
-        },
-        {
-          title: "hello.c",
-          time: 533,
-        },
-        {
-          title: "Compilation",
-          time: 322,
-        },
-        {
-          title: "Command-Line Arguments",
-          time: 1188,
-        },
-        {
-          title: "User Input",
-          time: 1310,
-        },
-        {
-          title: "get_string",
-          time: 1373,
-        },
-        {
-          title: "Variables",
-          time: 1443,
-        },
-        {
-          title: "printf",
-          time: 1545,
-        },
-      ],
-    },
-    {
-      youtube_id: "8PrOp9t0PyQ",
-      title: "CS50 Lecture 2 - Arrays",
-      description: `This is CS50, Harvard University's introduction to the intellectual enterprises of computer science and the art of programming. Demanding, but definitely doable. Social, but educational. A focused topic, but broadly applicable skills. CS50 is the quintessential Harvard course.`,
-      tags: [
-        {
-          title: "Preprocessing",
-          time: 390,
-        },
-        {
-          title: "Null Terminator",
-          time: 4288,
-        },
-      ],
-    },
-    {
-      youtube_id: "fykrlqbV9wM",
-      title: "CS50 Lecture 3 - Algorithms",
-      description: `This is CS50, Harvard University's introduction to the intellectual enterprises of computer science and the art of programming. Demanding, but definitely doable. Social, but educational. A focused topic, but broadly applicable skills. CS50 is the quintessential Harvard course.`,
-      tags: [
-        {
-          title: "Weeks 2 Recap",
-          time: 82,
-        },
-        {
-          title: "Algorithms Demo",
-          time: 166,
-        },
-        {
-          title: "Binary Search",
-          time: 584,
-        },
-      ],
-    },
-  ];
 
   return (
     <div className={classes.root}>
@@ -280,10 +199,10 @@ function ChaptersTabs() {
         aria-label="章節影片選單"
         className={classes.tabs}
       >
-        {getTabsContent(fakeData, classes)}
+        {getTabsContent(units, classes)}
       </Tabs>
       <ChapterTabPanel
-        data={fakeData}
+        units={units}
         value={value}
         videoCursor={videoCursor}
         setVideoCursor={setVideoCursor}
@@ -293,22 +212,35 @@ function ChaptersTabs() {
 }
 
 export default function Units() {
-  let { video_id } = useParams();
+  const { lecture_id } = useParams();
 
   const classes = useStyles();
+
+  const [lecture, setLecture] = useState({});
+  const [units, setUnits] = useState([]);
+
+  useEffect(() => {
+    axios({
+      method: "get",
+      url: `${process.env.REACT_APP_CONTENT_SERVICE}/lectures/${lecture_id}`,
+    }).then((result) => {
+      setLecture(result.data);
+      setUnits(result.data.units);
+    });
+  }, []);
 
   return (
     <Paper className={classes.pageContent}>
       <Grid container spacing={3} justify="center">
         <Grid item xs={12}>
-          <Box mx={5}>
-            <Typography gutterBottom variant="h5" component="h2">
-              Video ID: {video_id}
+          <Box mx={5} p={3}>
+            <Typography gutterBottom variant="h4" component="h4">
+              {lecture.title}
             </Typography>
           </Box>
           <Box mx={5}>
-            <Typography gutterBottom variant="h5" component="h2">
-              <ChaptersTabs />
+            <Typography gutterBottom variant="h5" component="h5">
+              <ChaptersTabs units={units} />
             </Typography>
           </Box>
         </Grid>

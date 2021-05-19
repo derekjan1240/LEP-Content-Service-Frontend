@@ -49,7 +49,7 @@ export default function Routes() {
     },
     { path: "/content/stages", element: <Stages /> },
     { path: "/content/stages/:stage_id", element: <Lectures /> },
-    { path: "/content/units/:unit_id", element: <Units /> },
+    { path: "/content/units/:lecture_id", element: <Units /> },
     { path: "/questionnaire", element: <Questionaires /> },
     { path: "/misssions", element: <Missions /> },
     { path: "/exercises", element: <Exercises /> },
