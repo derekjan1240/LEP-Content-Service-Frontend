@@ -163,13 +163,14 @@ export default function Classroom() {
     navigate(herf);
   };
 
-  const handleClassroomEdit = (data, resetForm) => {
-    console.log(data);
-    resetForm();
+  const handleClassroomEdit = (updatedClassroom, resetForm) => {
+    console.log("updatedClassroom:", updatedClassroom);
+    resetForm(updatedClassroom);
     setOpenPopup(false);
+    setClassroom(updatedClassroom);
     swal.fire({
       icon: "success",
-      title: `更新班級 ${data.name} 成功!`,
+      title: "更新班級成功!",
     });
   };
 
