@@ -3,8 +3,8 @@ import axios from "axios";
 import { Grid, Box, Button, Typography, makeStyles } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 
-import Controls from "../../Utility/compmnents/Controls/Controls";
-import { useForm, Form } from "../../Utility/compmnents/UseForm";
+import Controls from "../../../Utility/compmnents/Controls/Controls";
+import { useForm, Form } from "../../../Utility/compmnents/UseForm";
 
 const useStyles = makeStyles((theme) => ({
   buttonWrapper: {

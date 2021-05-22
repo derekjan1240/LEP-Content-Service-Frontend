@@ -14,10 +14,14 @@ import {
   CardContent,
   makeStyles,
 } from "@material-ui/core";
+
+// Icon
 import SupervisedUserCircleIcon from "@material-ui/icons/SupervisedUserCircle";
+
+// Components
 import PageHeader from "../../Utility/compmnents/PageHeader";
 import OperatorMenu from "../../Utility/compmnents/OperatorMenu";
-import ClassroomForm from "../compmnents/ClassroomForm";
+import ClassroomForm from "../compmnents/classroom/ClassroomForm";
 import Popup from "../../Utility/compmnents/Popup";
 
 const FAKE_CLASS_LIST = [
@@ -72,7 +76,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function ClassRoomButton({ data }) {
+function EntryCard({ classroom }) {
   const classes = useStyles();
   const navigate = useNavigate();
 
@@ -85,7 +89,7 @@ function ClassRoomButton({ data }) {
       <CardActionArea
         className={classes.classRoomButton}
         onClick={() => {
-          handleOnClick(`/classroom/${data.id}`);
+          handleOnClick(`/classroom/${classroom.id}`);
         }}
       >
         <Grid container spacing={3} alignItems="center">
@@ -95,10 +99,10 @@ function ClassRoomButton({ data }) {
           <Grid item md={10}>
             <CardContent>
               <Typography variant="h4" align="center" gutterBottom>
-                {data.name}
+                {classroom.name}
               </Typography>
               <Typography variant="h5" align="center">
-                班級教師: {data.manager.userName}
+                班級教師: {classroom.manager.userName}
               </Typography>
             </CardContent>
           </Grid>
@@ -174,10 +178,10 @@ export default function Classrooms() {
       {!userState.isChecking && (
         <Paper className={classes.pageContent}>
           <Grid container spacing={3}>
-            {classrooms.map((theClass) => {
+            {classrooms.map((classroom) => {
               return (
-                <Grid item md={6} key={theClass.id}>
-                  <ClassRoomButton data={theClass} />
+                <Grid item md={6} key={classroom.id}>
+                  <EntryCard classroom={classroom} />
                 </Grid>
               );
             })}

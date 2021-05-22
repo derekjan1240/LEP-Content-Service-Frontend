@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Grid, makeStyles } from "@material-ui/core";
-import Controls from "../../Utility/compmnents/Controls/Controls";
-import { useForm, Form } from "../../Utility/compmnents/UseForm";
+import Controls from "../../../Utility/compmnents/Controls/Controls";
+import { useForm, Form } from "../../../Utility/compmnents/UseForm";
 
 const useStyles = makeStyles((theme) => ({
   buttonWrapper: {
