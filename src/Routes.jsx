@@ -21,6 +21,7 @@ import Questionaires from "./services/Questionnaire/pages/Questionaires";
 import Missions from "./services/Assistant/pages/Missions";
 // 班級系統
 import Classrooms from "./services/Assistant/pages/Classrooms";
+import Classroom from "./services/Assistant/pages/Classroom";
 
 /** Content Service Pages */
 // 習題系統
@@ -54,6 +55,7 @@ export default function Routes() {
     { path: "/misssions", element: <Missions /> },
     { path: "/exercises", element: <Exercises /> },
     { path: "/classroom", element: <Classrooms /> },
+    { path: "/classroom/:classroom_id", element: <Classroom /> },
     { path: "/visualization", element: <Visualizations /> },
     { path: "/dashboard", element: <Dashboard /> },
     // Not found pages
