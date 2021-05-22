@@ -17,10 +17,12 @@ const isAllowAddItems = [
 ];
 
 const initialFValues = {
-  id: 0,
+  id: String(new Date().getTime()),
   name: "",
   description: "",
   isAllowAdd: "1",
+  studentList: [],
+  groupList: [],
 };
 
 export default function ClassroomForm({
