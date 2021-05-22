@@ -87,6 +87,9 @@ export default function useTable(records, headCells, filterFn) {
   const TblPagination = () => (
     <TablePagination
       component="div"
+      backIconButtonText="上一頁"
+      nextIconButtonText="下一頁"
+      labelRowsPerPage="每頁顯示筆數"
       page={page}
       rowsPerPageOptions={pages}
       rowsPerPage={rowsPerPage}

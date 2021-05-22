@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import {
   Paper,
   Grid,
@@ -8,11 +9,13 @@ import {
   CardActionArea,
   CardMedia,
   CardContent,
+  Button,
   makeStyles,
 } from "@material-ui/core";
 import MenuBookIcon from "@material-ui/icons/MenuBook";
 
 import PageHeader from "../../Utility/compmnents/PageHeader";
+import OperatorMenu from "../../Utility/compmnents/OperatorMenu";
 
 const useStyles = makeStyles((theme) => ({
   pageContent: {
@@ -30,8 +33,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const EntryCard = (props) => {
-  const { title, image, route } = props;
+const EntryCard = ({ title, image, route }) => {
   const navigate = useNavigate();
   const handleNavigate = (herf) => {
     navigate(herf);
@@ -53,6 +55,7 @@ const EntryCard = (props) => {
 
 export default function Stages() {
   const classes = useStyles();
+  const user = useSelector((state) => state.userState.user);
   return (
     <>
       <PageHeader
@@ -60,6 +63,13 @@ export default function Stages() {
         subTitle="subTitle"
         icon={<MenuBookIcon fontSize="large" />}
       />
+      {user?.role === "Admin" && (
+        <OperatorMenu>
+          <Button variant="contained" color="primary">
+            新增課程
+          </Button>
+        </OperatorMenu>
+      )}
       <Paper className={classes.pageContent}>
         <Grid container justify="center">
           <Grid item xs={12} md={4}>
