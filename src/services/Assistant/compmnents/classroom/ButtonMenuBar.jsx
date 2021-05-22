@@ -1,3 +1,4 @@
+import { useParams, useNavigate } from "react-router-dom";
 import swal from "sweetalert2";
 import { Grid, Button, Box, makeStyles } from "@material-ui/core";
 
@@ -7,8 +8,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ButtonMenuBar({ setPopup, setOpenPopup, isManager }) {
+export default function ButtonMenuBar({
+  classroom,
+  setPopup,
+  setOpenPopup,
+  isManager,
+}) {
   const classes = useStyles();
+  const navigate = useNavigate();
 
   const handleJoinMeet = () => {
     swal.fire({
@@ -24,6 +31,33 @@ export default function ButtonMenuBar({ setPopup, setOpenPopup, isManager }) {
         }
       },
     });
+  };
+
+  const handleRemoveClassroom = () => {
+    swal
+      .fire({
+        icon: "warning",
+        title: "是否確定要解散該班級?",
+        text: "解散後將無法復原",
+        showCancelButton: true,
+        reverseButtons: true,
+        confirmButtonText: "確定",
+        cancelButtonText: "離開",
+        confirmButtonColor: "#c0392b",
+        input: "text",
+        inputPlaceholder: "請輸入班級名稱",
+        inputValidator: (value) => {
+          if (value !== classroom.name) {
+            return "請確實輸入欲刪除的班級名稱!";
+          }
+        },
+      })
+      .then((result) => {
+        if (result.isConfirmed) {
+          // 解散班級
+          navigate("/classroom");
+        }
+      });
   };
 
   return (
@@ -65,6 +99,7 @@ export default function ButtonMenuBar({ setPopup, setOpenPopup, isManager }) {
               variant="contained"
               color="secondary"
               className={classes.menuButton}
+              onClick={handleRemoveClassroom}
             >
               解散班級
             </Button>

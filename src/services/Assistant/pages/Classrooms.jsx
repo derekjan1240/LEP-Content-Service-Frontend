@@ -29,31 +29,40 @@ const FAKE_CLASS_LIST = [
     id: "1",
     name: "向日葵班",
     manager: {
+      id: "609c247d4099fa16842d9dba",
       userName: "Admin",
     },
     description: "這是關於向日葵班的基本介紹",
     invitationCode: "ABCD1234",
     isAllowAdd: true,
+    studentList: [],
+    groupList: [],
   },
   {
     id: "2",
     name: "玫瑰班",
     manager: {
+      id: "222222222",
       userName: "王小明",
     },
     description: "這是關於玫瑰班的基本介紹",
     invitationCode: "ABCD4321",
     isAllowAdd: true,
+    studentList: [],
+    groupList: [],
   },
   {
     id: "3",
     name: "櫻花班",
     manager: {
+      id: "33333333",
       userName: "李大明",
     },
     description: "這是關於櫻花班的基本介紹",
     invitationCode: "ABCD1324",
     isAllowAdd: false,
+    studentList: [],
+    groupList: [],
   },
 ];
 
@@ -133,13 +142,16 @@ export default function Classrooms() {
     setClassrooms(FAKE_CLASS_LIST);
   }, []);
 
-  const handleAdd = (data, resetForm) => {
-    console.log(data);
+  const handleAdd = (newClassroom, resetForm) => {
+    console.log("newClassroom:", newClassroom);
     resetForm();
     setOpenPopup(false);
+    newClassroom.manager = userState.user;
+    newClassroom.invitationCode = "後端吐回來";
+    classrooms.push(newClassroom);
     swal.fire({
       icon: "success",
-      title: `新增班級 ${data.name} 成功!`,
+      title: `新增班級 ${newClassroom.name} 成功!`,
     });
   };
 
