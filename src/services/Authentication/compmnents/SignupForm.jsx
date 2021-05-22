@@ -32,10 +32,10 @@ const initialFValues = {
 };
 
 const roleItems = [
-  { id: "Student", title: "學生" },
-  { id: "Parent", title: "家長" },
-  { id: "Teacher", title: "老師" },
-  { id: "Admin", title: "管理員" },
+  { id: "Student", value: "Student", title: "學生" },
+  { id: "Parent", value: "Parent", title: "家長" },
+  { id: "Teacher", value: "Teacher", title: "老師" },
+  { id: "Admin", value: "Admin", title: "管理員" },
 ];
 
 export default function SignupForm(props) {

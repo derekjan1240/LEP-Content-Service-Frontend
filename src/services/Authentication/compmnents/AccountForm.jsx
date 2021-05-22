@@ -4,10 +4,10 @@ import Controls from "../../Utility/compmnents/Controls/Controls";
 import { useForm, Form } from "../../Utility/compmnents/UseForm";
 
 const roleItems = [
-  { id: "Admin", title: "管理員" },
-  { id: "Teacher", title: "老師" },
-  { id: "Parent", title: "家長" },
-  { id: "Student", title: "學生" },
+  { id: "Admin", value: "Admin", title: "管理員" },
+  { id: "Teacher", value: "Teacher", title: "老師" },
+  { id: "Parent", value: "Parent", title: "家長" },
+  { id: "Student", value: "Student", title: "學生" },
 ];
 
 const initialFValues = {
@@ -17,9 +17,7 @@ const initialFValues = {
   role: "student",
 };
 
-export default function AccountForm(props) {
-  const { addOrEdit, recordForEdit } = props;
-
+export default function AccountForm({ addOrEdit, recordForEdit }) {
   const validate = (fieldValues = values) => {
     let temp = { ...errors };
     if ("userName" in fieldValues)
@@ -41,14 +39,8 @@ export default function AccountForm(props) {
     if (fieldValues == values) return Object.values(temp).every((x) => x == "");
   };
 
-  const {
-    values,
-    setValues,
-    errors,
-    setErrors,
-    handleInputChange,
-    resetForm,
-  } = useForm(initialFValues, true, validate);
+  const { values, setValues, errors, setErrors, handleInputChange, resetForm } =
+    useForm(initialFValues, true, validate);
 
   const handleSubmit = (e) => {
     e.preventDefault();
