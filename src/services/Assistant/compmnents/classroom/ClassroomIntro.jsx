@@ -37,7 +37,7 @@ export default function ClassroomIntro({
         {isManager && (
           <Box mt={2}>
             <Typography variant="h5">
-              是否開放學生加入班級: {classroom.isAllowAdd ? "是" : "否"}
+              是否開放學生加入班級: {classroom.isAllowAdd === "1" ? "是" : "否"}
             </Typography>
           </Box>
         )}
