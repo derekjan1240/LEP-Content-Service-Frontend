@@ -1,16 +1,10 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { Grid, Box, Button, Typography, makeStyles } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 
 import Controls from "../../Utility/compmnents/Controls/Controls";
 import { useForm, Form } from "../../Utility/compmnents/UseForm";
-
-const initialFValues = {
-  id: 0,
-  name: "",
-  description: "",
-  isAllowAdd: "1",
-};
 
 const useStyles = makeStyles((theme) => ({
   buttonWrapper: {
@@ -19,7 +13,7 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(2),
   },
   menuButton: {
-    marginRight: 16,
+    margin: 8,
   },
   selectdeButton: {
     background: theme.palette.primary.main,
@@ -35,26 +29,81 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const initialFValues = {
+  groupName: "",
+};
+
 export default function GroupForm({
   classroom,
-  studentsList,
-  setStudentsList,
+  setClassroom,
+  handleGroupEdit,
 }) {
-  const handleSubmit = (e) => {
-    e.preventDefault();
-  };
-
   const classes = useStyles();
 
-  const INITIAL_GROUP_DATA = {
-    withoutGrouped: new Set(studentsList.map((student) => student.id)),
-    grouped: [],
+  const [initValue, setInitValue] = useState(null);
+  const [groupData, setGroupData] = useState(null);
+  const [studentSelected, setStudentSelected] = useState(new Set());
+  const validate = (fieldValues = values) => {
+    let temp = { ...errors };
+    if ("groupName" in fieldValues)
+      if (fieldValues.groupName.length === 0) {
+        temp.groupName = "組名為必填項目";
+      } else if (fieldValues.groupName.length > 10) {
+        temp.groupName = "組名不得超過 10 個字";
+      } else if (
+        groupData.groupList.filter(
+          (group) => group.name === fieldValues.groupName
+        ).length !== 0
+      ) {
+        temp.groupName = "組名不得重複";
+      } else {
+        temp.groupName = "";
+      }
+    setErrors({
+      ...temp,
+    });
+
+    if (fieldValues == values) return Object.values(temp).every((x) => x == "");
   };
 
-  const [groupData, setGroupData] = useState(INITIAL_GROUP_DATA);
-  const [studentSelected, setStudentSelected] = useState(new Set());
+  const { values, setValues, errors, setErrors, handleInputChange, resetForm } =
+    useForm(initialFValues, true, validate);
 
-  // Components
+  useEffect(() => {
+    const allStudentSet = new Set(
+      classroom.studentList.map((student) => student.id)
+    );
+    const groupedSet = classroom.groupList.map((group) => group.memberSet);
+    const groupedFlatSet = new Set(
+      classroom.groupList
+        .map((group) => group.memberSet)
+        .map((set) => {
+          return Array.from(set);
+        })
+        .flat()
+    );
+    const withoutGroupedSet = new Set(
+      [...allStudentSet].filter((x) => !groupedFlatSet.has(x))
+    );
+    setInitValue({
+      allStudentSet,
+      groupedSet,
+      groupedFlatSet,
+      withoutGroupedSet,
+    });
+  }, []);
+
+  useEffect(() => {
+    if (initValue) {
+      setGroupData({
+        withoutGrouped: initValue.withoutGroupedSet,
+        groupList: classroom.groupList,
+      });
+    }
+  }, [initValue]);
+
+  /* Components */
+  // 學生按鈕
   const studentButton = (student) => {
     return (
       <Button
@@ -73,14 +122,51 @@ export default function GroupForm({
       </Button>
     );
   };
+  // 組別區塊
+  const GroupStudentButton = ({ studentId }) => {
+    const student = classroom.studentList.filter(
+      (student) => student.id === studentId
+    )[0];
+    return (
+      <Button
+        variant="contained"
+        color="primary"
+        className={classes.menuButton}
+      >
+        {student.name}
+      </Button>
+    );
+  };
+  const Groups = () => {
+    return groupData.groupList.map((group, index) => {
+      return (
+        <Grid item xs={12} key={group.id}>
+          <Box m={3} p={2} className={classes.border}>
+            <div style={{ display: "flex" }}>
+              <Typography variant="h6" component="div" style={{ flexGrow: 1 }}>
+                {group.name}
+              </Typography>
+              <Controls.ActionButton
+                color="secondary"
+                onClick={() => {
+                  removeGroup(index);
+                }}
+              >
+                <CloseIcon />
+              </Controls.ActionButton>
+            </div>
 
-  const groupeds = () => {
-    return groupData.grouped.map((group) => {
-      return studentsList.filter((student) => group.has(student.id));
+            {Array.from(group.memberSet).map((memberId) => {
+              return <GroupStudentButton studentId={memberId} key={memberId} />;
+            })}
+          </Box>
+        </Grid>
+      );
     });
   };
 
-  // Functions
+  /* Functions */
+  // 處理被選擇學生
   const handleStudentSelected = (studentId) => {
     const clonedSet = new Set(studentSelected);
     clonedSet.has(studentId)
@@ -88,49 +174,66 @@ export default function GroupForm({
       : clonedSet.add(studentId);
     setStudentSelected(clonedSet);
   };
-
+  // 處理組成組別
   const handleGrouped = () => {
-    if (!studentSelected.size) {
+    if (!studentSelected.size || !validate()) {
       return;
     }
 
     const clonedSet = new Set(studentSelected);
-    const cloneGrouped = groupData.grouped.slice(0);
-    const withoutGroupedSet = new Set(
+    const newGroupList = groupData.groupList.slice(0);
+    const newWithoutGroupedSet = new Set(
       [...groupData.withoutGrouped].filter(
         (student) => !studentSelected.has(student)
       )
     );
-    cloneGrouped.push(clonedSet);
-    setGroupData({
-      withoutGrouped: withoutGroupedSet,
-      grouped: cloneGrouped,
+    newGroupList.push({
+      id: `${new Date().getTime()}`,
+      name: values.groupName,
+      memberSet: clonedSet,
     });
-    setStudentSelected(new Set());
-  };
 
+    setGroupData({
+      withoutGrouped: newWithoutGroupedSet,
+      groupList: newGroupList,
+    });
+    // Reset 被選取學生清單
+    setStudentSelected(new Set());
+    // Reset 組名
+    resetForm();
+  };
+  // 解散特定組別
   const removeGroup = (index) => {
-    const cloneGrouped = groupData.grouped.slice(0);
-    const withoutGroupedSet = new Set([
+    const newGroupList = groupData.groupList.slice(0);
+    const newWithoutGroupedSet = new Set([
       ...groupData.withoutGrouped,
-      ...groupData.grouped[index],
+      ...groupData.groupList[index].memberSet,
     ]);
-    cloneGrouped.splice(index, 1);
-
+    newGroupList.splice(index, 1);
     setGroupData({
-      withoutGrouped: withoutGroupedSet,
-      grouped: cloneGrouped,
+      withoutGrouped: newWithoutGroupedSet,
+      groupList: newGroupList,
     });
   };
-
-  const resetForm = () => {
-    setGroupData(INITIAL_GROUP_DATA);
+  // 組別初始化
+  const resetAll = () => {
+    resetForm();
+    setGroupData({
+      withoutGrouped: initValue.withoutGroupedSet,
+      groupList: classroom.groupList,
+    });
     setStudentSelected(new Set());
   };
-
-  useEffect(() => {
-    console.log(groupData);
-  }, [groupData]);
+  // 儲存分組
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log("submit:", groupData);
+    handleGroupEdit(groupData.groupList, resetAll);
+    // setClassroom({
+    //   ...classroom,
+    //   groupList: groupData.groupList,
+    // });
+  };
 
   return (
     <>
@@ -139,8 +242,22 @@ export default function GroupForm({
           <Grid item xs={12}></Grid>
         </Grid>
         <Grid item xs={12}>
-          <Box m={3}>
-            <Button variant="contained" color="primary" onClick={handleGrouped}>
+          <Box display="flex" flexDirection="row" alignItems="center" m={3}>
+            <Controls.Input
+              name="groupName"
+              label="新組名"
+              variant="outlined"
+              defaultValue="請輸入新組名"
+              value={values.groupName}
+              onChange={handleInputChange}
+              error={errors.groupName}
+            />
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleGrouped}
+              className={classes.menuButton}
+            >
               組成組別
             </Button>
           </Box>
@@ -150,56 +267,20 @@ export default function GroupForm({
             <Typography variant="h6" gutterBottom>
               無組別
             </Typography>
-            {studentsList
-              .filter((student) => groupData.withoutGrouped.has(student.id))
-              .map((student) => {
-                return studentButton(student);
-              })}
+            {groupData &&
+              classroom.studentList
+                .filter((student) => groupData.withoutGrouped.has(student.id))
+                .map((student) => {
+                  return studentButton(student);
+                })}
           </Box>
         </Grid>
         <hr />
-        {groupeds().map((group, index) => {
-          return (
-            <Grid item xs={12}>
-              <Box m={3} p={2} className={classes.border}>
-                <div style={{ display: "flex" }}>
-                  <Typography
-                    variant="h6"
-                    component="div"
-                    style={{ flexGrow: 1 }}
-                  >
-                    第 {index + 1} 組
-                  </Typography>
-                  <Controls.ActionButton
-                    color="secondary"
-                    onClick={() => {
-                      removeGroup(index);
-                    }}
-                  >
-                    <CloseIcon />
-                  </Controls.ActionButton>
-                </div>
-
-                {group.map((student) => {
-                  return (
-                    <Button
-                      key={student.id}
-                      variant="contained"
-                      color="primary"
-                      className={classes.menuButton}
-                    >
-                      {student.name}
-                    </Button>
-                  );
-                })}
-              </Box>
-            </Grid>
-          );
-        })}
+        {groupData && <Groups />}
         <Grid item xs={12}>
           <div className={classes.buttonWrapper}>
             <Controls.Button type="submit" text="儲存" />
-            <Controls.Button text="清除" color="default" onClick={resetForm} />
+            <Controls.Button text="清除" color="default" onClick={resetAll} />
           </div>
         </Grid>
       </Form>

@@ -67,20 +67,62 @@ const FAKE_STUDENT_LIST = [
   {
     id: "4",
     name: "黃小明",
-    age: 25,
+    age: 21,
     email: "abcd@test.com",
   },
   {
     id: "5",
     name: "張小明",
-    age: 25,
+    age: 20,
     email: "ijkl@test.com",
   },
   {
     id: "6",
     name: "呂小明",
-    age: 24,
+    age: 29,
     email: "efgh@test.com",
+  },
+  {
+    id: "7",
+    name: "趙小明",
+    age: 28,
+    email: "efgh@test.com",
+  },
+  {
+    id: "8",
+    name: "林小明",
+    age: 27,
+    email: "efgh@test.com",
+  },
+  {
+    id: "9",
+    name: "褚小明",
+    age: 26,
+    email: "efgh@test.com",
+  },
+  {
+    id: "10",
+    name: "伍小明",
+    age: 25,
+    email: "bear@test.com",
+  },
+];
+
+const FAKE_GROUP_DATA = [
+  {
+    id: "1",
+    name: "黑組",
+    memberSet: new Set(["8", "10"]),
+  },
+  {
+    id: "2",
+    name: "白組",
+    memberSet: new Set(["3", "5"]),
+  },
+  {
+    id: "3",
+    name: "紅組",
+    memberSet: new Set(["4", "6"]),
   },
 ];
 
@@ -95,6 +137,7 @@ const FAKE_CLASS_DATA = {
   invitationCode: "ABCD1234",
   isAllowAdd: "1",
   studentList: FAKE_STUDENT_LIST,
+  groupList: FAKE_GROUP_DATA,
 };
 
 const headCells = [
@@ -105,6 +148,7 @@ const headCells = [
   { id: "actions", label: "操作", disableSorting: true },
 ];
 
+/* Components */
 const ButtonMenu = ({ classroom, setPopup, setOpenPopup, isManager }) => {
   const classes = useStyles();
 
@@ -194,7 +238,6 @@ const ButtonMenu = ({ classroom, setPopup, setOpenPopup, isManager }) => {
     </>
   );
 };
-
 const ClassInfo = ({ classroom, setPopup, setOpenPopup, isManager }) => {
   const classes = useStyles();
   return (
@@ -245,8 +288,7 @@ const ClassInfo = ({ classroom, setPopup, setOpenPopup, isManager }) => {
     </>
   );
 };
-
-const StudentsTable = ({ studentList }) => {
+const StudentsTable = ({ groupList, studentList }) => {
   const [records, setRecords] = useState([]);
   const [filterFn, setFilterFn] = useState({
     fn: (items) => {
@@ -282,17 +324,26 @@ const StudentsTable = ({ studentList }) => {
 
   const classes = useStyles();
 
+  const test = (student) => {
+    const group = groupList.filter((group) => group.memberSet.has(student.id));
+    if (group.length) {
+      return group[0].name;
+    } else {
+      return "無";
+    }
+  };
+
   return (
     <Paper>
       <TblContainer>
         <TblHead />
         <TableBody>
-          {recordsAfterPagingAndSorting().map((item) => (
-            <TableRow key={item.id}>
-              <TableCell>{item.name}</TableCell>
-              <TableCell>{item.age}</TableCell>
-              <TableCell>{item.email}</TableCell>
-              <TableCell>{item.group || "無"}</TableCell>
+          {recordsAfterPagingAndSorting().map((student) => (
+            <TableRow key={student.id}>
+              <TableCell>{student.name}</TableCell>
+              <TableCell>{student.age}</TableCell>
+              <TableCell>{student.email}</TableCell>
+              <TableCell>{test(student)}</TableCell>
               <TableCell style={{ width: "30%" }}>
                 <Button
                   variant="contained"
@@ -341,7 +392,6 @@ export default function Classroom() {
   }, [userState]);
 
   const [classroom, setClassroom] = useState({});
-  const [studentsList, setStudentsList] = useState([]);
   const [openPopup, setOpenPopup] = useState(false);
   const [popup, setPopup] = useState({
     type: null,
@@ -363,8 +413,13 @@ export default function Classroom() {
     //     console.log(err);
     //   });
     setClassroom(FAKE_CLASS_DATA);
-    setStudentsList(FAKE_CLASS_DATA.studentList);
-  });
+    // setStudentList(FAKE_CLASS_DATA.studentList);
+    // setGroupList(FAKE_CLASS_DATA.groupList);
+  }, []);
+
+  useEffect(() => {
+    console.log("classroom:", classroom);
+  }, [classroom]);
 
   const handleOnClick = (herf) => {
     navigate(herf);
@@ -380,12 +435,18 @@ export default function Classroom() {
     });
   };
 
-  const roleChecking = () => {
-    return (
-      userState?.user?.role === "Admin" ||
-      userState?.user?.role === "Teacher" ||
-      userState?.user?.role === "Parent"
-    );
+  const handleGroupEdit = (newGroupList, resetForm) => {
+    console.log(newGroupList);
+    resetForm();
+    setOpenPopup(false);
+    setClassroom({
+      ...classroom,
+      groupList: newGroupList,
+    });
+    swal.fire({
+      icon: "success",
+      title: `更新組別成功!`,
+    });
   };
 
   const isManager = () => {
@@ -434,7 +495,10 @@ export default function Classroom() {
               {/* 教師 > 學生列表 */}
               {isManager() && (
                 <Grid item md={12}>
-                  <StudentsTable studentList={studentsList} />
+                  <StudentsTable
+                    groupList={classroom.groupList}
+                    studentList={classroom.studentList}
+                  />
                 </Grid>
               )}
             </Grid>
@@ -453,8 +517,8 @@ export default function Classroom() {
             {popup.type === 1 && (
               <GroupForm
                 classroom={classroom}
-                studentsList={studentsList}
-                setStudentsList={setStudentsList}
+                setClassroom={setClassroom}
+                handleGroupEdit={handleGroupEdit}
               />
             )}
           </Popup>
