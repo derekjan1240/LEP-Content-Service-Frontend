@@ -94,6 +94,7 @@ export default function Profile() {
           icon: "success",
           title: "基本資料更新成功!",
           confirmButtonText: "關閉",
+          width: 700,
         });
       })
       .catch((err) => {

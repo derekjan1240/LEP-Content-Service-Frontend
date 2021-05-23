@@ -25,6 +25,7 @@ export default function ButtonMenuBar({
       showCancelButton: true,
       confirmButtonText: "加入",
       cancelButtonText: "取消",
+      width: 700,
       inputValidator: (value) => {
         if (!value) {
           return "請確實輸入課堂視訊代號!";
@@ -44,6 +45,7 @@ export default function ButtonMenuBar({
         confirmButtonText: "確定",
         cancelButtonText: "離開",
         confirmButtonColor: "#c0392b",
+        width: 700,
         input: "text",
         inputPlaceholder: "請輸入班級名稱",
         inputValidator: (value) => {

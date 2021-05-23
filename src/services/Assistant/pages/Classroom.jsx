@@ -171,11 +171,12 @@ export default function Classroom() {
     swal.fire({
       icon: "success",
       title: "更新班級成功!",
+      width: 700,
     });
   };
 
   const handleGroupEdit = (newGroupList, resetForm) => {
-    console.log(newGroupList);
+    console.log("newGroupList:", newGroupList);
     resetForm();
     setOpenPopup(false);
     setClassroom({
@@ -185,7 +186,38 @@ export default function Classroom() {
     swal.fire({
       icon: "success",
       title: `更新組別成功!`,
+      width: 700,
     });
+  };
+
+  const handleStudentRemove = (removeStudent) => {
+    swal
+      .fire({
+        icon: "warning",
+        title: `確定要將該 ${removeStudent.name} 移出班級嗎?`,
+        confirmButtonText: "確定",
+        cancelButtonText: "離開",
+        showCancelButton: true,
+        reverseButtons: true,
+        confirmButtonColor: "#c0392b",
+        width: 700,
+      })
+      .then((result) => {
+        if (result.isConfirmed) {
+          const newStudentList = classroom.studentList.filter(
+            (student) => student.id !== removeStudent.id
+          );
+          setClassroom({
+            ...classroom,
+            studentList: newStudentList,
+          });
+          swal.fire({
+            icon: "success",
+            title: `${removeStudent.name} 移出班級成功`,
+            width: 700,
+          });
+        }
+      });
   };
 
   const isManager = () => {
@@ -236,6 +268,7 @@ export default function Classroom() {
                 <StudentsTable
                   groupList={classroom.groupList}
                   studentList={classroom.studentList}
+                  handleStudentRemove={handleStudentRemove}
                 />
               )}
             </Grid>

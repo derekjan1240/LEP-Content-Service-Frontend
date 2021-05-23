@@ -8,7 +8,6 @@ import {
   TableCell,
   makeStyles,
 } from "@material-ui/core";
-import swal from "sweetalert2";
 
 // Icons
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -32,7 +31,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function StudentsTable({ groupList, studentList }) {
+export default function StudentsTable({
+  groupList,
+  studentList,
+  handleStudentRemove,
+}) {
   const [records, setRecords] = useState([]);
   const [filterFn, setFilterFn] = useState({
     fn: (items) => {
@@ -45,26 +48,6 @@ export default function StudentsTable({ groupList, studentList }) {
   useEffect(() => {
     setRecords(studentList || []);
   }, [studentList]);
-
-  const handleRemoveStudent = () => {
-    swal
-      .fire({
-        icon: "warning",
-        title: "確定要將該學生移出班級嗎?",
-        confirmButtonText: "確定",
-        cancelButtonText: "離開",
-        showCancelButton: true,
-        reverseButtons: true,
-      })
-      .then((result) => {
-        if (result.isConfirmed) {
-          swal.fire({
-            icon: "success",
-            title: "學生移出班級成功",
-          });
-        }
-      });
-  };
 
   const classes = useStyles();
 
@@ -111,7 +94,9 @@ export default function StudentsTable({ groupList, studentList }) {
                     color="secondary"
                     className={classes.button}
                     startIcon={<DeleteIcon />}
-                    onClick={handleRemoveStudent}
+                    onClick={() => {
+                      handleStudentRemove(student);
+                    }}
                   >
                     移除學生
                   </Button>

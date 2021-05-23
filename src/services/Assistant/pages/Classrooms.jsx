@@ -152,6 +152,7 @@ export default function Classrooms() {
     swal.fire({
       icon: "success",
       title: `新增班級 ${newClassroom.name} 成功!`,
+      width: 700,
     });
   };
 
