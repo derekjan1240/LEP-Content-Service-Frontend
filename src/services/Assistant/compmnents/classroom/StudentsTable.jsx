@@ -18,7 +18,7 @@ import PlaylistAddIcon from "@material-ui/icons/PlaylistAdd";
 import useTable from "../../../Utility/compmnents/UseTable";
 
 const headCells = [
-  { id: "fullName", label: "姓名" },
+  { id: "name", label: "姓名" },
   { id: "age", label: "年齡" },
   { id: "email", label: "Email" },
   { id: "group", label: "組別" },
@@ -46,6 +46,10 @@ export default function StudentsTable({
     useTable(records, headCells, filterFn);
 
   useEffect(() => {
+    studentList.map((student) => {
+      student.group = group(student);
+      return student;
+    });
     setRecords(studentList || []);
   }, [studentList]);
 

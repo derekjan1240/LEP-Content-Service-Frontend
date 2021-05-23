@@ -92,17 +92,17 @@ const FAKE_STUDENT_LIST = [
 const FAKE_GROUP_DATA = [
   {
     id: "1",
-    name: "黑組",
+    name: "A",
     memberSet: new Set(["8", "10"]),
   },
   {
     id: "2",
-    name: "白組",
+    name: "B",
     memberSet: new Set(["3", "5"]),
   },
   {
     id: "3",
-    name: "紅組",
+    name: "C",
     memberSet: new Set(["4", "6"]),
   },
 ];
@@ -156,7 +156,7 @@ export default function Classroom() {
   }, []);
 
   useEffect(() => {
-    console.log("classroom:", classroom);
+    console.log("班級資料更新:", classroom);
   }, [classroom]);
 
   const handleNavigate = (herf) => {
