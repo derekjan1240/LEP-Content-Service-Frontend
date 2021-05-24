@@ -17,14 +17,6 @@ import PlaylistAddIcon from "@material-ui/icons/PlaylistAdd";
 // Components
 import useTable from "../../../Utility/compmnents/UseTable";
 
-const headCells = [
-  { id: "name", label: "姓名" },
-  { id: "age", label: "年齡" },
-  { id: "email", label: "Email" },
-  { id: "group", label: "組別" },
-  { id: "actions", label: "操作", disableSorting: true },
-];
-
 const useStyles = makeStyles((theme) => ({
   button: {
     margin: theme.spacing(1),
@@ -35,7 +27,23 @@ export default function StudentsTable({
   groupList,
   studentList,
   handleStudentRemove,
+  isManager,
 }) {
+  const headCells = isManager
+    ? [
+        { id: "name", label: "姓名" },
+        { id: "age", label: "年齡" },
+        { id: "email", label: "Email" },
+        { id: "group", label: "組別" },
+        { id: "actions", label: "操作", disableSorting: true },
+      ]
+    : [
+        { id: "name", label: "姓名" },
+        { id: "age", label: "年齡" },
+        { id: "email", label: "Email" },
+        { id: "group", label: "組別" },
+      ];
+
   const [records, setRecords] = useState([]);
   const [filterFn, setFilterFn] = useState({
     fn: (items) => {
@@ -46,11 +54,13 @@ export default function StudentsTable({
     useTable(records, headCells, filterFn);
 
   useEffect(() => {
-    studentList.map((student) => {
-      student.group = group(student);
-      return student;
-    });
-    setRecords(studentList || []);
+    if (studentList) {
+      studentList.map((student) => {
+        student.group = group(student);
+        return student;
+      });
+      setRecords(studentList);
+    }
   }, [studentList]);
 
   const classes = useStyles();
@@ -76,35 +86,37 @@ export default function StudentsTable({
                 <TableCell>{student.age}</TableCell>
                 <TableCell>{student.email}</TableCell>
                 <TableCell>{group(student)}</TableCell>
-                <TableCell style={{ width: "30%" }}>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    className={classes.button}
-                    startIcon={<PlaylistAddIcon />}
-                  >
-                    指派任務
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    className={classes.button}
-                    startIcon={<AssignmentIcon />}
-                  >
-                    學習紀錄
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    className={classes.button}
-                    startIcon={<DeleteIcon />}
-                    onClick={() => {
-                      handleStudentRemove(student);
-                    }}
-                  >
-                    移除學生
-                  </Button>
-                </TableCell>
+                {isManager && (
+                  <TableCell style={{ width: "35%" }}>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      className={classes.button}
+                      startIcon={<PlaylistAddIcon />}
+                    >
+                      指派個人任務
+                    </Button>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      className={classes.button}
+                      startIcon={<AssignmentIcon />}
+                    >
+                      查看學習進度
+                    </Button>
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      className={classes.button}
+                      startIcon={<DeleteIcon />}
+                      onClick={() => {
+                        handleStudentRemove(student);
+                      }}
+                    >
+                      移除學生
+                    </Button>
+                  </TableCell>
+                )}
               </TableRow>
             ))}
           </TableBody>

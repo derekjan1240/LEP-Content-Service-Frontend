@@ -3,7 +3,15 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import swal from "sweetalert2";
 import axios from "axios";
-import { Paper, Grid, Button, Box, makeStyles } from "@material-ui/core";
+import {
+  Paper,
+  Grid,
+  Box,
+  Button,
+  Tabs,
+  Tab,
+  makeStyles,
+} from "@material-ui/core";
 import SupervisedUserCircleIcon from "@material-ui/icons/SupervisedUserCircle";
 
 // Components
@@ -12,6 +20,7 @@ import OperatorMenu from "../../Utility/compmnents/OperatorMenu";
 import ClassroomIntro from "../compmnents/classroom/ClassroomIntro";
 import ButtonMenuBar from "../compmnents/classroom/ButtonMenuBar";
 import StudentsTable from "../compmnents/classroom/StudentsTable";
+import StudentGroups from "../compmnents/classroom/StudentGroups";
 import ClassroomForm from "../compmnents/classroom/ClassroomForm";
 import GroupForm from "../compmnents/classroom/GroupForm";
 import Popup from "../../Utility/compmnents/Popup";
@@ -23,6 +32,18 @@ const useStyles = makeStyles((theme) => ({
   },
   menuButton: {
     marginRight: 16,
+  },
+  tabsWrapper: {
+    background: "#2d3436",
+  },
+  tab: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: 700,
+    letterSpacing: 2,
+  },
+  tabPanel: {
+    border: "0.5px solid #dfe6e9",
   },
 }));
 
@@ -132,6 +153,7 @@ export default function Classroom() {
   }, [userState]);
 
   const [classroom, setClassroom] = useState({});
+  const [tabsValue, setTabsValue] = useState("table");
   const [openPopup, setOpenPopup] = useState(false);
   const [popup, setPopup] = useState({
     type: null,
@@ -220,6 +242,33 @@ export default function Classroom() {
       });
   };
 
+  const handleTabChange = (event, newValue) => {
+    setTabsValue(newValue);
+  };
+
+  function a11yProps(index) {
+    return {
+      id: `wrapped-tab-${index}`,
+      "aria-controls": `wrapped-tabpanel-${index}`,
+    };
+  }
+
+  function TabPanel(props) {
+    const { children, value, index, ...other } = props;
+
+    return (
+      <div
+        role="tabpanel"
+        hidden={value !== index}
+        id={`wrapped-tabpanel-${index}`}
+        aria-labelledby={`wrapped-tab-${index}`}
+        {...other}
+      >
+        {value === index && <Box p={3}>{children}</Box>}
+      </div>
+    );
+  }
+
   const isManager = () => {
     return userState?.user?.id === classroom.manager?.id;
   };
@@ -262,15 +311,55 @@ export default function Classroom() {
                 setOpenPopup={setOpenPopup}
                 isManager={isManager()}
               />
-
-              {/* 教師 > 學生列表 */}
-              {isManager() && (
-                <StudentsTable
-                  groupList={classroom.groupList}
-                  studentList={classroom.studentList}
-                  handleStudentRemove={handleStudentRemove}
-                />
-              )}
+              <Grid item md={12}>
+                <Paper square className={classes.tabsWrapper}>
+                  <Tabs
+                    value={tabsValue}
+                    indicatorColor="secondary"
+                    textColor="inherit"
+                    onChange={handleTabChange}
+                    aria-label="操作選單"
+                  >
+                    <Tab
+                      value="table"
+                      label="班級學生"
+                      wrapped
+                      {...a11yProps("table")}
+                      className={classes.tab}
+                    />
+                    <Tab
+                      value="groups"
+                      label="班級組別"
+                      wrapped
+                      {...a11yProps("groups")}
+                      className={classes.tab}
+                    />
+                  </Tabs>
+                </Paper>
+                <TabPanel
+                  value={tabsValue}
+                  index="table"
+                  className={classes.tabPanel}
+                >
+                  <StudentsTable
+                    groupList={classroom.groupList}
+                    studentList={classroom.studentList}
+                    handleStudentRemove={handleStudentRemove}
+                    isManager={isManager()}
+                  />
+                </TabPanel>
+                <TabPanel
+                  value={tabsValue}
+                  index="groups"
+                  className={classes.tabPanel}
+                >
+                  <StudentGroups
+                    groupList={classroom.groupList}
+                    studentList={classroom.studentList}
+                    isManager={isManager()}
+                  />
+                </TabPanel>
+              </Grid>
             </Grid>
           </Paper>
           <Popup

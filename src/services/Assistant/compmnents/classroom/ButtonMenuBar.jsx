@@ -64,7 +64,7 @@ export default function ButtonMenuBar({
 
   return (
     <Grid item md={12}>
-      <Box mt={4}>
+      <Box my={4}>
         {isManager && (
           <>
             <Button
