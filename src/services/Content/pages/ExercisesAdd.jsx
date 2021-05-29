@@ -57,7 +57,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ContentSelectOption = () => {
+const ContentSelectOption = ({ question, setQuestion }) => {
   const [state, setState] = useState({
     grade: "",
     subject: "",
@@ -98,13 +98,20 @@ const ContentSelectOption = () => {
   }, []);
 
   useEffect(() => {
-    console.log("state:", state);
+    console.log(state);
+    setQuestion({
+      ...question,
+      link: state,
+    });
   }, [state]);
 
   const handleStateChange = (event) => {
+    const data = options[`${event.target.name}s`].filter(
+      (item) => item.id === event.target.value
+    )[0];
     setState({
       ...state,
-      [event.target.name]: event.target.value,
+      [event.target.name]: data,
     });
   };
 
@@ -138,7 +145,7 @@ const ContentSelectOption = () => {
       method: "get",
       url: `${process.env.REACT_APP_CONTENT_SERVICE}/lectures`,
       params: {
-        grade: state.grade,
+        grade: state.grade.id,
         subject: event.target.value,
       },
     }).then((result) => {
@@ -166,7 +173,6 @@ const ContentSelectOption = () => {
       method: "get",
       url: `${process.env.REACT_APP_CONTENT_SERVICE}/lectures/${event.target.value}`,
     }).then((result) => {
-      console.log(result);
       const units = result.data.units;
       // 章節排序
       units.sort((a, b) => {
@@ -204,7 +210,7 @@ const ContentSelectOption = () => {
           <InputLabel htmlFor="grade">年級</InputLabel>
           <Select
             native
-            value={state.grade}
+            value={state.grade.id}
             onChange={handleGradeChange}
             inputProps={{
               name: "grade",
@@ -228,7 +234,7 @@ const ContentSelectOption = () => {
           <InputLabel htmlFor="subject">科目</InputLabel>
           <Select
             native
-            value={state.subject}
+            value={state.subject.id}
             onChange={handleSubjectChange}
             inputProps={{
               name: "subject",
@@ -252,7 +258,7 @@ const ContentSelectOption = () => {
           <InputLabel htmlFor="lecture">章節</InputLabel>
           <Select
             native
-            value={state.lecture}
+            value={state.lecture.id}
             onChange={handleLectureChange}
             inputProps={{
               name: "lecture",
@@ -276,7 +282,7 @@ const ContentSelectOption = () => {
           <InputLabel htmlFor="unit">單元</InputLabel>
           <Select
             native
-            value={state.unit}
+            value={state.unit.id}
             onChange={handleUnitChange}
             inputProps={{
               name: "unit",
@@ -300,7 +306,7 @@ const ContentSelectOption = () => {
           <InputLabel htmlFor="tag">標籤</InputLabel>
           <Select
             native
-            value={state.tag}
+            value={state.tag.id}
             onChange={handleStateChange}
             inputProps={{
               name: "tag",
@@ -328,6 +334,7 @@ const ChoiceQuestion = () => {
     type: "1",
     title: "",
     intro: "",
+    link: {},
     choices: [
       {
         title: "",
@@ -340,11 +347,8 @@ const ChoiceQuestion = () => {
   const [error, setError] = useState({
     question: null,
     choice: [],
+    answerCount: null,
   });
-
-  useEffect(() => {
-    console.log(question);
-  }, [question]);
 
   const handleCorrectChoiceSet = (i) => {
     const clonedArr = question.choices.slice(0);
@@ -393,8 +397,6 @@ const ChoiceQuestion = () => {
   const handleChoiceChange = (value, index) => {
     const clonedArr = question.choices.slice(0);
     clonedArr[index].title = value;
-    // clonedArr[index].error = value === "" ? "選項為必填" : null;
-
     setQuestion({
       ...question,
       choices: clonedArr,
@@ -406,20 +408,6 @@ const ChoiceQuestion = () => {
       ...question,
       [event.target.name]: event.target.value,
     });
-  };
-
-  const handleQuestionSave = () => {
-    if (validQuestion()) {
-      swal.fire({
-        icon: "success",
-        title: "新增選擇題成功!",
-      });
-    } else {
-      swal.fire({
-        icon: "error",
-        title: "請確實填寫必填項目!",
-      });
-    }
   };
 
   const validQuestion = () => {
@@ -441,8 +429,31 @@ const ChoiceQuestion = () => {
       }
     });
 
+    const answerCount = question.choices.filter(
+      (choice) => choice.isCorrectAnswer === true
+    ).length;
+    if (answerCount === 0) {
+      temp.answerCount = "至少設定有一個正確選項";
+      isValid = false;
+    }
+
     setError(temp);
     return isValid;
+  };
+
+  const handleQuestionSave = () => {
+    if (validQuestion()) {
+      console.log(question);
+      swal.fire({
+        icon: "success",
+        title: "新增選擇題成功!",
+      });
+    } else {
+      swal.fire({
+        icon: "error",
+        title: "請確實填寫必填項目，且至少設定一個正確選項!",
+      });
+    }
   };
 
   const classes = useStyles();
@@ -481,7 +492,7 @@ const ChoiceQuestion = () => {
           fullWidth
         />
       </Grid>
-      <ContentSelectOption />
+      <ContentSelectOption question={question} setQuestion={setQuestion} />
       {question.choices.map((choice, index) => {
         return (
           <>
@@ -566,16 +577,13 @@ const TextQuestion = () => {
     type: "2",
     title: "",
     intro: "",
+    link: {},
   };
 
   const [question, setQuestion] = useState(initTextQuestion);
   const [error, setError] = useState({
     title: null,
   });
-
-  useEffect(() => {
-    console.log(question);
-  }, [question]);
 
   const handleInputChange = (event) => {
     setQuestion({
@@ -598,6 +606,7 @@ const TextQuestion = () => {
   };
 
   const handleQuestionSave = () => {
+    console.log(question);
     if (validQuestion()) {
       swal.fire({
         icon: "success",
@@ -647,7 +656,7 @@ const TextQuestion = () => {
           fullWidth
         />
       </Grid>
-      <ContentSelectOption />
+      <ContentSelectOption question={question} setQuestion={setQuestion} />
       <Grid item md={12}>
         <ThemeProvider theme={successTheme}>
           <Button
