@@ -33,11 +33,7 @@ const initialFValues = {
   groupName: "",
 };
 
-export default function GroupForm({
-  classroom,
-  setClassroom,
-  handleGroupEdit,
-}) {
+export default function GroupForm({ classroom, handleGroupEdit }) {
   const classes = useStyles();
 
   const [initValue, setInitValue] = useState(null);
@@ -238,9 +234,25 @@ export default function GroupForm({
   return (
     <>
       <Form onSubmit={handleSubmit}>
-        <Grid container>
-          <Grid item xs={12}></Grid>
+        <Grid item xs={12}>
+          <Box display="flex" flexDirection="row" alignItems="center" px={3}>
+            <Button
+              variant="contained"
+              color="primary"
+              className={classes.menuButton}
+            >
+              同質性分組
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              className={classes.menuButton}
+            >
+              異質性分組
+            </Button>
+          </Box>
         </Grid>
+        <hr />
         <Grid item xs={12}>
           <Box display="flex" flexDirection="row" alignItems="center" m={3}>
             <Controls.Input

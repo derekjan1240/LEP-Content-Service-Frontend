@@ -161,19 +161,7 @@ export default function Classroom() {
   });
 
   useEffect(() => {
-    // TODO: 打取得班級資料的 API
-    // axios({
-    //   method: "GET",
-    //   url: `${process.env.REACT_APP_ASSISTANT_SERVICE}/classroom/${classroomId}`,
-    //   headers: { Authorization: `Bearer ${localStorage.jwt}` },
-    // })
-    //   .then((res) => {
-    //     console.log(res);
-    //     setRecords(res.data);
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //   });
+    // TODO: 打取得此班級資料的 API
     setClassroom(FAKE_CLASS_DATA);
   }, []);
 
@@ -376,7 +364,6 @@ export default function Classroom() {
             {popup.type === 1 && (
               <GroupForm
                 classroom={classroom}
-                setClassroom={setClassroom}
                 handleGroupEdit={handleGroupEdit}
               />
             )}
