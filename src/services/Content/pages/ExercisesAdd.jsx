@@ -55,318 +55,60 @@ const useStyles = makeStyles((theme) => ({
   successButton: {
     background: "green",
   },
+  questionWrapper: {
+    borderBottom: "1px dashed #636e72",
+  },
 }));
 
-const ContentSelectOption = ({ question, setQuestion }) => {
-  const [state, setState] = useState({
-    grade: "",
-    subject: "",
-    lecture: "",
-    unit: "",
-    tag: "",
-  });
+const Question = ({
+  initQuestionData,
+  questions,
+  setQuestions,
+  unitsCache,
+  setUnitsCache,
+  handleQuestionDelete,
+}) => {
+  const [question, setQuestion] = useState(initQuestionData);
+  const [tags, setTags] = useState([]);
 
-  const [options, setOptions] = useState({
-    grades: [],
-    subjects: [],
-    lectures: [],
-    units: [],
-    tags: [],
-  });
-
-  useEffect(() => {
-    axios({
-      method: "get",
-      url: `${process.env.REACT_APP_CONTENT_SERVICE}/grades`,
-    }).then((result) => {
-      const grades = result.data;
-      // 章節排序
-      grades.sort((a, b) => {
-        if (a.order < b.order) {
-          return -1;
-        }
-        if (a.order > b.order) {
-          return 1;
-        }
-        return 0;
-      });
-      setOptions({
-        ...options,
-        grades,
-      });
+  const handleChange = (event) => {
+    setQuestion({
+      ...initQuestionData,
+      type: event.target.value,
     });
-  }, []);
+  };
 
-  useEffect(() => {
-    console.log(state);
+  const handleInputChange = (event) => {
     setQuestion({
       ...question,
-      link: state,
-    });
-  }, [state]);
-
-  const handleStateChange = (event) => {
-    const data = options[`${event.target.name}s`].filter(
-      (item) => item.id === event.target.value
-    )[0];
-    setState({
-      ...state,
-      [event.target.name]: data,
+      [event.target.name]: event.target.value,
     });
   };
 
-  const handleGradeChange = (event) => {
-    handleStateChange(event);
-    axios({
-      method: "get",
-      url: `${process.env.REACT_APP_CONTENT_SERVICE}/grades/${event.target.value}`,
-    }).then((result) => {
-      const subjects = result.data.subjects;
-      // 章節排序
-      subjects.sort((a, b) => {
-        if (a.order < b.order) {
-          return -1;
-        }
-        if (a.order > b.order) {
-          return 1;
-        }
-        return 0;
-      });
-      setOptions({
-        ...options,
-        subjects,
-      });
+  const handleChoiceChange = (value, index) => {
+    const clonedChoiseArr = question.choices.slice(0);
+    clonedChoiseArr[index].title = value;
+    setQuestion({
+      ...question,
+      choices: clonedChoiseArr,
     });
   };
 
-  const handleSubjectChange = (event) => {
-    handleStateChange(event);
-    axios({
-      method: "get",
-      url: `${process.env.REACT_APP_CONTENT_SERVICE}/lectures`,
-      params: {
-        grade: state.grade.id,
-        subject: event.target.value,
-      },
-    }).then((result) => {
-      const lectures = result.data;
-      // 章節排序
-      lectures.sort((a, b) => {
-        if (a.order < b.order) {
-          return -1;
-        }
-        if (a.order > b.order) {
-          return 1;
-        }
-        return 0;
-      });
-      setOptions({
-        ...options,
-        lectures,
-      });
-    });
-  };
-
-  const handleLectureChange = (event) => {
-    handleStateChange(event);
-    axios({
-      method: "get",
-      url: `${process.env.REACT_APP_CONTENT_SERVICE}/lectures/${event.target.value}`,
-    }).then((result) => {
-      const units = result.data.units;
-      // 章節排序
-      units.sort((a, b) => {
-        if (a.order < b.order) {
-          return -1;
-        }
-        if (a.order > b.order) {
-          return 1;
-        }
-        return 0;
-      });
-      setOptions({
-        ...options,
-        units,
-      });
-    });
-  };
-
-  const handleUnitChange = (event) => {
-    handleStateChange(event);
-    const unit = options.units.filter((unit) => unit.id === event.target.value);
-
-    if (unit.length) {
-      setOptions({
-        ...options,
-        tags: unit[0].tags,
-      });
-    }
-  };
-
-  return (
-    <>
-      <Grid item md={2}>
-        <FormControl variant="outlined" fullWidth>
-          <InputLabel htmlFor="grade">年級</InputLabel>
-          <Select
-            native
-            value={state.grade.id}
-            onChange={handleGradeChange}
-            inputProps={{
-              name: "grade",
-              id: "grade",
-            }}
-            label="年級"
-          >
-            <option aria-label="None" value="" />
-            {options.grades.map((grade) => {
-              return (
-                <option key={grade.id} value={grade.id}>
-                  {grade.title}
-                </option>
-              );
-            })}
-          </Select>
-        </FormControl>
-      </Grid>
-      <Grid item md={2}>
-        <FormControl variant="outlined" fullWidth>
-          <InputLabel htmlFor="subject">科目</InputLabel>
-          <Select
-            native
-            value={state.subject.id}
-            onChange={handleSubjectChange}
-            inputProps={{
-              name: "subject",
-              id: "subject",
-            }}
-            label="科目"
-          >
-            <option aria-label="None" value="" />
-            {options.subjects.map((subject) => {
-              return (
-                <option key={subject.id} value={subject.id}>
-                  {subject.title}
-                </option>
-              );
-            })}
-          </Select>
-        </FormControl>
-      </Grid>
-      <Grid item md={2}>
-        <FormControl variant="outlined" fullWidth>
-          <InputLabel htmlFor="lecture">章節</InputLabel>
-          <Select
-            native
-            value={state.lecture.id}
-            onChange={handleLectureChange}
-            inputProps={{
-              name: "lecture",
-              id: "lecture",
-            }}
-            label="章節"
-          >
-            <option aria-label="None" value="" />
-            {options.lectures.map((lecture) => {
-              return (
-                <option key={lecture.id} value={lecture.id}>
-                  {lecture.title}
-                </option>
-              );
-            })}
-          </Select>
-        </FormControl>
-      </Grid>
-      <Grid item md={2}>
-        <FormControl variant="outlined" fullWidth>
-          <InputLabel htmlFor="unit">單元</InputLabel>
-          <Select
-            native
-            value={state.unit.id}
-            onChange={handleUnitChange}
-            inputProps={{
-              name: "unit",
-              id: "unit",
-            }}
-            label="單元"
-          >
-            <option aria-label="None" value="" />
-            {options.units.map((unit) => {
-              return (
-                <option key={unit.id} value={unit.id}>
-                  {unit.title}
-                </option>
-              );
-            })}
-          </Select>
-        </FormControl>
-      </Grid>
-      <Grid item md={2}>
-        <FormControl variant="outlined" fullWidth>
-          <InputLabel htmlFor="tag">標籤</InputLabel>
-          <Select
-            native
-            value={state.tag.id}
-            onChange={handleStateChange}
-            inputProps={{
-              name: "tag",
-              id: "tag",
-            }}
-            label="標籤"
-          >
-            <option aria-label="None" value="" />
-            {options.tags.map((tag) => {
-              return (
-                <option key={tag.id} value={tag.id}>
-                  {tag.title}
-                </option>
-              );
-            })}
-          </Select>
-        </FormControl>
-      </Grid>
-    </>
-  );
-};
-
-const ChoiceQuestion = () => {
-  const initChoiceQuestion = {
-    type: "1",
-    title: "",
-    intro: "",
-    link: {},
-    choices: [
-      {
-        title: "",
-        isCorrectAnswer: false,
-      },
-    ],
-  };
-
-  const [question, setQuestion] = useState(initChoiceQuestion);
-  const [error, setError] = useState({
-    question: null,
-    choice: [],
-    answerCount: null,
-  });
-
-  const handleCorrectChoiceSet = (i) => {
-    const clonedArr = question.choices.slice(0);
-    clonedArr.map((choice, index) => {
-      if (i === index) {
-        choice.isCorrectAnswer = !choice.isCorrectAnswer;
-      }
-      return choice;
+  const handleChoiceAdd = () => {
+    const clonedChoiseArr = question.choices.slice(0);
+    clonedChoiseArr.push({
+      title: "",
+      isCorrectAnswer: false,
     });
     setQuestion({
       ...question,
-      choices: clonedArr,
+      choices: clonedChoiseArr,
     });
   };
 
-  const handleDeleteChoice = (i) => {
-    const clonedArr = question.choices.slice(0);
-    if (clonedArr.length === 1) {
+  const handleChoiceDelete = (i) => {
+    const clonedChoiseArr = question.choices.slice(0);
+    if (clonedChoiseArr.length === 1) {
       swal.fire({
         icon: "warning",
         title: "題目至少需要一個選項!",
@@ -375,304 +117,243 @@ const ChoiceQuestion = () => {
       });
       return;
     }
-    clonedArr.splice(i, 1);
+    clonedChoiseArr.splice(i, 1);
     setQuestion({
       ...question,
-      choices: clonedArr,
+      choices: clonedChoiseArr,
     });
   };
 
-  const handleChoiceAdd = () => {
-    const clonedArr = question.choices.slice(0);
-    clonedArr.push({
-      title: "",
-      isCorrectAnswer: false,
-    });
-    setQuestion({
-      ...question,
-      choices: clonedArr,
-    });
-  };
-
-  const handleChoiceChange = (value, index) => {
-    const clonedArr = question.choices.slice(0);
-    clonedArr[index].title = value;
-    setQuestion({
-      ...question,
-      choices: clonedArr,
-    });
-  };
-
-  const handleInputChange = (event) => {
-    setQuestion({
-      ...question,
-      [event.target.name]: event.target.value,
-    });
-  };
-
-  const validQuestion = () => {
-    let isValid = true;
-    const temp = {
-      question: null,
-      choice: [],
-    };
-
-    if (question.title === "") {
-      temp.question = "題目為必填";
-      isValid = false;
-    }
-
-    question.choices.forEach((choice, index) => {
-      if (choice.title === "") {
-        temp.choice[index] = "選項為必填";
-        isValid = false;
+  const handleCorrectChoiceSet = (i) => {
+    const clonedChoiseArr = question.choices.slice(0);
+    clonedChoiseArr.map((choice, index) => {
+      if (i === index) {
+        choice.isCorrectAnswer = !choice.isCorrectAnswer;
       }
+      return choice;
     });
-
-    const answerCount = question.choices.filter(
-      (choice) => choice.isCorrectAnswer === true
-    ).length;
-    if (answerCount === 0) {
-      temp.answerCount = "至少設定有一個正確選項";
-      isValid = false;
-    }
-
-    setError(temp);
-    return isValid;
+    setQuestion({
+      ...question,
+      choices: clonedChoiseArr,
+    });
   };
 
-  const handleQuestionSave = () => {
-    if (validQuestion()) {
-      console.log(question);
-      swal.fire({
-        icon: "success",
-        title: "新增選擇題成功!",
-      });
+  useEffect(() => {
+    const newQuestions = questions.map((q) => {
+      return q.id === question.id ? question : q;
+    });
+    setQuestions(newQuestions);
+  }, [question]);
+
+  useEffect(() => {
+    // Fetch Unit & Tags
+    if (question.videoId.length === 11) {
+      const unit = unitsCache.filter(
+        (unit) => unit.youtubeId === question.videoId
+      );
+      if (unit.length) {
+        setTags(unit[0].tags);
+      } else {
+        axios({
+          method: "get",
+          url: `${process.env.REACT_APP_CONTENT_SERVICE}/units`,
+          params: {
+            youtube_id: question.videoId,
+          },
+        }).then((result) => {
+          if (result.data.length) {
+            const clonedUnitsCache = unitsCache;
+            clonedUnitsCache.push(result.data[0]);
+            setUnitsCache(clonedUnitsCache);
+            setTags(result.data[0].tags);
+          }
+        });
+      }
     } else {
-      swal.fire({
-        icon: "error",
-        title: "請確實填寫必填項目，且至少設定一個正確選項!",
+      setTags([]);
+      setQuestion({
+        ...question,
+        tag: "",
       });
     }
-  };
+  }, [question.videoId]);
 
   const classes = useStyles();
 
   return (
-    <Grid container spacing={3} alignItems="center">
-      <Grid item md={12}>
-        <TextField
-          id="outlined-basic"
-          label="題目"
-          variant="outlined"
-          type="text"
-          name="title"
-          value={question.title}
-          multiline
-          fullWidth
-          onChange={(event) => {
-            handleInputChange(event);
-          }}
-          error={error.question}
-          helperText={error.question}
-          required
-        />
-      </Grid>
-      <Grid item md={12}>
-        <TextField
-          id="outlined-basic"
-          label="說明"
-          variant="outlined"
-          name="intro"
-          value={question.intro}
-          onChange={(event) => {
-            handleInputChange(event);
-          }}
-          multiline
-          fullWidth
-        />
-      </Grid>
-      <ContentSelectOption question={question} setQuestion={setQuestion} />
-      {question.choices.map((choice, index) => {
-        return (
-          <>
-            <Grid item md={10}>
+    <Grid item md={12} className={classes.questionWrapper}>
+      <Box p={5}>
+        <Box p={2} mx={5}>
+          <FormControl component="fieldset">
+            <FormLabel component="legend">類型</FormLabel>
+            <RadioGroup
+              aria-label="type"
+              name="type"
+              value={question.type}
+              onChange={handleChange}
+              row
+            >
+              <FormControlLabel
+                value="choiceAnswer"
+                control={<Radio />}
+                label="選擇題"
+              />
+              <FormControlLabel
+                value="textAnswer"
+                control={<Radio />}
+                label="問答題"
+              />
+            </RadioGroup>
+          </FormControl>
+        </Box>
+        <Box mx={5}>
+          <Grid container spacing={3} alignItems="center">
+            <Grid item md={12}>
               <TextField
                 id="outlined-basic"
-                label="選項"
+                label="題目"
                 variant="outlined"
                 type="text"
-                value={choice.title}
+                name="title"
+                value={question.title}
                 multiline
                 fullWidth
-                className={choice.isCorrectAnswer ? classes.correct : null}
-                onChange={(el) => {
-                  handleChoiceChange(el.target.value, index);
-                }}
-                error={error.choice[index]}
-                helperText={error.choice[index]}
+                onChange={handleInputChange}
+                error={question.errors.title !== ""}
+                helperText={question.errors.title}
                 required
               />
             </Grid>
-            <Grid item md={2}>
-              <ThemeProvider theme={successTheme}>
+            <Grid item md={12}>
+              <TextField
+                id="outlined-basic"
+                label="說明"
+                variant="outlined"
+                name="intro"
+                value={question.intro}
+                onChange={handleInputChange}
+                multiline
+                fullWidth
+              />
+            </Grid>
+            <Grid item md={6}>
+              <TextField
+                id="outlined-basic"
+                label="影片ID"
+                variant="outlined"
+                type="text"
+                name="videoId"
+                value={question.videoId}
+                multiline
+                fullWidth
+                onChange={handleInputChange}
+                inputProps={{ maxLength: 11 }}
+              />
+            </Grid>
+            <Grid item md={6}>
+              <FormControl variant="outlined" fullWidth>
+                <InputLabel htmlFor="tag">標籤</InputLabel>
+                <Select
+                  native
+                  value={question.tag}
+                  onChange={handleInputChange}
+                  inputProps={{
+                    name: "tag",
+                    id: "tag",
+                  }}
+                  label="標籤"
+                >
+                  <option aria-label="None" value="" />
+                  {tags.map((tag) => {
+                    return (
+                      <option key={tag.id} value={tag.id}>
+                        {tag.title}
+                      </option>
+                    );
+                  })}
+                </Select>
+              </FormControl>
+            </Grid>
+            {question.type === "choiceAnswer" &&
+              question.choices.map((choice, index) => {
+                return (
+                  <>
+                    <Grid item md={10}>
+                      <TextField
+                        id="outlined-basic"
+                        label="選項"
+                        variant="outlined"
+                        type="text"
+                        value={choice.title}
+                        multiline
+                        fullWidth
+                        className={
+                          choice.isCorrectAnswer ? classes.correct : null
+                        }
+                        onChange={(el) => {
+                          handleChoiceChange(el.target.value, index);
+                        }}
+                        error={question.errors.choices[index]}
+                        helperText={question.errors.choices[index]}
+                        required
+                      />
+                    </Grid>
+                    <Grid item md={2}>
+                      <ThemeProvider theme={successTheme}>
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          className={classes.button}
+                          startIcon={<CheckCircleIcon />}
+                          onClick={() => {
+                            handleCorrectChoiceSet(index);
+                          }}
+                        >
+                          設為正解
+                        </Button>
+                      </ThemeProvider>
+                      <Button
+                        variant="contained"
+                        color="secondary"
+                        className={classes.button}
+                        startIcon={<DeleteIcon />}
+                        onClick={() => {
+                          handleChoiceDelete(index);
+                        }}
+                      >
+                        刪除
+                      </Button>
+                    </Grid>
+                  </>
+                );
+              })}
+            <Grid item md={12}>
+              {question.type === "choiceAnswer" && (
                 <Button
                   variant="contained"
                   color="primary"
                   className={classes.button}
-                  startIcon={<CheckCircleIcon />}
-                  onClick={() => {
-                    handleCorrectChoiceSet(index);
-                  }}
+                  startIcon={<AddCircleIcon />}
+                  onClick={handleChoiceAdd}
                 >
-                  設為正解
+                  新增選項
                 </Button>
-              </ThemeProvider>
+              )}
               <Button
                 variant="contained"
                 color="secondary"
                 className={classes.button}
                 startIcon={<DeleteIcon />}
                 onClick={() => {
-                  handleDeleteChoice(index);
+                  handleQuestionDelete(question.id);
                 }}
               >
-                刪除
+                刪除題目
               </Button>
             </Grid>
-          </>
-        );
-      })}
-      <Grid item md={12}>
-        <Button
-          variant="contained"
-          color="primary"
-          className={classes.button}
-          startIcon={<AddCircleIcon />}
-          onClick={handleChoiceAdd}
-        >
-          新增選項
-        </Button>
-        <ThemeProvider theme={successTheme}>
-          <Button
-            variant="contained"
-            color="primary"
-            className={classes.button}
-            startIcon={<SaveIcon />}
-            onClick={() => {
-              validQuestion();
-              handleQuestionSave();
-            }}
-          >
-            完成
-          </Button>
-        </ThemeProvider>
-      </Grid>
-    </Grid>
-  );
-};
-
-const TextQuestion = () => {
-  const initTextQuestion = {
-    type: "2",
-    title: "",
-    intro: "",
-    link: {},
-  };
-
-  const [question, setQuestion] = useState(initTextQuestion);
-  const [error, setError] = useState({
-    title: null,
-  });
-
-  const handleInputChange = (event) => {
-    setQuestion({
-      ...question,
-      [event.target.name]: event.target.value,
-    });
-  };
-
-  const validQuestion = () => {
-    let isValid = true;
-    const temp = {
-      title: null,
-    };
-    if (question.title === "") {
-      temp.title = "題目為必填";
-      isValid = false;
-    }
-    setError(temp);
-    return isValid;
-  };
-
-  const handleQuestionSave = () => {
-    console.log(question);
-    if (validQuestion()) {
-      swal.fire({
-        icon: "success",
-        title: "新增問答題成功!",
-      });
-    } else {
-      swal.fire({
-        icon: "error",
-        title: "請確實填寫必填項目!",
-      });
-    }
-  };
-
-  const classes = useStyles();
-
-  return (
-    <Grid container spacing={3} alignItems="center">
-      <Grid item md={12}>
-        <TextField
-          id="outlined-basic"
-          label="題目"
-          variant="outlined"
-          type="text"
-          name="title"
-          value={question.title}
-          onChange={(event) => {
-            handleInputChange(event);
-          }}
-          error={error.title}
-          helperText={error.title}
-          multiline
-          fullWidth
-          required
-        />
-      </Grid>
-      <Grid item md={12}>
-        <TextField
-          id="outlined-basic"
-          label="說明"
-          variant="outlined"
-          name="intro"
-          value={question.intro}
-          onChange={(event) => {
-            handleInputChange(event);
-          }}
-          multiline
-          fullWidth
-        />
-      </Grid>
-      <ContentSelectOption question={question} setQuestion={setQuestion} />
-      <Grid item md={12}>
-        <ThemeProvider theme={successTheme}>
-          <Button
-            variant="contained"
-            color="primary"
-            className={classes.button}
-            startIcon={<SaveIcon />}
-            onClick={() => {
-              validQuestion();
-              handleQuestionSave();
-            }}
-          >
-            完成
-          </Button>
-        </ThemeProvider>
-      </Grid>
+          </Grid>
+        </Box>
+      </Box>
     </Grid>
   );
 };
@@ -688,15 +369,124 @@ export default function ExercisesAdd() {
     }
   }, [userState]);
 
-  const [type, setType] = useState("choiceAnswer");
-  const [questions, setQuestions] = useState([]);
+  const INIT_EXERCISE = {
+    title: "",
+    remark: "",
+    errors: {
+      title: "",
+    },
+  };
 
-  const handleChange = (event) => {
-    setType(event.target.value);
+  const INIT_QUESTION = {
+    id: new Date().getTime(),
+    type: "choiceAnswer",
+    title: "",
+    intro: "",
+    videoId: "",
+    tag: "",
+    choices: [
+      {
+        title: "",
+        isCorrectAnswer: false,
+      },
+    ],
+    errors: {
+      title: "",
+      choices: [],
+    },
+  };
+
+  const [exercise, setExercise] = useState(INIT_EXERCISE);
+  const [questions, setQuestions] = useState([]);
+  const [unitsCache, setUnitsCache] = useState([]);
+
+  const handleInputChange = (event) => {
+    setExercise({
+      ...exercise,
+      [event.target.name]: event.target.value,
+    });
   };
 
   const handleQuestionAdd = () => {
-    const clonedArr = questions.slice(0);
+    const clonedArray = questions.slice(0);
+    clonedArray.push(INIT_QUESTION);
+    setQuestions(clonedArray);
+  };
+
+  const handleQuestionDelete = (qusetionId) => {
+    const newQuestions = questions.filter(
+      (question) => question.id !== qusetionId
+    );
+    setQuestions(newQuestions);
+  };
+
+  const validQuestions = () => {
+    let isValid = true;
+    const clonedQuestions = questions.slice(0);
+    clonedQuestions.forEach((question) => {
+      console.log(question);
+      if (question.title === "") {
+        question.errors.title = "題目不得為空!";
+        isValid = false;
+      } else {
+        question.errors.title = "";
+      }
+
+      if (question.type === "choiceAnswer") {
+        const answerCount = question.choices.filter(
+          (choice) => choice.isCorrectAnswer === true
+        ).length;
+
+        if (!answerCount) {
+          question.errors.choices[0] = "請至少設定一個正確選項";
+          isValid = false;
+        } else {
+          question.errors.choices[0] = "";
+          question.choices.forEach((choice, index) => {
+            if (choice.title === "") {
+              question.errors.choices[index] = "選項為必填";
+              isValid = false;
+            } else {
+              question.errors.choices[index] = "";
+            }
+          });
+        }
+      }
+    });
+    setQuestions(clonedQuestions);
+    return isValid;
+  };
+
+  const validExercise = () => {
+    let isValid = true;
+    const clonedExercise = { ...exercise };
+    if (clonedExercise.title === "") {
+      clonedExercise.errors.title = "試卷名稱不得為空!";
+      isValid = false;
+    } else {
+      clonedExercise.errors.title = "";
+    }
+    setExercise(clonedExercise);
+
+    return isValid;
+  };
+
+  const handleAddExercise = () => {
+    if (questions.length === 0) {
+      swal.fire({
+        icon: "error",
+        title: "請至少新增一道題目!",
+      });
+    } else {
+      if (validExercise() && validQuestions()) {
+        console.log({
+          title: exercise.title,
+          remark: exercise.remark,
+          questions,
+        });
+        swal.fire("試卷新增成功!");
+      }
+    }
   };
 
   const classes = useStyles();
@@ -726,42 +516,78 @@ export default function ExercisesAdd() {
             <Grid container spacing={3}>
               <Grid item md={12}>
                 <Box mx={5}>
-                  <FormControl component="fieldset">
-                    <FormLabel component="legend">類型</FormLabel>
-                    <RadioGroup
-                      aria-label="type"
-                      name="type"
-                      value={type}
-                      onChange={handleChange}
-                      row
-                    >
-                      <FormControlLabel
-                        value="choiceAnswer"
-                        control={<Radio />}
-                        label="選擇題"
-                      />
-                      <FormControlLabel
-                        value="textAnswer"
-                        control={<Radio />}
-                        label="問答題"
-                      />
-                    </RadioGroup>
-                  </FormControl>
+                  <TextField
+                    id="outlined-basic"
+                    label="試卷名稱"
+                    variant="outlined"
+                    type="text"
+                    name="title"
+                    value={exercise.title}
+                    error={exercise.errors.title !== ""}
+                    helperText={exercise.errors.title}
+                    inputProps={{ maxLength: 50 }}
+                    onChange={handleInputChange}
+                    fullWidth
+                    required
+                  />
                 </Box>
               </Grid>
+              <Grid item md={12} className={classes.questionWrapper}>
+                <Box mx={5}>
+                  <TextField
+                    id="outlined-basic"
+                    label="試卷備註"
+                    variant="outlined"
+                    type="text"
+                    name="remark"
+                    value={exercise.remark}
+                    inputProps={{ maxLength: 500 }}
+                    onChange={handleInputChange}
+                    fullWidth
+                    multiline
+                  />
+                </Box>
+              </Grid>
+              {questions.map((question) => {
+                return (
+                  <Question
+                    key={question.id}
+                    initQuestionData={question}
+                    questions={questions}
+                    setQuestions={setQuestions}
+                    unitsCache={unitsCache}
+                    setUnitsCache={setUnitsCache}
+                    handleQuestionDelete={handleQuestionDelete}
+                  />
+                );
+              })}
               <Grid item md={12}>
-                {type === "choiceAnswer" ? (
-                  <Box mx={5}>
-                    <ChoiceQuestion />
-                  </Box>
-                ) : (
-                  <Box mx={5}>
-                    <TextQuestion />
-                  </Box>
-                )}
+                <Box p={3} mx={3}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    className={classes.button}
+                    startIcon={<AddCircleIcon />}
+                    onClick={handleQuestionAdd}
+                  >
+                    新增題目
+                  </Button>
+                  <ThemeProvider theme={successTheme}>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      className={classes.button}
+                      startIcon={<SaveIcon />}
+                      onClick={handleAddExercise}
+                    >
+                      儲存試卷
+                    </Button>
+                  </ThemeProvider>
+                </Box>
               </Grid>
             </Grid>
           </Paper>
+          <Paper className={classes.pageContent}></Paper>
         </>
       )}
     </>
