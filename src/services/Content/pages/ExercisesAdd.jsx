@@ -203,7 +203,7 @@ const Question = ({
       setTags([]);
       setQuestion({
         ...question,
-        tagid: "",
+        tagId: "",
         unitId: "",
       });
     }
@@ -302,10 +302,10 @@ const Question = ({
                   <InputLabel htmlFor="tag">標籤</InputLabel>
                   <Select
                     native
-                    value={question.tagid}
+                    value={question.tagId}
                     onChange={handleInputChange}
                     inputProps={{
-                      name: "tagid",
+                      name: "tagId",
                       id: "tag",
                     }}
                     label="標籤"
@@ -432,7 +432,7 @@ export default function ExercisesAdd() {
     description: "",
     videoId: "",
     unitId: "",
-    tagid: "",
+    tagId: "",
     choices: [
       {
         title: "",
