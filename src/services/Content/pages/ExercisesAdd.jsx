@@ -69,6 +69,7 @@ const Question = ({
   handleQuestionDelete,
 }) => {
   const [question, setQuestion] = useState(initQuestionData);
+  const [unit, setUnit] = useState(null);
   const [tags, setTags] = useState([]);
 
   const handleChange = (event) => {
@@ -148,11 +149,16 @@ const Question = ({
   useEffect(() => {
     // Fetch Unit & Tags
     if (question.videoId.length === 11) {
-      const unit = unitsCache.filter(
-        (unit) => unit.youtubeId === question.videoId
+      const theUnit = unitsCache.filter(
+        (cacheUnit) => cacheUnit.youtubeId === question.videoId
       );
-      if (unit.length) {
-        setTags(unit[0].tags);
+      if (theUnit.length) {
+        setTags(theUnit[0].tags);
+        setUnit(theUnit[0]);
+        setQuestion({
+          ...question,
+          unitId: theUnit[0].id,
+        });
       } else {
         axios({
           method: "get",
@@ -160,20 +166,45 @@ const Question = ({
           params: {
             youtube_id: question.videoId,
           },
-        }).then((result) => {
-          if (result.data.length) {
-            const clonedUnitsCache = unitsCache;
-            clonedUnitsCache.push(result.data[0]);
-            setUnitsCache(clonedUnitsCache);
-            setTags(result.data[0].tags);
-          }
-        });
+        })
+          .then((result) => {
+            if (result.data.length) {
+              const clonedUnitsCache = unitsCache;
+              clonedUnitsCache.push(result.data[0]);
+              setUnitsCache(clonedUnitsCache);
+              setUnit(result.data[0]);
+              setTags(result.data[0].tags);
+              setQuestion({
+                ...question,
+                unitId: result.data[0].id,
+              });
+            } else {
+              setTags([]);
+              setQuestion({
+                ...question,
+                unit: null,
+              });
+              swal.fire({
+                title: "該課程影片不存在!",
+                icon: "error",
+              });
+            }
+          })
+          .catch((err) => {
+            console.error(err);
+            swal.fire({
+              title: "影片標籤查詢失敗!",
+              icon: "error",
+            });
+          });
       }
     } else {
+      setUnit(null);
       setTags([]);
       setQuestion({
         ...question,
-        tag: "",
+        tagid: "",
+        unitId: "",
       });
     }
   }, [question.videoId]);
@@ -219,6 +250,7 @@ const Question = ({
                 multiline
                 fullWidth
                 onChange={handleInputChange}
+                inputProps={{ maxLength: 500 }}
                 error={question.errors.title !== ""}
                 helperText={question.errors.title}
                 required
@@ -229,51 +261,67 @@ const Question = ({
                 id="outlined-basic"
                 label="說明"
                 variant="outlined"
-                name="intro"
-                value={question.intro}
+                name="description"
+                value={question.description}
                 onChange={handleInputChange}
+                inputProps={{ maxLength: 500 }}
                 multiline
                 fullWidth
               />
             </Grid>
-            <Grid item md={6}>
+            <Grid item md={4}>
               <TextField
-                id="outlined-basic"
+                id="videoId"
                 label="影片ID"
                 variant="outlined"
                 type="text"
                 name="videoId"
                 value={question.videoId}
-                multiline
                 fullWidth
                 onChange={handleInputChange}
                 inputProps={{ maxLength: 11 }}
               />
             </Grid>
-            <Grid item md={6}>
-              <FormControl variant="outlined" fullWidth>
-                <InputLabel htmlFor="tag">標籤</InputLabel>
-                <Select
-                  native
-                  value={question.tag}
-                  onChange={handleInputChange}
-                  inputProps={{
-                    name: "tag",
-                    id: "tag",
-                  }}
-                  label="標籤"
-                >
-                  <option aria-label="None" value="" />
-                  {tags.map((tag) => {
-                    return (
-                      <option key={tag.id} value={tag.id}>
-                        {tag.title}
-                      </option>
-                    );
-                  })}
-                </Select>
-              </FormControl>
-            </Grid>
+            {unit?.title && (
+              <Grid item md={4}>
+                <TextField
+                  id="unit"
+                  label="單元"
+                  variant="outlined"
+                  type="text"
+                  name="unit"
+                  value={unit?.title}
+                  fullWidth
+                  readonly
+                />
+              </Grid>
+            )}
+            {tags[0] && (
+              <Grid item md={4}>
+                <FormControl variant="outlined" fullWidth>
+                  <InputLabel htmlFor="tag">標籤</InputLabel>
+                  <Select
+                    native
+                    value={question.tagid}
+                    onChange={handleInputChange}
+                    inputProps={{
+                      name: "tagid",
+                      id: "tag",
+                    }}
+                    label="標籤"
+                  >
+                    <option aria-label="None" value="" />
+                    {tags.map((tag) => {
+                      return (
+                        <option key={tag.id} value={tag.id}>
+                          {tag.title}
+                        </option>
+                      );
+                    })}
+                  </Select>
+                </FormControl>
+              </Grid>
+            )}
             {question.type === "choiceAnswer" &&
               question.choices.map((choice, index) => {
                 return (
@@ -371,7 +419,7 @@ export default function ExercisesAdd() {
 
   const INIT_EXERCISE = {
     title: "",
-    remark: "",
+    description: "",
     errors: {
       title: "",
     },
@@ -381,9 +429,10 @@ export default function ExercisesAdd() {
     id: new Date().getTime(),
     type: "choiceAnswer",
     title: "",
-    intro: "",
+    description: "",
     videoId: "",
-    tag: "",
+    unitId: "",
+    tagid: "",
     choices: [
       {
         title: "",
@@ -424,7 +473,6 @@ export default function ExercisesAdd() {
     let isValid = true;
     const clonedQuestions = questions.slice(0);
     clonedQuestions.forEach((question) => {
-      console.log(question);
       if (question.title === "") {
         question.errors.title = "題目不得為空!";
         isValid = false;
@@ -479,12 +527,27 @@ export default function ExercisesAdd() {
       });
     } else {
       if (validExercise() && validQuestions()) {
-        console.log({
+        console.log("Exercise", {
           title: exercise.title,
-          remark: exercise.remark,
+          description: exercise.description,
           questions,
         });
-        swal.fire("試卷新增成功!");
+        axios({
+          method: "POST",
+          url: `${process.env.REACT_APP_CONTENT_SERVICE}/exercises`,
+          data: {
+            title: exercise.title,
+            description: exercise.description,
+            questions,
+          },
+          withCredentials: true,
+        })
+          .then((result) => {
+            console.log(result);
+          })
+          .catch((err) => {
+            console.error(err);
+          });
       }
     }
   };
@@ -539,8 +602,8 @@ export default function ExercisesAdd() {
                     label="試卷備註"
                     variant="outlined"
                     type="text"
-                    name="remark"
-                    value={exercise.remark}
+                    name="description"
+                    value={exercise.description}
                     inputProps={{ maxLength: 500 }}
                     onChange={handleInputChange}
                     fullWidth
