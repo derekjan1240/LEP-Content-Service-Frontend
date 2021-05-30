@@ -1,6 +1,8 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import axios from "axios";
+import Swal from "sweetalert2";
 import { Paper, Grid, Button, makeStyles } from "@material-ui/core";
 import MenuBookIcon from "@material-ui/icons/MenuBook";
 
@@ -28,6 +30,36 @@ export default function Missions() {
     }
   }, [userState]);
 
+  const fetchById = () => {
+    Swal.fire({
+      title: "輸入 ID",
+      input: "text",
+      inputLabel: "試卷 ID",
+      inputPlaceholder: "f2f9ab00-5912-4372-8f9b-e984bb67ff45",
+      inputValidator: (value) => {
+        if (!value) {
+          return "請確實輸入試卷 ID";
+        }
+      },
+    }).then((result) => {
+      axios({
+        method: "GET",
+        url: `${process.env.REACT_APP_CONTENT_SERVICE}/exercises/${result.value}`,
+      }).then((result) => {
+        console.log(result.data);
+      });
+    });
+  };
+
+  const fetchAll = () => {
+    axios({
+      method: "GET",
+      url: `${process.env.REACT_APP_CONTENT_SERVICE}/exercises/`,
+    }).then((result) => {
+      console.log(result.data);
+    });
+  };
+
   const classes = useStyles();
 
   return (
@@ -50,6 +82,22 @@ export default function Missions() {
             }}
           >
             新增習題
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            className={classes.menuButton}
+            onClick={fetchById}
+          >
+            搜尋試卷 (測試)
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            className={classes.menuButton}
+            onClick={fetchAll}
+          >
+            搜尋所有試卷 (測試)
           </Button>
         </OperatorMenu>
       )}
