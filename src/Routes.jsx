@@ -19,7 +19,6 @@ import Questionaires from "./services/Questionnaire/pages/Questionaires";
 /** Assistant Service Pages */
 // 任務系統
 import Missions from "./services/Assistant/pages/Missions";
-import MissionsAdd from "./services/Assistant/pages/MissionsAdd";
 // 班級系統
 import Classrooms from "./services/Assistant/pages/Classrooms";
 import Classroom from "./services/Assistant/pages/Classroom";
@@ -55,7 +54,6 @@ export default function Routes() {
     { path: "/content/units/:lecture_id", element: <Units /> },
     { path: "/questionnaire", element: <Questionaires /> },
     { path: "/misssions", element: <Missions /> },
-    { path: "/misssions/add", element: <MissionsAdd /> },
     { path: "/exercises", element: <Exercises /> },
     { path: "/exercises/add", element: <ExercisesAdd /> },
     { path: "/classroom", element: <Classrooms /> },
