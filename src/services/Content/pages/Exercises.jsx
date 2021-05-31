@@ -1,13 +1,34 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import Swal from "sweetalert2";
-import { Paper, Grid, Button, makeStyles } from "@material-ui/core";
+import {
+  Paper,
+  Grid,
+  Box,
+  Chip,
+  Button,
+  Typography,
+  makeStyles,
+} from "@material-ui/core";
+import { ThemeProvider, createMuiTheme } from "@material-ui/core/styles";
+
 import MenuBookIcon from "@material-ui/icons/MenuBook";
 
 import PageHeader from "../../Utility/compmnents/PageHeader";
 import OperatorMenu from "../../Utility/compmnents/OperatorMenu";
+
+import green from "@material-ui/core/colors/lightGreen";
+
+const successTheme = createMuiTheme({
+  palette: {
+    primary: {
+      main: green[700],
+      contrastText: "#fff",
+    },
+  },
+});
 
 const useStyles = makeStyles((theme) => ({
   pageContent: {
@@ -17,16 +38,42 @@ const useStyles = makeStyles((theme) => ({
   menuButton: {
     marginRight: 16,
   },
+  exerciseCard: {
+    borderBottom: "1px dashed #636e72",
+  },
+  chip: {
+    margin: theme.spacing(1),
+    letterSpacing: 1.5,
+    fontSize: 14,
+  },
 }));
 
 export default function Missions() {
   // 登入檢查
   const navigate = useNavigate();
   const userState = useSelector((state) => state.userState);
+  const [exercises, setExercises] = useState([]);
 
   useEffect(() => {
     if (!userState.user && !userState.isChecking) {
       navigate("/auth/login");
+    }
+
+    if (userState.user) {
+      axios({
+        method: "GET",
+        url: `${process.env.REACT_APP_CONTENT_SERVICE}/exercises/`,
+        headers: {
+          token: `${localStorage.jwt}`,
+          user: `${userState.user.id}`,
+        },
+        params: {
+          owner: userState.user.id,
+        },
+      }).then((result) => {
+        console.log(result.data);
+        setExercises(result.data);
+      });
     }
   }, [userState]);
 
@@ -55,9 +102,58 @@ export default function Missions() {
     axios({
       method: "GET",
       url: `${process.env.REACT_APP_CONTENT_SERVICE}/exercises/`,
+      headers: {
+        token: `${localStorage.jwt}`,
+        user: `${userState.user.id}`,
+      },
     }).then((result) => {
       console.log(result.data);
     });
+  };
+
+  const exerciseRelates = (questions) => {
+    let temp = {
+      units: [],
+      tags: [],
+    };
+    questions.forEach((question) => {
+      temp.units.push(question.unit);
+      if (question.tag) {
+        temp.tags.push(question.tag);
+      }
+    });
+    const unitList = [...new Set(temp.units.map(JSON.stringify))].map(
+      JSON.parse
+    );
+    const tagList = [...new Set(temp.tags.map(JSON.stringify))].map(JSON.parse);
+    return (
+      <>
+        <Box display="flex" alignItems="center">
+          <Typography variant="h6">相關單元:</Typography>
+          {unitList.map((unit) => (
+            <ThemeProvider theme={successTheme}>
+              <Chip
+                key={unit.id}
+                label={unit.title}
+                color="primary"
+                className={classes.chip}
+              />
+            </ThemeProvider>
+          ))}
+        </Box>
+        <Box display="flex" alignItems="center">
+          <Typography variant="h6">相關標籤:</Typography>
+          {tagList.map((tag) => (
+            <Chip
+              key={tag.id}
+              label={tag.title}
+              color="primary"
+              className={classes.chip}
+            />
+          ))}
+        </Box>
+      </>
+    );
   };
 
   const classes = useStyles();
@@ -81,9 +177,9 @@ export default function Missions() {
               navigate("/exercises/add");
             }}
           >
-            新增習題
+            新增試卷
           </Button>
-          <Button
+          {/* <Button
             variant="contained"
             color="primary"
             className={classes.menuButton}
@@ -98,18 +194,37 @@ export default function Missions() {
             onClick={fetchAll}
           >
             搜尋所有試卷 (測試)
-          </Button>
+          </Button> */}
         </OperatorMenu>
       )}
       {!userState.isChecking && (
         <Paper className={classes.pageContent}>
           <Grid container spacing={3}>
             <Grid item md={12}>
-              習題列表
+              <Typography variant="h4" gutterBottom>
+                我的試卷
+              </Typography>
             </Grid>
-            <Grid item md={12}></Grid>
-            <Grid item md={12}></Grid>
-            <Grid item md={12}></Grid>
+            {exercises.map((exercise) => {
+              return (
+                <Grid item md={12}>
+                  <Box p={3} className={classes.exerciseCard}>
+                    <Typography variant="h5" gutterBottom>
+                      <b>{exercise.title}</b>
+                    </Typography>
+                    <Typography variant="h6" gutterBottom>
+                      總題數: {exercise.questions.length}
+                    </Typography>
+                    <Typography variant="h6" gutterBottom>
+                      {exerciseRelates(exercise.questions)}
+                    </Typography>
+                    <Typography variant="h6" gutterBottom>
+                      備註: {exercise.description || "無"}
+                    </Typography>
+                  </Box>
+                </Grid>
+              );
+            })}
           </Grid>
         </Paper>
       )}

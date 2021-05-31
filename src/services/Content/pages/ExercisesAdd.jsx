@@ -535,6 +535,10 @@ export default function ExercisesAdd() {
         axios({
           method: "POST",
           url: `${process.env.REACT_APP_CONTENT_SERVICE}/exercises`,
+          headers: {
+            token: `${localStorage.jwt}`,
+            user: `${userState.user.id}`,
+          },
           data: {
             title: exercise.title,
             description: exercise.description,
@@ -544,9 +548,21 @@ export default function ExercisesAdd() {
         })
           .then((result) => {
             console.log(result);
+            swal
+              .fire({
+                icon: "success",
+                title: "新增試卷成功!",
+              })
+              .then(() => {
+                navigate("/exercises");
+              });
           })
           .catch((err) => {
             console.error(err);
+            swal.fire({
+              icon: "error",
+              title: "新增失敗!",
+            });
           });
       }
     }
@@ -650,7 +666,6 @@ export default function ExercisesAdd() {
               </Grid>
             </Grid>
           </Paper>
-          <Paper className={classes.pageContent}></Paper>
         </>
       )}
     </>
