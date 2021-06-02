@@ -301,7 +301,6 @@ export default function Classroom() {
                 >
                   <StudentGroups
                     groupList={classroom.studentGroups}
-                    studentList={classroom.studentList}
                     isManager={classroom.isManager}
                   />
                 </TabPanel>

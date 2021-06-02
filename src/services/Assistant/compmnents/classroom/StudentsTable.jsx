@@ -66,7 +66,10 @@ export default function StudentsTable({
   const classes = useStyles();
 
   const group = (student) => {
-    const group = groupList.filter((group) => group.memberSet.has(student.id));
+    const group = groupList.filter(
+      (group) =>
+        group.members.filter((member) => member._id === student._id).length > 0
+    );
     if (group.length) {
       return group[0].name;
     } else {

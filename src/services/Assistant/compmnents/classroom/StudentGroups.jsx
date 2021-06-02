@@ -17,27 +17,20 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function StudentGroups({ groupList, studentList, isManager }) {
-  const GroupStudentButton = ({ studentId }) => {
-    const student = studentList.filter(
-      (student) => student.id === studentId
-    )[0];
+export default function StudentGroups({ groupList, isManager }) {
+  const GroupStudentButton = ({ student }) => {
     return (
       <Button
         variant="contained"
         color="primary"
         className={classes.menuButton}
       >
-        {student.name}
+        {student.userName}
       </Button>
     );
   };
 
   const classes = useStyles();
-
-  useEffect(() => {
-    console.log(groupList);
-  }, [groupList]);
 
   return (
     <Grid container spacing={3}>
@@ -50,21 +43,25 @@ export default function StudentGroups({ groupList, studentList, isManager }) {
                   {group.name}
                 </Typography>
               </Box>
-              <hr />
-              <Box p={2}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  className={classes.button}
-                  startIcon={<PlaylistAddIcon />}
-                >
-                  指派組別任務
-                </Button>
-              </Box>
-              <hr />
+              {isManager && (
+                <>
+                  <hr />
+                  <Box p={2}>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      className={classes.button}
+                      startIcon={<PlaylistAddIcon />}
+                    >
+                      指派組別任務
+                    </Button>
+                  </Box>
+                  <hr />
+                </>
+              )}
               <Box mt={2}>
-                {Array.from(group.memberSet).map((memberId) => (
-                  <GroupStudentButton studentId={memberId} />
+                {group.members.map((student) => (
+                  <GroupStudentButton student={student} />
                 ))}
               </Box>
             </Box>
