@@ -8,12 +8,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ButtonMenuBar({
-  classroom,
-  setPopup,
-  setOpenPopup,
-  isManager,
-}) {
+export default function ButtonMenuBar({ classroom, setPopup, setOpenPopup }) {
   const classes = useStyles();
   const navigate = useNavigate();
 
@@ -65,7 +60,7 @@ export default function ButtonMenuBar({
   return (
     <Grid item md={12}>
       <Box my={4}>
-        {isManager && (
+        {classroom.isManager && (
           <>
             <Button
               variant="contained"
@@ -107,7 +102,7 @@ export default function ButtonMenuBar({
             </Button>
           </>
         )}
-        {!isManager && (
+        {!classroom.isManager && (
           <>
             <Button
               variant="contained"

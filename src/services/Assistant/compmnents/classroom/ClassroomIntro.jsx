@@ -3,18 +3,13 @@ import { Grid, IconButton, Typography, Box } from "@material-ui/core";
 
 import EditIcon from "@material-ui/icons/Edit";
 
-export default function ClassroomIntro({
-  classroom,
-  setPopup,
-  setOpenPopup,
-  isManager,
-}) {
+export default function ClassroomIntro({ classroom, setPopup, setOpenPopup }) {
   return (
     <>
       <Grid item md={10}>
         <Box display="flex" alignItems="center">
           <Typography variant="h3">{classroom.name}</Typography>
-          {isManager && (
+          {classroom.isManager && (
             <IconButton
               aria-label="edit"
               onClick={() => {
@@ -31,17 +26,17 @@ export default function ClassroomIntro({
         </Box>
         <Box mt={3}>
           <Typography variant="h5">
-            班級教師: {classroom.manager?.userName}
+            班級教師: {classroom.manager.userName}
           </Typography>
         </Box>
-        {isManager && (
+        {classroom.isManager && (
           <Box mt={2}>
             <Typography variant="h5">
               是否開放學生加入班級: {classroom.isAllowAdd === "1" ? "是" : "否"}
             </Typography>
           </Box>
         )}
-        <Box mt={4}>
+        <Box whiteSpace="pre" mt={4}>
           <Typography variant="h6">{classroom.description}</Typography>
         </Box>
       </Grid>
@@ -49,7 +44,7 @@ export default function ClassroomIntro({
         <Box display="flex" flexDirection="column" alignItems="center">
           <QRCode value="https://www.youtube.com/" size={120} />
           <Box p={2}>
-            <Typography>邀請碼: {classroom.invitationCode}</Typography>
+            <Typography>加入班級</Typography>
           </Box>
         </Box>
       </Grid>

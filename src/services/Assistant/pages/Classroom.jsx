@@ -150,6 +150,27 @@ export default function Classroom() {
     if (!userState.user && !userState.isChecking) {
       navigate("/auth/login");
     }
+
+    if (userState.user) {
+      axios({
+        method: "GET",
+        url: `${process.env.REACT_APP_CONTENT_SERVICE}/classrooms/${classroom_id}`,
+        headers: {
+          token: `${localStorage.jwt}`,
+          user: `${userState.user._id}`,
+        },
+      })
+        .then((result) => {
+          setClassroom(result.data);
+        })
+        .catch((err) => {
+          console.error(err);
+          swal.fire({
+            icon: "error",
+            title: "讀取班級失敗!",
+          });
+        });
+    }
   }, [userState]);
 
   const [classroom, setClassroom] = useState({});
@@ -159,11 +180,6 @@ export default function Classroom() {
     type: null,
     title: "",
   });
-
-  useEffect(() => {
-    // TODO: 打取得此班級資料的 API
-    setClassroom(FAKE_CLASS_DATA);
-  }, []);
 
   useEffect(() => {
     console.log("班級資料更新:", classroom);
@@ -257,10 +273,6 @@ export default function Classroom() {
     );
   }
 
-  const isManager = () => {
-    return userState?.user?.id === classroom.manager?.id;
-  };
-
   const classes = useStyles();
 
   return (
@@ -271,7 +283,7 @@ export default function Classroom() {
         icon={<SupervisedUserCircleIcon fontSize="large" />}
       />
 
-      {!userState.isChecking && (
+      {!userState.isChecking && Object.keys(classroom).length > 0 && (
         <>
           <OperatorMenu>
             <Button
@@ -291,13 +303,12 @@ export default function Classroom() {
                 classroom={classroom}
                 setPopup={setPopup}
                 setOpenPopup={setOpenPopup}
-                isManager={isManager()}
               />
+
               <ButtonMenuBar
                 classroom={classroom}
                 setPopup={setPopup}
                 setOpenPopup={setOpenPopup}
-                isManager={isManager()}
               />
               <Grid item md={12}>
                 <Paper square className={classes.tabsWrapper}>
@@ -330,10 +341,10 @@ export default function Classroom() {
                   className={classes.tabPanel}
                 >
                   <StudentsTable
-                    groupList={classroom.groupList}
+                    groupList={classroom.studentGroups}
                     studentList={classroom.studentList}
                     handleStudentRemove={handleStudentRemove}
-                    isManager={isManager()}
+                    isManager={classroom.isManager}
                   />
                 </TabPanel>
                 <TabPanel
@@ -344,7 +355,7 @@ export default function Classroom() {
                   <StudentGroups
                     groupList={classroom.groupList}
                     studentList={classroom.studentList}
-                    isManager={isManager()}
+                    isManager={classroom.isManager}
                   />
                 </TabPanel>
               </Grid>

@@ -82,8 +82,8 @@ export default function StudentsTable({
           <TableBody>
             {recordsAfterPagingAndSorting().map((student) => (
               <TableRow key={student.id}>
-                <TableCell>{student.name}</TableCell>
-                <TableCell>{student.age}</TableCell>
+                <TableCell>{student.userName}</TableCell>
+                <TableCell>{student.age || "未提供"}</TableCell>
                 <TableCell>{student.email}</TableCell>
                 <TableCell>{group(student)}</TableCell>
                 {isManager && (
