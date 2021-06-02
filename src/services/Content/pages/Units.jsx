@@ -27,10 +27,12 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
   },
   tabs: {
+    padding: 10,
     borderRight: `1px solid ${theme.palette.divider}`,
   },
   tab: {
     wordBreak: "keep-all",
+    margin: "0 10px",
     fontSize: 16,
   },
   tabPanel: {
@@ -236,23 +238,33 @@ export default function Units() {
       url: `${process.env.REACT_APP_CONTENT_SERVICE}/lectures/${lecture_id}`,
     }).then((result) => {
       setLecture(result.data);
-      setUnits(result.data.units);
+      setUnits(
+        result.data.units.sort((a, b) => {
+          if (a.order < b.order) {
+            return -1;
+          }
+          if (a.order > b.order) {
+            return 1;
+          }
+          return 0;
+        })
+      );
     });
   }, []);
 
   return (
     <Paper className={classes.pageContent}>
-      <Grid container spacing={3} justify="center">
+      <Grid container spacing={1} justify="center">
         <Grid item xs={12}>
-          <Box mx={5} p={3}>
+          <Box p={3}>
             <Typography gutterBottom variant="h4" component="h4">
               {lecture.title}
             </Typography>
           </Box>
-          <Box mx={5}>
-            <Typography gutterBottom variant="h5" component="h5">
-              <ChaptersTabs units={units} />
-            </Typography>
+        </Grid>
+        <Grid item xs={12}>
+          <Box>
+            <ChaptersTabs units={units} />
           </Box>
         </Grid>
       </Grid>
