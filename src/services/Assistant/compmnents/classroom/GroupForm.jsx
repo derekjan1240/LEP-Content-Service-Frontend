@@ -69,16 +69,15 @@ export default function GroupForm({ classroom, handleGroupEdit }) {
     const allStudentSet = new Set(
       classroom.studentList.map((student) => student._id)
     );
-    const groupedSet = classroom.studentGroups.map((group) => group.memberSet);
-    const groupedFlatSet = new Set(
-      classroom.studentGroups
-        .map((group) => group.memberSet)
-        .map((set) => {
-          return Array.from(set);
-        })
-        .flat()
+    const groupedSet = classroom.studentGroups.map((group) =>
+      group.members.map((member) => member._id)
     );
+    const groupedFlatSet = new Set(groupedSet.flat());
     const withoutGroupedSet = new Set(
+      [...allStudentSet].filter((x) => !groupedFlatSet.has(x))
+    );
+    console.log(
+      withoutGroupedSet,
       [...allStudentSet].filter((x) => !groupedFlatSet.has(x))
     );
     setInitValue({
@@ -152,8 +151,10 @@ export default function GroupForm({ classroom, handleGroupEdit }) {
               </Controls.ActionButton>
             </div>
 
-            {Array.from(group.memberSet).map((memberId) => {
-              return <GroupStudentButton studentId={memberId} key={memberId} />;
+            {Array.from(group.members).map((member) => {
+              return (
+                <GroupStudentButton studentId={member._id} key={member._id} />
+              );
             })}
           </Box>
         </Grid>
@@ -186,7 +187,9 @@ export default function GroupForm({ classroom, handleGroupEdit }) {
     newGroupList.push({
       id: `${new Date().getTime()}`,
       name: values.groupName,
-      memberSet: clonedSet,
+      members: classroom.studentList.filter((student) =>
+        clonedSet.has(student._id)
+      ),
     });
 
     setGroupData({
@@ -201,10 +204,14 @@ export default function GroupForm({ classroom, handleGroupEdit }) {
   // 解散特定組別
   const removeGroup = (index) => {
     const newGroupList = groupData.groupList.slice(0);
-    const newWithoutGroupedSet = new Set([
-      ...groupData.withoutGrouped,
-      ...groupData.groupList[index].memberSet,
-    ]);
+    const newWithoutGroupedSet = groupData.withoutGrouped.size
+      ? new Set([
+          ...groupData.withoutGrouped,
+          ...groupData.groupList[index].members.map((student) => student._id),
+        ])
+      : new Set([
+          ...groupData.groupList[index].members.map((student) => student._id),
+        ]);
     newGroupList.splice(index, 1);
     setGroupData({
       withoutGrouped: newWithoutGroupedSet,
@@ -223,12 +230,7 @@ export default function GroupForm({ classroom, handleGroupEdit }) {
   // 儲存分組
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("submit:", groupData);
     handleGroupEdit(groupData.groupList, resetAll);
-    // setClassroom({
-    //   ...classroom,
-    //   groupList: groupData.groupList,
-    // });
   };
 
   return (
