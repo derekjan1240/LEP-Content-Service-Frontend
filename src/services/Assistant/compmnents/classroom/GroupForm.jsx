@@ -67,11 +67,11 @@ export default function GroupForm({ classroom, handleGroupEdit }) {
 
   useEffect(() => {
     const allStudentSet = new Set(
-      classroom.studentList.map((student) => student.id)
+      classroom.studentList.map((student) => student._id)
     );
-    const groupedSet = classroom.groupList.map((group) => group.memberSet);
+    const groupedSet = classroom.studentGroups.map((group) => group.memberSet);
     const groupedFlatSet = new Set(
-      classroom.groupList
+      classroom.studentGroups
         .map((group) => group.memberSet)
         .map((set) => {
           return Array.from(set);
@@ -93,7 +93,7 @@ export default function GroupForm({ classroom, handleGroupEdit }) {
     if (initValue) {
       setGroupData({
         withoutGrouped: initValue.withoutGroupedSet,
-        groupList: classroom.groupList,
+        groupList: classroom.studentGroups,
       });
     }
   }, [initValue]);
@@ -103,25 +103,25 @@ export default function GroupForm({ classroom, handleGroupEdit }) {
   const studentButton = (student) => {
     return (
       <Button
-        key={student.id}
+        key={student._id}
         variant="outlined"
         color="primary"
         className={`${classes.menuButton} ${
-          studentSelected.has(student.id) && classes.selectdeButton
+          studentSelected.has(student._id) && classes.selectdeButton
         }`}
-        value={student.id}
+        value={student._id}
         onClick={() => {
-          handleStudentSelected(student.id);
+          handleStudentSelected(student._id);
         }}
       >
-        {student.name}
+        {student.userName}
       </Button>
     );
   };
   // 組別區塊
   const GroupStudentButton = ({ studentId }) => {
     const student = classroom.studentList.filter(
-      (student) => student.id === studentId
+      (student) => student._id === studentId
     )[0];
     return (
       <Button
@@ -129,7 +129,7 @@ export default function GroupForm({ classroom, handleGroupEdit }) {
         color="primary"
         className={classes.menuButton}
       >
-        {student.name}
+        {student.userName}
       </Button>
     );
   };
@@ -216,7 +216,7 @@ export default function GroupForm({ classroom, handleGroupEdit }) {
     resetForm();
     setGroupData({
       withoutGrouped: initValue.withoutGroupedSet,
-      groupList: classroom.groupList,
+      groupList: classroom.studentGroups,
     });
     setStudentSelected(new Set());
   };
@@ -281,7 +281,7 @@ export default function GroupForm({ classroom, handleGroupEdit }) {
             </Typography>
             {groupData &&
               classroom.studentList
-                .filter((student) => groupData.withoutGrouped.has(student.id))
+                .filter((student) => groupData.withoutGrouped.has(student._id))
                 .map((student) => {
                   return studentButton(student);
                 })}
