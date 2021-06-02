@@ -104,14 +104,13 @@ export default function Classrooms() {
         url: `${process.env.REACT_APP_CONTENT_SERVICE}/classrooms`,
         headers: {
           token: `${localStorage.jwt}`,
-          user: `${userState.user.id}`,
+          user: `${userState.user._id}`,
         },
         params: {
-          manager: userState.user.id,
+          manager: userState.user._id,
         },
       })
         .then((result) => {
-          console.log();
           setClassrooms(result.data);
         })
         .catch((err) => {
@@ -132,7 +131,7 @@ export default function Classrooms() {
   const handleAdd = (newClassroom, resetForm) => {
     resetForm();
     setOpenPopup(false);
-    newClassroom.manager = userState.user.id;
+    newClassroom.manager = userState.user._id;
     console.log("newClassroom:", newClassroom);
 
     axios({
@@ -140,7 +139,7 @@ export default function Classrooms() {
       url: `${process.env.REACT_APP_CONTENT_SERVICE}/classrooms`,
       headers: {
         token: `${localStorage.jwt}`,
-        user: `${userState.user.id}`,
+        user: `${userState.user._id}`,
       },
       data: {
         ...newClassroom,

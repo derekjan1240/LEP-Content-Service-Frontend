@@ -537,7 +537,7 @@ export default function ExercisesAdd() {
           url: `${process.env.REACT_APP_CONTENT_SERVICE}/exercises`,
           headers: {
             token: `${localStorage.jwt}`,
-            user: `${userState.user.id}`,
+            user: `${userState.user._id}`,
           },
           data: {
             title: exercise.title,

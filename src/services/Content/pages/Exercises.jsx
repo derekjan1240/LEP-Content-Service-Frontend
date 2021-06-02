@@ -65,10 +65,10 @@ export default function Missions() {
         url: `${process.env.REACT_APP_CONTENT_SERVICE}/exercises/`,
         headers: {
           token: `${localStorage.jwt}`,
-          user: `${userState.user.id}`,
+          user: `${userState.user._id}`,
         },
         params: {
-          owner: userState.user.id,
+          owner: userState.user._id,
         },
       }).then((result) => {
         console.log(result.data);
@@ -104,7 +104,7 @@ export default function Missions() {
       url: `${process.env.REACT_APP_CONTENT_SERVICE}/exercises/`,
       headers: {
         token: `${localStorage.jwt}`,
-        user: `${userState.user.id}`,
+        user: `${userState.user._id}`,
       },
     }).then((result) => {
       console.log(result.data);
@@ -209,18 +209,50 @@ export default function Missions() {
               return (
                 <Grid item md={12}>
                   <Box p={3} className={classes.exerciseCard}>
-                    <Typography variant="h5" gutterBottom>
+                    <Typography variant="h4" gutterBottom>
                       <b>{exercise.title}</b>
                     </Typography>
-                    <Typography variant="h6" gutterBottom>
-                      總題數: {exercise.questions.length}
-                    </Typography>
-                    <Typography variant="h6" gutterBottom>
-                      {exerciseRelates(exercise.questions)}
-                    </Typography>
-                    <Typography variant="h6" gutterBottom>
-                      備註: {exercise.description || "無"}
-                    </Typography>
+                    <Box my={3}>
+                      <Typography variant="h6" gutterBottom>
+                        總題數: {exercise.questions.length}
+                      </Typography>
+                      <Typography variant="h6" gutterBottom>
+                        {exerciseRelates(exercise.questions)}
+                      </Typography>
+                      <Typography variant="h6" gutterBottom>
+                        備註: {exercise.description || "無"}
+                      </Typography>
+                    </Box>
+                    <Box display="flex" alignItems="center">
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        className={classes.menuButton}
+                      >
+                        指派給班級
+                      </Button>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        className={classes.menuButton}
+                      >
+                        分享試卷
+                      </Button>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        className={classes.menuButton}
+                      >
+                        編輯試卷
+                      </Button>
+                      <Button
+                        variant="contained"
+                        color="secondary"
+                        className={classes.menuButton}
+                      >
+                        刪除試卷
+                      </Button>
+                    </Box>
                   </Box>
                 </Grid>
               );
