@@ -5,6 +5,7 @@ import swal from "sweetalert2";
 import axios from "axios";
 import {
   Paper,
+  Box,
   Grid,
   Button,
   Typography,
@@ -23,48 +24,6 @@ import PageHeader from "../../Utility/compmnents/PageHeader";
 import OperatorMenu from "../../Utility/compmnents/OperatorMenu";
 import ClassroomForm from "../compmnents/classroom/ClassroomForm";
 import Popup from "../../Utility/compmnents/Popup";
-
-const FAKE_CLASS_LIST = [
-  {
-    id: "1",
-    name: "向日葵班",
-    manager: {
-      id: "609c247d4099fa16842d9dba",
-      userName: "Admin",
-    },
-    description: "這是關於向日葵班的基本介紹",
-    invitationCode: "ABCD1234",
-    isAllowAdd: true,
-    studentList: [],
-    groupList: [],
-  },
-  {
-    id: "2",
-    name: "玫瑰班",
-    manager: {
-      id: "222222222",
-      userName: "王小明",
-    },
-    description: "這是關於玫瑰班的基本介紹",
-    invitationCode: "ABCD4321",
-    isAllowAdd: true,
-    studentList: [],
-    groupList: [],
-  },
-  {
-    id: "3",
-    name: "櫻花班",
-    manager: {
-      id: "33333333",
-      userName: "李大明",
-    },
-    description: "這是關於櫻花班的基本介紹",
-    invitationCode: "ABCD1324",
-    isAllowAdd: false,
-    studentList: [],
-    groupList: [],
-  },
-];
 
 const useStyles = makeStyles((theme) => ({
   pageContent: {
@@ -86,6 +45,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function EntryCard({ classroom }) {
+  const userState = useSelector((state) => state.userState);
+
   const classes = useStyles();
   const navigate = useNavigate();
 
@@ -107,12 +68,16 @@ function EntryCard({ classroom }) {
           </Grid>
           <Grid item md={10}>
             <CardContent>
-              <Typography variant="h4" align="center" gutterBottom>
-                {classroom.name}
+              <Typography variant="h4" gutterBottom>
+                <b>{classroom.name}</b>
               </Typography>
-              <Typography variant="h5" align="center">
-                班級教師: {classroom.manager.userName}
+              <Typography variant="h5" gutterBottom>
+                班級教師: {userState.user.userName}
               </Typography>
+              <hr />
+              <Box component="div" whiteSpace="pre">
+                <Typography variant="h6">{classroom.description}</Typography>
+              </Box>
             </CardContent>
           </Grid>
         </Grid>
@@ -132,28 +97,74 @@ export default function Classrooms() {
     if (!userState.user && !userState.isChecking) {
       navigate("/auth/login");
     }
+
+    if (userState.user) {
+      axios({
+        method: "GET",
+        url: `${process.env.REACT_APP_CONTENT_SERVICE}/classrooms`,
+        headers: {
+          token: `${localStorage.jwt}`,
+          user: `${userState.user.id}`,
+        },
+        params: {
+          manager: userState.user.id,
+        },
+      })
+        .then((result) => {
+          console.log();
+          setClassrooms(result.data);
+        })
+        .catch((err) => {
+          console.error(err);
+          swal.fire({
+            icon: "error",
+            title: "讀取班級列表失敗!",
+          });
+        });
+    }
   }, [userState]);
 
   const [classrooms, setClassrooms] = useState([]);
   const [openPopup, setOpenPopup] = useState(false);
 
-  useEffect(() => {
-    // TODO: 打 API 取得班級資料
-    setClassrooms(FAKE_CLASS_LIST);
-  }, []);
+  useEffect(() => {}, []);
 
   const handleAdd = (newClassroom, resetForm) => {
-    console.log("newClassroom:", newClassroom);
     resetForm();
     setOpenPopup(false);
-    newClassroom.manager = userState.user;
-    newClassroom.invitationCode = "後端吐回來";
-    classrooms.push(newClassroom);
-    swal.fire({
-      icon: "success",
-      title: `新增班級 ${newClassroom.name} 成功!`,
-      width: 700,
-    });
+    newClassroom.manager = userState.user.id;
+    console.log("newClassroom:", newClassroom);
+
+    axios({
+      method: "POST",
+      url: `${process.env.REACT_APP_CONTENT_SERVICE}/classrooms`,
+      headers: {
+        token: `${localStorage.jwt}`,
+        user: `${userState.user.id}`,
+      },
+      data: {
+        ...newClassroom,
+        isAllowAdd: newClassroom.isAllowAdd === "1",
+      },
+      withCredentials: true,
+    })
+      .then((result) => {
+        const clonedClassrooms = classrooms.slice(0);
+        clonedClassrooms.push(result.data);
+        setClassrooms(clonedClassrooms);
+        swal.fire({
+          icon: "success",
+          title: `新增班級 ${result.data.name} 成功!`,
+          width: 700,
+        });
+      })
+      .catch((err) => {
+        console.error(err);
+        swal.fire({
+          icon: "error",
+          title: "新增班級失敗!",
+        });
+      });
   };
 
   return (
@@ -193,7 +204,7 @@ export default function Classrooms() {
           <Grid container spacing={3}>
             {classrooms.map((classroom) => {
               return (
-                <Grid item md={6} key={classroom.id}>
+                <Grid item md={12} key={classroom.id}>
                   <EntryCard classroom={classroom} />
                 </Grid>
               );
