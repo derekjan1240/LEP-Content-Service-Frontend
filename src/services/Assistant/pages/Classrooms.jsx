@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import swal from "sweetalert2";
+import Swal from "sweetalert2";
 import axios from "axios";
 import {
   Paper,
@@ -45,8 +45,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function EntryCard({ classroom }) {
-  const userState = useSelector((state) => state.userState);
-
   const classes = useStyles();
   const navigate = useNavigate();
 
@@ -72,7 +70,7 @@ function EntryCard({ classroom }) {
                 <b>{classroom.name}</b>
               </Typography>
               <Typography variant="h5" gutterBottom>
-                班級教師: {userState.user.userName}
+                班級人數: {classroom.studentList.length} 人
               </Typography>
               <hr />
               <Box component="div" whiteSpace="pre">
@@ -112,7 +110,7 @@ export default function Classrooms() {
         })
         .catch((err) => {
           console.error(err);
-          swal.fire({
+          Swal.fire({
             icon: "error",
             title: "讀取班級列表失敗!",
           });
@@ -148,7 +146,7 @@ export default function Classrooms() {
         const clonedClassrooms = classrooms.slice(0);
         clonedClassrooms.push(result.data);
         setClassrooms(clonedClassrooms);
-        swal.fire({
+        Swal.fire({
           icon: "success",
           title: `新增班級 ${result.data.name} 成功!`,
           width: 700,
@@ -156,11 +154,48 @@ export default function Classrooms() {
       })
       .catch((err) => {
         console.error(err);
-        swal.fire({
+        Swal.fire({
           icon: "error",
           title: "新增班級失敗!",
         });
       });
+  };
+
+  const handleJoinClassroom = () => {
+    Swal.fire({
+      title: "請輸入班級 ID",
+      input: "text",
+      inputLabel: "班級 ID",
+      confirmButtonText: "加入",
+      inputValidator: (value) => {
+        if (!value) {
+          return "請確實輸入班級 ID";
+        }
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axios({
+          method: "POST",
+          url: `${process.env.REACT_APP_CONTENT_SERVICE}/classrooms/join`,
+          headers: {
+            token: `${localStorage.jwt}`,
+            user: `${userState.user._id}`,
+          },
+          params: {
+            classroom: result.value,
+          },
+        }).then((result) => {
+          const clonedClassrooms = classrooms.slice(0);
+          clonedClassrooms.push(result.data);
+          setClassrooms(clonedClassrooms);
+          Swal.fire({
+            icon: "success",
+            title: `加入班級 ${result.data.name} 成功!`,
+            width: 700,
+          });
+        });
+      }
+    });
   };
 
   return (
@@ -190,6 +225,7 @@ export default function Classrooms() {
             variant="contained"
             color="primary"
             className={classes.menuButton}
+            onClick={handleJoinClassroom}
           >
             加入班級
           </Button>
