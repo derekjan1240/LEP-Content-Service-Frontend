@@ -104,7 +104,30 @@ function TagButtonGroup(props) {
       >
         回起始點
       </Button>
-      {props.tags.map((tag) => {
+      {props.tags
+        .sort((a, b) => {
+          if (a.time < b.time) {
+            return -1;
+          }
+          if (a.time > b.time) {
+            return 1;
+          }
+          return 0;
+        })
+        .map((tag) => {
+          return (
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => props.setVideoCursor(tag.time)}
+              className={classes.tagButton}
+              key={tag.id}
+            >
+              {tag.title}
+            </Button>
+          );
+        })}
+      {/* {props.tags.map((tag) => {
         return (
           <Button
             variant="contained"
@@ -116,7 +139,7 @@ function TagButtonGroup(props) {
             {tag.title}
           </Button>
         );
-      })}
+      })} */}
     </Box>
   );
 }
