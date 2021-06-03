@@ -106,9 +106,6 @@ export default function Classrooms() {
           token: `${localStorage.jwt}`,
           user: `${userState.user._id}`,
         },
-        params: {
-          manager: userState.user._id,
-        },
       })
         .then((result) => {
           setClassrooms(result.data);

@@ -84,7 +84,7 @@ export default function StudentsTable({
           <TblHead />
           <TableBody>
             {recordsAfterPagingAndSorting().map((student) => (
-              <TableRow key={student.id}>
+              <TableRow key={student._id}>
                 <TableCell>{student.userName}</TableCell>
                 <TableCell>{student.age || "未提供"}</TableCell>
                 <TableCell>{student.email}</TableCell>
