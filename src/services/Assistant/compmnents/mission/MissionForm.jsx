@@ -18,14 +18,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const isAllowAddItems = [
-  { id: "Video", value: "1", title: "影片任務" },
-  { id: "Exercise", value: "2", title: "習題任務" },
+const typeItems = [
+  { id: "Video", value: "Video", title: "影片任務" },
+  { id: "Exercise", value: "Exercise", title: "習題任務" },
 ];
 
 const initialFValues = {
   id: String(new Date().getTime()),
-  type: "1",
+  type: "Video",
   name: "",
   unit: "",
   exercise: "",
@@ -41,9 +41,9 @@ export default function MissionForm({
     let temp = { ...errors };
     if ("name" in fieldValues)
       temp.name = fieldValues.name ? "" : "任務名稱為必填";
-    if ("unit" in fieldValues && fieldValues.type === "1")
+    if ("unit" in fieldValues && fieldValues.type === "Video")
       temp.unit = fieldValues.unit ? "" : "影片為必填";
-    if ("exercise" in fieldValues && fieldValues.type === "2")
+    if ("exercise" in fieldValues && fieldValues.type === "Exercise")
       temp.exercise = fieldValues.exercise ? "" : "習題為必填";
 
     setErrors({
@@ -82,7 +82,7 @@ export default function MissionForm({
             label="種類"
             value={values.type}
             onChange={handleInputChange}
-            items={isAllowAddItems}
+            items={typeItems}
             required
           />
           <Controls.Input
@@ -92,7 +92,7 @@ export default function MissionForm({
             onChange={handleInputChange}
             error={errors.name}
           />
-          {values.type === "1" && (
+          {values.type === "Video" && (
             <FormControl variant="outlined" fullWidth error={errors.unit}>
               <InputLabel htmlFor="exercise">影片</InputLabel>
               <Select
@@ -117,7 +117,7 @@ export default function MissionForm({
               <FormHelperText>影片為必填</FormHelperText>
             </FormControl>
           )}
-          {values.type === "2" && (
+          {values.type === "Exercise" && (
             <FormControl variant="outlined" fullWidth error={errors.exercise}>
               <InputLabel htmlFor="exercise">習題</InputLabel>
               <Select
