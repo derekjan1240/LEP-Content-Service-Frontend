@@ -154,48 +154,6 @@ const Question = ({ question, answers, setAnswers }) => {
                 />
               </Grid>
             )}
-            {/* {question.type === "choiceAnswer" &&
-              question.choices.map((choice) => {
-                return (
-                  <>
-                    <Grid item md={10}>
-                      <TextField
-                        id="outlined-basic"
-                        label="選項"
-                        variant="outlined"
-                        type="text"
-                        value={choice.title}
-                        className={
-                          answers.filter(
-                            (answer) => answer.answer === choice.id
-                          ).length
-                            ? classes.correct
-                            : null
-                        }
-                        multiline
-                        fullWidth
-                        readonly
-                        required
-                      />
-                    </Grid>
-                    <Grid item md={2}>
-                      <ThemeProvider theme={successTheme}>
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          className={classes.button}
-                          startIcon={<CheckCircleIcon />}
-                          onClick={() => {
-                            handleCorrectAnswerSet(question, choice, null);
-                          }}
-                        >
-                          選擇
-                        </Button>
-                      </ThemeProvider>
-                    </Grid>
-                  </>
-                );
-              })} */}
           </Grid>
         </Box>
         <Box mx={5}>
