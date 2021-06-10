@@ -151,7 +151,7 @@ const LoginedMenu = () => {
     },
     {
       title: "任務系統",
-      href: "/misssions",
+      href: "/missions",
       icon: <FlagIcon />,
     },
     {

@@ -64,6 +64,9 @@ export default function Missions() {
     }
 
     if (userState.user) {
+      if (userState.user.role === "Student") {
+        navigate("/missions/student");
+      }
       // 取得任務清單
       axios({
         method: "GET",

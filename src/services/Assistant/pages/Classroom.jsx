@@ -238,6 +238,7 @@ export default function Classroom() {
         影片任務: inputOption.units,
         習題任務: inputOption.exercises,
       },
+      inputLabel: "指派任務",
       confirmButtonText: "指派",
       inputPlaceholder: "請選擇一項任務",
       inputValidator: (value) => {
