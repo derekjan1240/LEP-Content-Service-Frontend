@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import swal from "sweetalert2";
+import Swal from "sweetalert2";
 import axios from "axios";
 import {
   Paper,
@@ -58,6 +58,7 @@ export default function Classroom() {
     }
 
     if (userState.user) {
+      // 取得班級資料
       axios({
         method: "GET",
         url: `${process.env.REACT_APP_CONTENT_SERVICE}/classrooms/${classroom_id}`,
@@ -84,15 +85,37 @@ export default function Classroom() {
         })
         .catch((err) => {
           console.error(err);
-          swal.fire({
+          Swal.fire({
             icon: "error",
             title: "讀取班級失敗!",
+          });
+        });
+
+      // 取得任務清單
+      axios({
+        method: "GET",
+        url: `${process.env.REACT_APP_ASSISTANT_SERVICE}/mission/teacher`,
+        headers: {
+          token: `${localStorage.jwt}`,
+          user: `${userState.user._id}`,
+        },
+      })
+        .then((result) => {
+          console.log("教師任務:", result.data);
+          setMissions(result.data);
+        })
+        .catch((err) => {
+          console.error(err);
+          Swal.fire({
+            icon: "error",
+            title: "查詢任務失敗!",
           });
         });
     }
   }, [userState]);
 
   const [classroom, setClassroom] = useState({});
+  const [missions, setMissions] = useState([]);
   const [tabsValue, setTabsValue] = useState("table");
   const [openPopup, setOpenPopup] = useState(false);
   const [popup, setPopup] = useState({
@@ -113,7 +136,7 @@ export default function Classroom() {
     resetForm(updatedClassroom);
     setOpenPopup(false);
     setClassroom(updatedClassroom);
-    swal.fire({
+    Swal.fire({
       icon: "success",
       title: "更新班級成功!",
       width: 700,
@@ -146,7 +169,7 @@ export default function Classroom() {
           ...classroom,
           studentGroups: newGroupList,
         });
-        swal.fire({
+        Swal.fire({
           icon: "success",
           title: `更新組別成功!`,
           width: 700,
@@ -154,7 +177,7 @@ export default function Classroom() {
       })
       .catch((err) => {
         console.error(err);
-        swal.fire({
+        Swal.fire({
           icon: "error",
           title: "編輯組別失敗!",
         });
@@ -164,33 +187,102 @@ export default function Classroom() {
   };
 
   const handleStudentRemove = (removeStudent) => {
-    swal
-      .fire({
-        icon: "warning",
-        title: `確定要將該 ${removeStudent.name} 移出班級嗎?`,
-        confirmButtonText: "確定",
-        cancelButtonText: "離開",
-        showCancelButton: true,
-        reverseButtons: true,
-        confirmButtonColor: "#c0392b",
-        width: 700,
-      })
-      .then((result) => {
-        if (result.isConfirmed) {
-          const newStudentList = classroom.studentList.filter(
-            (student) => student.id !== removeStudent.id
-          );
-          setClassroom({
-            ...classroom,
-            studentList: newStudentList,
-          });
-          swal.fire({
-            icon: "success",
-            title: `${removeStudent.name} 移出班級成功`,
-            width: 700,
-          });
-        }
+    Swal.fire({
+      icon: "warning",
+      title: `確定要將該 ${removeStudent.name} 移出班級嗎?`,
+      confirmButtonText: "確定",
+      cancelButtonText: "離開",
+      showCancelButton: true,
+      reverseButtons: true,
+      confirmButtonColor: "#c0392b",
+      width: 700,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const newStudentList = classroom.studentList.filter(
+          (student) => student.id !== removeStudent.id
+        );
+        setClassroom({
+          ...classroom,
+          studentList: newStudentList,
+        });
+        Swal.fire({
+          icon: "success",
+          title: `${removeStudent.name} 移出班級成功`,
+          width: 700,
+        });
+      }
+    });
+  };
+
+  const handlePersonalMissionAssign = (student) => {
+    console.log(missions, student);
+    const inputOption = {
+      units: {},
+      exercises: {},
+    };
+    missions
+      .filter((mission) => mission.type === "Video")
+      .forEach((mission) => {
+        inputOption.units[mission._id] = mission.name;
       });
+    missions
+      .filter((mission) => mission.type === "Exercise")
+      .forEach((mission) => {
+        inputOption.exercises[mission._id] = mission.name;
+      });
+
+    Swal.fire({
+      title: `請選擇欲指派給 ${student.userName} 的任務`,
+      input: "select",
+      inputOptions: {
+        影片任務: inputOption.units,
+        習題任務: inputOption.exercises,
+      },
+      confirmButtonText: "指派",
+      inputPlaceholder: "請選擇一項任務",
+      inputValidator: (value) => {
+        if (!value) {
+          return "請至少選擇一項任務!";
+        }
+      },
+      width: 1200,
+      allowOutsideClick: false,
+      showCancelButton: false,
+      showCloseButton: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        console.log(result);
+        axios({
+          method: "POST",
+          url: `${process.env.REACT_APP_ASSISTANT_SERVICE}/mission`,
+          headers: {
+            token: `${localStorage.jwt}`,
+            user: `${userState.user._id}`,
+          },
+          data: {
+            classroom: classroom.id,
+            mission: result.value,
+            assignee: student._id,
+          },
+          withCredentials: true,
+        })
+          .then((result) => {
+            console.log("result:", result.data);
+            Swal.fire({
+              icon: "success",
+              title: `指派單人任務成功!`,
+              width: 700,
+            });
+          })
+          .catch((err) => {
+            console.error(err);
+            Swal.fire({
+              icon: "error",
+              title: "指派單人任務失敗!",
+            });
+          });
+      }
+    });
   };
 
   const handleTabChange = (event, newValue) => {
@@ -292,6 +384,7 @@ export default function Classroom() {
                     studentList={classroom.studentList}
                     handleStudentRemove={handleStudentRemove}
                     isManager={classroom.isManager}
+                    handlePersonalMissionAssign={handlePersonalMissionAssign}
                   />
                 </TabPanel>
                 <TabPanel

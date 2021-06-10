@@ -28,6 +28,7 @@ export default function StudentsTable({
   studentList,
   handleStudentRemove,
   isManager,
+  handlePersonalMissionAssign,
 }) {
   const headCells = isManager
     ? [
@@ -96,6 +97,9 @@ export default function StudentsTable({
                       color="primary"
                       className={classes.button}
                       startIcon={<PlaylistAddIcon />}
+                      onClick={() => {
+                        handlePersonalMissionAssign(student);
+                      }}
                     >
                       指派個人任務
                     </Button>

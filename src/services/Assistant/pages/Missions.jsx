@@ -135,7 +135,7 @@ export default function Missions() {
 
     axios({
       method: "POST",
-      url: `${process.env.REACT_APP_ASSISTANT_SERVICE}/mission`,
+      url: `${process.env.REACT_APP_ASSISTANT_SERVICE}/mission/teacher`,
       headers: {
         token: `${localStorage.jwt}`,
         user: `${userState.user._id}`,
