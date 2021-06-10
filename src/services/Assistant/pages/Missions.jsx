@@ -3,13 +3,33 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Swal from "sweetalert2";
 import axios from "axios";
-import { Paper, Grid, Button, makeStyles } from "@material-ui/core";
+import {
+  Paper,
+  Grid,
+  Box,
+  Button,
+  Chip,
+  Typography,
+  makeStyles,
+} from "@material-ui/core";
+import { ThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import FlagIcon from "@material-ui/icons/Flag";
 
 import PageHeader from "../../Utility/compmnents/PageHeader";
 import OperatorMenu from "../../Utility/compmnents/OperatorMenu";
 import MissionForm from "../compmnents/mission/MissionForm";
 import Popup from "../../Utility/compmnents/Popup";
+
+import green from "@material-ui/core/colors/lightGreen";
+
+const successTheme = createMuiTheme({
+  palette: {
+    primary: {
+      main: green[700],
+      contrastText: "#fff",
+    },
+  },
+});
 
 const useStyles = makeStyles((theme) => ({
   pageContent: {
@@ -19,6 +39,14 @@ const useStyles = makeStyles((theme) => ({
   menuButton: {
     marginRight: 16,
   },
+  missionCard: {
+    borderBottom: "1px dashed #636e72",
+  },
+  chip: {
+    margin: theme.spacing(1),
+    letterSpacing: 1.5,
+    fontSize: 14,
+  },
 }));
 
 export default function Missions() {
@@ -26,6 +54,7 @@ export default function Missions() {
   const navigate = useNavigate();
   const userState = useSelector((state) => state.userState);
 
+  const [missions, setMissions] = useState([]);
   const [exercises, setExercises] = useState([]);
   const [units, setUnits] = useState([]);
 
@@ -35,6 +64,27 @@ export default function Missions() {
     }
 
     if (userState.user) {
+      // 取得任務清單
+      axios({
+        method: "GET",
+        url: `${process.env.REACT_APP_ASSISTANT_SERVICE}/mission/teacher`,
+        headers: {
+          token: `${localStorage.jwt}`,
+          user: `${userState.user._id}`,
+        },
+      })
+        .then((result) => {
+          console.log("教師任務:", result.data);
+          setMissions(result.data);
+        })
+        .catch((err) => {
+          console.error(err);
+          Swal.fire({
+            icon: "error",
+            title: "查詢任務失敗!",
+          });
+        });
+
       // 取得考試卷清單
       axios({
         method: "GET",
@@ -83,31 +133,43 @@ export default function Missions() {
 
     console.log("新任務:", newMission);
 
-    // axios({
-    //   method: "POST",
-    //   url: `${process.env.REACT_APP_CONTENT_SERVICE}/missions`,
-    //   headers: {
-    //     token: `${localStorage.jwt}`,
-    //     user: `${userState.user._id}`,
-    //   },
-    //   data: newMission,
-    //   withCredentials: true,
-    // })
-    //   .then((result) => {
-    //     console.log(result.data)
-    //     Swal.fire({
-    //       icon: "success",
-    //       title: `新增任務 ${result.data.name} 成功!`,
-    //       width: 700,
-    //     });
-    //   })
-    //   .catch((err) => {
-    //     console.error(err);
-    //     Swal.fire({
-    //       icon: "error",
-    //       title: "新增任務失敗!",
-    //     });
-    //   });
+    axios({
+      method: "POST",
+      url: `${process.env.REACT_APP_ASSISTANT_SERVICE}/mission`,
+      headers: {
+        token: `${localStorage.jwt}`,
+        user: `${userState.user._id}`,
+      },
+      data: newMission,
+      withCredentials: true,
+    })
+      .then((result) => {
+        console.log(result.data);
+        const clonedMissions = missions.slice(0);
+        clonedMissions.push(result.data);
+        setMissions(clonedMissions);
+        Swal.fire({
+          icon: "success",
+          title: `新增任務 ${result.data.name} 成功!`,
+          width: 700,
+        });
+      })
+      .catch((err) => {
+        console.error(err);
+        Swal.fire({
+          icon: "error",
+          title: "新增任務失敗!",
+        });
+      });
+  };
+
+  const getExerciseName = (mission) => {
+    return exercises.filter((exercise) => exercise.id === mission.exercise)[0]
+      ?.title;
+  };
+
+  const getUnitName = (mission) => {
+    return units.filter((unit) => unit.id === mission.unit)[0]?.title;
   };
 
   const classes = useStyles();
@@ -116,7 +178,7 @@ export default function Missions() {
     <>
       <PageHeader
         title="任務系統"
-        subTitle="subTitle"
+        subTitle="任務管理"
         icon={<FlagIcon fontSize="large" />}
       />
       {(userState?.user?.role === "Admin" ||
@@ -138,9 +200,45 @@ export default function Missions() {
       {!userState.isChecking && (
         <Paper className={classes.pageContent}>
           <Grid container spacing={3}>
-            <Grid item md={12}></Grid>
-            <Grid item md={12}></Grid>
-            <Grid item md={12}></Grid>
+            {missions.map((mission) => {
+              return (
+                <Grid item md={12}>
+                  <Box p={3} className={classes.missionCard}>
+                    <Typography variant="h4" gutterBottom>
+                      <b>{mission.name}</b>
+                    </Typography>
+                    <Box display="flex" alignItems="center">
+                      <Typography variant="h6">類型: </Typography>
+                      {mission.type === "Video" ? (
+                        <Chip
+                          label="影片"
+                          color="primary"
+                          className={classes.chip}
+                        />
+                      ) : (
+                        <ThemeProvider theme={successTheme}>
+                          <Chip
+                            label="練習卷"
+                            color="primary"
+                            className={classes.chip}
+                          />
+                        </ThemeProvider>
+                      )}
+                    </Box>
+                    {mission.exercise && (
+                      <Typography variant="h6" gutterBottom>
+                        任務內容: {getExerciseName(mission)}
+                      </Typography>
+                    )}
+                    {mission.unit && (
+                      <Typography variant="h6" gutterBottom>
+                        任務內容: {getUnitName(mission)}
+                      </Typography>
+                    )}
+                  </Box>
+                </Grid>
+              );
+            })}
           </Grid>
         </Paper>
       )}

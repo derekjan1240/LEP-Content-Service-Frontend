@@ -71,6 +71,14 @@ export default function MissionForm({
       });
   }, [missionForEdit]);
 
+  useEffect(() => {
+    if (values.type === "Video") {
+      values.exercise = "";
+    } else {
+      values.unit = "";
+    }
+  }, [values]);
+
   const classes = useStyles();
 
   return (
