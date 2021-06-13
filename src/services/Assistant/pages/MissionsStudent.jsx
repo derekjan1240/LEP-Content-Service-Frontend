@@ -102,11 +102,11 @@ export default function MissionsStudent() {
                 <Grid item md={12} key={mission.id}>
                   <Box p={3} className={classes.missionCard}>
                     <Typography variant="h4" gutterBottom>
-                      <b>{mission.name}</b>
+                      <b>{mission.content.name}</b>
                     </Typography>
                     <Box display="flex" alignItems="center">
                       <Typography variant="h6">類型: </Typography>
-                      {mission.type === "Video" ? (
+                      {mission.content.type === "Video" ? (
                         <Chip
                           label="影片"
                           color="primary"
@@ -122,46 +122,28 @@ export default function MissionsStudent() {
                         </ThemeProvider>
                       )}
                     </Box>
-                    {mission.exercise && (
+                    {mission.content.exercise && (
                       <Typography variant="h6" gutterBottom>
-                        任務內容: {mission.exercise.title}
+                        任務內容: {mission.content.exercise.title}
                       </Typography>
                     )}
-                    {mission.exercise && (
-                      <Box mt={3}>
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          className={classes.menuButton}
-                          onClick={() => {
-                            navigate(`/exercises/${mission.exercise.id}`);
-                          }}
-                        >
-                          前往習題
-                        </Button>
-                      </Box>
-                    )}
-                    {mission.unit && (
+                    {mission.content.unit && (
                       <Typography variant="h6" gutterBottom>
-                        任務內容: {mission.unit.title}
+                        任務內容: {mission.content.unit.title}
                       </Typography>
                     )}
-                    {mission.unit && (
-                      <Box mt={3}>
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          className={classes.menuButton}
-                          onClick={() => {
-                            navigate(
-                              `/content/units/${mission.unit.lecture.id}`
-                            );
-                          }}
-                        >
-                          前往影片
-                        </Button>
-                      </Box>
-                    )}
+                    <Box mt={3}>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        className={classes.menuButton}
+                        onClick={() => {
+                          navigate(`/missions/content/${mission._id}`);
+                        }}
+                      >
+                        前往任務
+                      </Button>
+                    </Box>
                   </Box>
                 </Grid>
               );
