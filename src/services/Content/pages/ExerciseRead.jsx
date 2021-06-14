@@ -204,7 +204,7 @@ const Question = ({ question, answers, setAnswers }) => {
   );
 };
 
-export default function ExercisesWrite() {
+export default function ExercisesRead() {
   // 登入檢查
   const { exercise_id } = useParams();
   const navigate = useNavigate();

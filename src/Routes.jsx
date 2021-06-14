@@ -21,6 +21,7 @@ import Questionaires from "./services/Questionnaire/pages/Questionaires";
 import Missions from "./services/Assistant/pages/Missions";
 import MissionsStudent from "./services/Assistant/pages/MissionsStudent";
 import MissionContent from "./services/Assistant/pages/MissionContent";
+import MissionReview from "./services/Assistant/pages/MissionReview";
 // 班級系統
 import Classrooms from "./services/Assistant/pages/Classrooms";
 import Classroom from "./services/Assistant/pages/Classroom";
@@ -59,6 +60,7 @@ export default function Routes() {
     { path: "/missions", element: <Missions /> },
     { path: "/missions/student", element: <MissionsStudent /> },
     { path: "/missions/content/:mission_id", element: <MissionContent /> },
+    { path: "/missions/review/:mission_id", element: <MissionReview /> },
     { path: "/exercises", element: <Exercises /> },
     { path: "/exercises/add", element: <ExercisesAdd /> },
     { path: "/exercises/:exercise_id", element: <ExercisesRead /> },

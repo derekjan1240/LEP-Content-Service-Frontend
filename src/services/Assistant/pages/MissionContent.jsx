@@ -23,7 +23,7 @@ import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import SaveIcon from "@material-ui/icons/Save";
 
 import PageHeader from "../../Utility/compmnents/PageHeader";
-
+import OperatorMenu from "../../Utility/compmnents/OperatorMenu";
 import green from "@material-ui/core/colors/lightGreen";
 
 const successTheme = createMuiTheme({
@@ -495,6 +495,18 @@ export default function MissionContent() {
         subTitle="任務執行"
         icon={<FlagIcon fontSize="large" />}
       />
+      <OperatorMenu>
+        <Button
+          variant="contained"
+          color="primary"
+          className={classes.menuButton}
+          onClick={() => {
+            navigate("/missions/student");
+          }}
+        >
+          回任務列表
+        </Button>
+      </OperatorMenu>
       {!userState.isChecking && mission && (
         <>
           <Paper className={classes.pageContent}>
@@ -508,17 +520,6 @@ export default function MissionContent() {
               <Grid item md={12}>
                 <Box mx={5}>
                   <h1>此任務已完成!</h1>
-                </Box>
-                <Box mx={5}>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() => {
-                      navigate("/missions/student");
-                    }}
-                  >
-                    回任務列表
-                  </Button>
                 </Box>
               </Grid>
             ) : (

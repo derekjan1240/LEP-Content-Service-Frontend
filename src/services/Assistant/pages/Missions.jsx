@@ -373,9 +373,9 @@ export default function Missions() {
                               variant="contained"
                               color="primary"
                               className={classes.menuButton}
-                              // onClick={() => {
-                              //   setDisplay("1");
-                              // }}
+                              onClick={() => {
+                                navigate(`/missions/review/${mission._id}`);
+                              }}
                             >
                               批閱任務
                             </Button>
