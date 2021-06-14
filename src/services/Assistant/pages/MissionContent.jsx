@@ -69,6 +69,7 @@ const Question = ({ question, answers, setAnswers }) => {
 
       if (newAnswers.length === answers.length) {
         newAnswers.push({
+          type: "choiceAnswer",
           question: question.id,
           answer: choice.id,
         });
@@ -79,6 +80,7 @@ const Question = ({ question, answers, setAnswers }) => {
         .slice(0)
         .filter((answer) => answer.question !== question.id);
       newAnswers.push({
+        type: "textAnswer",
         question: question.id,
         answer: textAnswer,
       });
@@ -207,7 +209,7 @@ const Question = ({ question, answers, setAnswers }) => {
   );
 };
 
-const Exercise = ({ content, handleFinishExercise }) => {
+const Exercise = ({ content, handleMissionFinished }) => {
   const INIT_EXERCISE = {
     title: "",
     description: "",
@@ -269,7 +271,10 @@ const Exercise = ({ content, handleFinishExercise }) => {
             className={classes.saveButton}
             startIcon={<SaveIcon />}
             onClick={() => {
-              handleFinishExercise(exercise, answers);
+              handleMissionFinished({
+                type: "Exercise",
+                answers,
+              });
             }}
             fullWidth
           >
@@ -345,7 +350,7 @@ const VideoContent = ({ content, videoCursor }) => {
   );
 };
 
-const VideoPlayer = ({ content, handleVideoFinished }) => {
+const VideoPlayer = ({ content, handleMissionFinished }) => {
   const [videoCursor, setVideoCursor] = useState(0);
   const classes = useStyles();
 
@@ -380,7 +385,9 @@ const VideoPlayer = ({ content, handleVideoFinished }) => {
             className={classes.saveButton}
             startIcon={<SaveIcon />}
             onClick={() => {
-              handleVideoFinished();
+              handleMissionFinished({
+                type: "Video",
+              });
             }}
             fullWidth
           >
@@ -434,26 +441,49 @@ export default function MissionContent() {
 
   const classes = useStyles();
 
-  const handleVideoFinished = () => {
-    Swal.fire("任務完成!");
-  };
-
-  const handleFinishExercise = (exercise, answers) => {
-    console.log("交卷: ", {
-      exercise,
-      answers,
-    });
+  const handleMissionFinished = (data) => {
+    console.log(mission, data);
+    if (mission.is_complated) {
+      return;
+    }
     Swal.fire({
-      title: "您確定要交卷了嗎?",
-      text: "交卷後就無法再次修改哦",
+      title:
+        data.type === "Exercise"
+          ? "您確定要交卷了嗎?"
+          : "你確定觀看完影片了嗎?",
+      text: data.type === "Exercise" ? "交卷後就無法再次修改哦" : "",
       icon: "question",
-      confirmButtonText: "交卷",
+      confirmButtonText: "是",
       showCloseButton: true,
       allowOutsideClick: false,
       width: 700,
     }).then((result) => {
       if (result.isConfirmed) {
-        Swal.fire("交卷成功!");
+        // 更新任務完成
+        axios({
+          method: "PUT",
+          url: `${process.env.REACT_APP_ASSISTANT_SERVICE}/mission/content/${mission_id}`,
+          headers: {
+            token: `${localStorage.jwt}`,
+            user: `${userState.user._id}`,
+          },
+          data,
+        })
+          .then(() => {
+            Swal.fire({
+              icon: "success",
+              title: "任務完成!",
+            }).then(() => {
+              navigate("/missions/student");
+            });
+          })
+          .catch((err) => {
+            console.error(err);
+            Swal.fire({
+              icon: "error",
+              title: "任務完成失敗!",
+            });
+          });
       }
     });
   };
@@ -473,17 +503,28 @@ export default function MissionContent() {
                 <h1>任務: {mission.content.name}</h1>
               </Box>
             </Grid>
-            {mission.content.type === "Exercise" && (
-              <Exercise
-                content={mission.content}
-                handleFinishExercise={handleFinishExercise}
-              />
-            )}
-            {mission.content.type === "Video" && (
-              <VideoPlayer
-                content={mission.content}
-                handleVideoFinished={handleVideoFinished}
-              />
+
+            {mission.is_complated ? (
+              <Grid item md={12}>
+                <Box mx={5}>
+                  <h1>此任務已完成!</h1>
+                </Box>
+              </Grid>
+            ) : (
+              <>
+                {mission.content.type === "Exercise" && (
+                  <Exercise
+                    content={mission.content}
+                    handleMissionFinished={handleMissionFinished}
+                  />
+                )}
+                {mission.content.type === "Video" && (
+                  <VideoPlayer
+                    content={mission.content}
+                    handleMissionFinished={handleMissionFinished}
+                  />
+                )}
+              </>
             )}
           </Paper>
         </>
