@@ -29,7 +29,7 @@ import Classroom from "./services/Assistant/pages/Classroom";
 // 習題系統
 import Exercises from "./services/Content/pages/Exercises";
 import ExercisesAdd from "./services/Content/pages/ExercisesAdd";
-import ExercisesWrite from "./services/Content/pages/ExerciseWrite";
+import ExercisesRead from "./services/Content/pages/ExerciseRead";
 
 /** Visualization Service Pages */
 // 資料視覺化系統
@@ -61,7 +61,7 @@ export default function Routes() {
     { path: "/missions/content/:mission_id", element: <MissionContent /> },
     { path: "/exercises", element: <Exercises /> },
     { path: "/exercises/add", element: <ExercisesAdd /> },
-    { path: "/exercises/:exercise_id", element: <ExercisesWrite /> },
+    { path: "/exercises/:exercise_id", element: <ExercisesRead /> },
     { path: "/classroom", element: <Classrooms /> },
     { path: "/classroom/:classroom_id", element: <Classroom /> },
     { path: "/visualization", element: <Visualizations /> },

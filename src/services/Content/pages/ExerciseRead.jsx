@@ -214,6 +214,12 @@ export default function ExercisesWrite() {
     if (!userState.user && !userState.isChecking) {
       navigate("/auth/login");
     }
+
+    if (userState.user) {
+      if (userState.user.role === "Student") {
+        navigate("/exercises");
+      }
+    }
   }, [userState]);
 
   const INIT_EXERCISE = {
@@ -233,24 +239,6 @@ export default function ExercisesWrite() {
       setExercise(result.data);
     });
   }, []);
-
-  const handleFinishExercise = () => {
-    console.log("交卷: ", {
-      exercise,
-      answers,
-    });
-    swal
-      .fire({
-        title: "您確定要交卷了嗎?",
-        text: "交卷後就無法再次修改哦",
-        icon: "question",
-      })
-      .then((result) => {
-        if (result.isConfirmed) {
-          swal.fire("交卷成功!");
-        }
-      });
-  };
 
   const classes = useStyles();
 
@@ -301,20 +289,6 @@ export default function ExercisesWrite() {
                   />
                 );
               })}
-              <Grid item md={12}>
-                <Box p={3} mx={3}>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    className={classes.saveButton}
-                    startIcon={<SaveIcon />}
-                    onClick={handleFinishExercise}
-                    fullWidth
-                  >
-                    交卷
-                  </Button>
-                </Box>
-              </Grid>
             </Grid>
           </Paper>
         </>
