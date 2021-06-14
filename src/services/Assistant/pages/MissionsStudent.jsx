@@ -132,6 +132,9 @@ export default function MissionsStudent() {
                         任務內容: {mission.content.unit.title}
                       </Typography>
                     )}
+                    <Typography variant="h6" gutterBottom>
+                      任務狀態: {mission.is_complated ? "已完成" : "未完成"}
+                    </Typography>
                     <Box mt={3}>
                       <Button
                         variant="contained"
