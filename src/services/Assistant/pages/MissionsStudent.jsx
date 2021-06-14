@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Swal from "sweetalert2";
 import axios from "axios";
+import moment from "moment";
 import {
   Paper,
   Grid,
@@ -122,6 +123,16 @@ export default function MissionsStudent() {
                         </ThemeProvider>
                       )}
                     </Box>
+                    <Typography variant="h6" gutterBottom>
+                      指派人: {mission.assigner.userName}
+                    </Typography>
+                    <Typography variant="h6" gutterBottom>
+                      指派時間:{" "}
+                      {moment(mission.createdAt).format("YYYY/MM/DD HH:mm")}
+                    </Typography>
+                    <Typography variant="h6" gutterBottom>
+                      所屬班級: {mission.classroom.name}
+                    </Typography>
                     {mission.content.exercise && (
                       <Typography variant="h6" gutterBottom>
                         任務內容: {mission.content.exercise.title}

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Swal from "sweetalert2";
 import axios from "axios";
+import moment from "moment";
 import {
   Paper,
   Grid,
@@ -55,6 +56,7 @@ export default function Missions() {
   const userState = useSelector((state) => state.userState);
 
   const [missions, setMissions] = useState([]);
+  const [assignedMissions, setAssignedMissions] = useState([]);
   const [exercises, setExercises] = useState([]);
   const [units, setUnits] = useState([]);
 
@@ -67,7 +69,7 @@ export default function Missions() {
       if (userState.user.role === "Student") {
         navigate("/missions/student");
       }
-      // 取得任務清單
+      // 取得已新增任務清單
       axios({
         method: "GET",
         url: `${process.env.REACT_APP_ASSISTANT_SERVICE}/mission/teacher`,
@@ -77,8 +79,29 @@ export default function Missions() {
         },
       })
         .then((result) => {
-          console.log("教師任務:", result.data);
+          console.log("已新增任務清單:", result.data);
           setMissions(result.data);
+        })
+        .catch((err) => {
+          console.error(err);
+          Swal.fire({
+            icon: "error",
+            title: "查詢任務失敗!",
+          });
+        });
+
+      // 取得已指派任務清單
+      axios({
+        method: "GET",
+        url: `${process.env.REACT_APP_ASSISTANT_SERVICE}/mission/student`,
+        headers: {
+          token: `${localStorage.jwt}`,
+          user: `${userState.user._id}`,
+        },
+      })
+        .then((result) => {
+          console.log("已指派任務清單:", result.data);
+          setAssignedMissions(result.data);
         })
         .catch((err) => {
           console.error(err);
@@ -129,12 +152,11 @@ export default function Missions() {
   }, [userState]);
 
   const [openPopup, setOpenPopup] = useState(false);
+  const [display, setDisplay] = useState("1");
 
   const handleAdd = (newMission, resetForm) => {
     resetForm();
     setOpenPopup(false);
-
-    console.log("新任務:", newMission);
 
     axios({
       method: "POST",
@@ -203,45 +225,166 @@ export default function Missions() {
       {!userState.isChecking && (
         <Paper className={classes.pageContent}>
           <Grid container spacing={3}>
-            {missions.map((mission) => {
-              return (
-                <Grid item md={12}>
-                  <Box p={3} className={classes.missionCard}>
-                    <Typography variant="h4" gutterBottom>
-                      <b>{mission.name}</b>
-                    </Typography>
-                    <Box display="flex" alignItems="center">
-                      <Typography variant="h6">類型: </Typography>
-                      {mission.type === "Video" ? (
-                        <Chip
-                          label="影片"
-                          color="primary"
-                          className={classes.chip}
-                        />
-                      ) : (
-                        <ThemeProvider theme={successTheme}>
+            <Grid item md={12}>
+              <Button
+                variant="contained"
+                color="primary"
+                className={classes.menuButton}
+                onClick={() => {
+                  setDisplay("1");
+                }}
+              >
+                已新增的任務
+              </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                className={classes.menuButton}
+                onClick={() => {
+                  setDisplay("2");
+                }}
+              >
+                已指派的任務
+              </Button>
+            </Grid>
+            {display === "1" &&
+              missions.map((mission) => {
+                return (
+                  <Grid item md={12}>
+                    <Box p={3} className={classes.missionCard}>
+                      <Typography variant="h4" gutterBottom>
+                        <b>{mission.name}</b>
+                      </Typography>
+                      <Box display="flex" alignItems="center">
+                        <Typography variant="h6">類型: </Typography>
+                        {mission.type === "Video" ? (
                           <Chip
-                            label="練習卷"
+                            label="影片"
                             color="primary"
                             className={classes.chip}
                           />
-                        </ThemeProvider>
+                        ) : (
+                          <ThemeProvider theme={successTheme}>
+                            <Chip
+                              label="練習卷"
+                              color="primary"
+                              className={classes.chip}
+                            />
+                          </ThemeProvider>
+                        )}
+                      </Box>
+                      {mission.exercise && (
+                        <Typography variant="h6" gutterBottom>
+                          任務內容: {getExerciseName(mission)}
+                        </Typography>
                       )}
+                      {mission.unit && (
+                        <Typography variant="h6" gutterBottom>
+                          任務內容: {getUnitName(mission)}
+                        </Typography>
+                      )}
+                      <Box display="flex" alignItems="center" mt={3}>
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          className={classes.menuButton}
+                        >
+                          指派任務
+                        </Button>
+                        {mission.exercise && (
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            className={classes.menuButton}
+                            onClick={() => {
+                              navigate(`/exercises/${mission.exercise}`);
+                            }}
+                          >
+                            檢視試卷
+                          </Button>
+                        )}
+                      </Box>
                     </Box>
-                    {mission.exercise && (
-                      <Typography variant="h6" gutterBottom>
-                        任務內容: {getExerciseName(mission)}
+                  </Grid>
+                );
+              })}
+            {display === "2" &&
+              assignedMissions.map((mission) => {
+                return (
+                  <Grid item md={12}>
+                    <Box p={3} className={classes.missionCard}>
+                      <Typography variant="h4" gutterBottom>
+                        <b>{mission.content.name}</b>
                       </Typography>
-                    )}
-                    {mission.unit && (
+                      <Box display="flex" alignItems="center">
+                        <Typography variant="h6">類型: </Typography>
+                        {mission.content.type === "Video" ? (
+                          <Chip
+                            label="影片"
+                            color="primary"
+                            className={classes.chip}
+                          />
+                        ) : (
+                          <ThemeProvider theme={successTheme}>
+                            <Chip
+                              label="練習卷"
+                              color="primary"
+                              className={classes.chip}
+                            />
+                          </ThemeProvider>
+                        )}
+                      </Box>
                       <Typography variant="h6" gutterBottom>
-                        任務內容: {getUnitName(mission)}
+                        任務內容: {mission.content.name}
                       </Typography>
-                    )}
-                  </Box>
-                </Grid>
-              );
-            })}
+                      <Typography variant="h6" gutterBottom>
+                        所屬班級: {mission.classroom.name}
+                      </Typography>
+                      <Typography variant="h6" gutterBottom>
+                        指派對象: {mission.assignee.userName}
+                      </Typography>
+                      <Typography variant="h6" gutterBottom>
+                        指派時間:{" "}
+                        {moment(mission.createdAt).format("YYYY/MM/DD HH:mm")}
+                      </Typography>
+
+                      <Typography variant="h6" gutterBottom>
+                        完成狀態:{" "}
+                        {mission.is_complated
+                          ? `學生已完成 ${moment(mission.complated_date).format(
+                              "(YYYY/MM/DD HH:mm)"
+                            )}`
+                          : "學生尚未完成"}
+                      </Typography>
+                      <Typography variant="h6" gutterBottom>
+                        批閱狀態:{" "}
+                        {mission.content.type === "Video"
+                          ? "無須批閱"
+                          : mission.is_reviewed
+                          ? `教師已批閱 ${moment(mission.reviewed_date).format(
+                              "(YYYY/MM/DD HH:mm)"
+                            )}`
+                          : "教師尚未批閱"}
+                      </Typography>
+                      {mission.content.type === "Exercise" &&
+                        mission.is_complated && (
+                          <Box mt={3}>
+                            <Button
+                              variant="contained"
+                              color="primary"
+                              className={classes.menuButton}
+                              // onClick={() => {
+                              //   setDisplay("1");
+                              // }}
+                            >
+                              批閱任務
+                            </Button>
+                          </Box>
+                        )}
+                    </Box>
+                  </Grid>
+                );
+              })}
           </Grid>
         </Paper>
       )}

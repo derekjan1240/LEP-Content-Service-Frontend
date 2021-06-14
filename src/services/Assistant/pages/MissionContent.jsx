@@ -509,6 +509,17 @@ export default function MissionContent() {
                 <Box mx={5}>
                   <h1>此任務已完成!</h1>
                 </Box>
+                <Box mx={5}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => {
+                      navigate("/missions/student");
+                    }}
+                  >
+                    回任務列表
+                  </Button>
+                </Box>
               </Grid>
             ) : (
               <>
