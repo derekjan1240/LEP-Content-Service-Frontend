@@ -24,6 +24,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function StudentsTable({
+  user,
   groupList,
   studentList,
   handleStudentRemove,
@@ -86,7 +87,10 @@ export default function StudentsTable({
           <TableBody>
             {recordsAfterPagingAndSorting().map((student) => (
               <TableRow key={student._id}>
-                <TableCell>{student.userName}</TableCell>
+                <TableCell>
+                  {student.userName}
+                  {student._id === user._id ? " (我)" : ""}
+                </TableCell>
                 <TableCell>{student.age || "未提供"}</TableCell>
                 <TableCell>{student.email}</TableCell>
                 <TableCell>{group(student)}</TableCell>

@@ -131,6 +131,32 @@ export default function Classroom() {
     navigate(herf);
   };
 
+  const handleClassroomRemove = () => {
+    Swal.fire({
+      icon: "warning",
+      title: "是否確定要解散該班級?",
+      text: "解散後將無法復原",
+      showCancelButton: true,
+      reverseButtons: true,
+      confirmButtonText: "確定",
+      cancelButtonText: "離開",
+      confirmButtonColor: "#c0392b",
+      width: 700,
+      input: "text",
+      inputPlaceholder: "請輸入班級名稱",
+      inputValidator: (value) => {
+        if (value !== classroom.name) {
+          return "請確實輸入欲刪除的班級名稱!";
+        }
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // 解散班級
+        handleNavigate("/classroom");
+      }
+    });
+  };
+
   const handleClassroomEdit = (updatedClassroom, resetForm) => {
     console.log("updatedClassroom:", updatedClassroom);
     resetForm(updatedClassroom);
@@ -277,8 +303,8 @@ export default function Classroom() {
   const handleOnlineMeeting = () => {
     window.open("http://meet.google.com/new", "_blank").focus();
     Swal.fire({
-      title: "請輸入視訊邀請連結",
-      text: "輸入後班級學生將可以在班級中取得連接並加入視訊!",
+      title: "請貼上視訊邀請連結",
+      text: "貼上後班級學生將可以在班級中取得連接並加入視訊!",
       inputPlaceholder: "https://meet.google.com/XXX-XXXX-XXX",
       confirmButtonText: "送出",
       cancelButtonText: "取消",
@@ -287,6 +313,11 @@ export default function Classroom() {
       showCancelButton: true,
       input: "text",
       width: 700,
+      inputValidator: (value) => {
+        if (!value) {
+          return "請確實貼上視訊邀請連結!";
+        }
+      },
     }).then((result) => {
       if (result.isConfirmed) {
         axios({
@@ -450,6 +481,7 @@ export default function Classroom() {
                 handleOnlineMeeting={handleOnlineMeeting}
                 handleRemoveOnlineMeeting={handleRemoveOnlineMeeting}
                 handleJoinOnlineMeeting={handleJoinOnlineMeeting}
+                handleClassroomRemove={handleClassroomRemove}
               />
               <Grid item md={12}>
                 <Paper square className={classes.tabsWrapper}>
@@ -482,6 +514,7 @@ export default function Classroom() {
                   className={classes.tabPanel}
                 >
                   <StudentsTable
+                    user={userState.user}
                     groupList={classroom.studentGroups}
                     studentList={classroom.studentList}
                     handleStudentRemove={handleStudentRemove}

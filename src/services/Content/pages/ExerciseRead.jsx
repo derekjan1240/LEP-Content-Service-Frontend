@@ -49,6 +49,9 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(5),
     padding: theme.spacing(3),
   },
+  menuButton: {
+    marginRight: theme.spacing(2),
+  },
   correct: {
     background: green[100],
   },
@@ -282,6 +285,16 @@ export default function ExercisesRead() {
           }}
         >
           回習題管理
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          className={classes.menuButton}
+          onClick={() => {
+            navigate("/missions");
+          }}
+        >
+          回任務管理
         </Button>
       </OperatorMenu>
       {!userState.isChecking && exercise && (
