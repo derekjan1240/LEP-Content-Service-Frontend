@@ -260,7 +260,7 @@ export default function Missions() {
             {display === "1" &&
               missions.map((mission) => {
                 return (
-                  <Grid item md={12}>
+                  <Grid item md={12} key={mission._id}>
                     <Box p={3} className={classes.missionCard}>
                       <Typography variant="h4" gutterBottom>
                         <b>{mission.name}</b>
@@ -323,7 +323,7 @@ export default function Missions() {
             {display === "2" &&
               assignedMissions.map((mission) => {
                 return (
-                  <Grid item md={12}>
+                  <Grid item md={12} key={mission._id}>
                     <Box p={3} className={classes.missionCard}>
                       <Typography variant="h4" gutterBottom>
                         <b>{mission.content.name}</b>

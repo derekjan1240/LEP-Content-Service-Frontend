@@ -20,11 +20,21 @@ import PageHeader from "../../Utility/compmnents/PageHeader";
 import OperatorMenu from "../../Utility/compmnents/OperatorMenu";
 
 import green from "@material-ui/core/colors/lightGreen";
+import teal from "@material-ui/core/colors/teal";
 
 const successTheme = createMuiTheme({
   palette: {
     primary: {
       main: green[700],
+      contrastText: "#fff",
+    },
+  },
+});
+
+const infoTheme = createMuiTheme({
+  palette: {
+    primary: {
+      main: teal[600],
       contrastText: "#fff",
     },
   },
@@ -97,9 +107,8 @@ export default function Missions() {
         <Box display="flex" alignItems="center">
           <Typography variant="h6">相關單元:</Typography>
           {unitList.map((unit) => (
-            <ThemeProvider theme={successTheme}>
+            <ThemeProvider theme={successTheme} key={`${unit.id}`}>
               <Chip
-                key={unit.id}
                 label={unit.title}
                 color="primary"
                 className={classes.chip}
@@ -111,7 +120,7 @@ export default function Missions() {
           <Typography variant="h6">相關標籤:</Typography>
           {tagList.map((tag) => (
             <Chip
-              key={tag.id}
+              key={`${tag.id}`}
               label={tag.title}
               color="primary"
               className={classes.chip}
@@ -157,7 +166,7 @@ export default function Missions() {
             </Grid>
             {exercises.map((exercise) => {
               return (
-                <Grid item md={12}>
+                <Grid item md={12} key={exercise.id}>
                   <Box p={3} className={classes.exerciseCard}>
                     <Typography variant="h4" gutterBottom>
                       <b>{exercise.title}</b>
@@ -188,16 +197,18 @@ export default function Missions() {
                       >
                         分享試卷
                       </Button>
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        className={classes.menuButton}
-                        onClick={() => {
-                          navigate(`/exercises/${exercise.id}`);
-                        }}
-                      >
-                        檢視試卷
-                      </Button>
+                      <ThemeProvider theme={infoTheme}>
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          className={classes.menuButton}
+                          onClick={() => {
+                            navigate(`/exercises/${exercise.id}`);
+                          }}
+                        >
+                          檢視試卷
+                        </Button>
+                      </ThemeProvider>
                       <Button
                         variant="contained"
                         color="primary"

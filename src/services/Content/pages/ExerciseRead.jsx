@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import swal from "sweetalert2";
 import axios from "axios";
 import {
   Paper,
@@ -25,6 +24,7 @@ import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import MenuBookIcon from "@material-ui/icons/MenuBook";
 
 import PageHeader from "../../Utility/compmnents/PageHeader";
+import OperatorMenu from "../../Utility/compmnents/OperatorMenu";
 
 const successTheme = createMuiTheme({
   palette: {
@@ -225,19 +225,13 @@ const Question = ({ question, answers, setAnswers }) => {
   );
 };
 
-const INIT_EXERCISE = {
-  title: "",
-  description: "",
-  questions: [],
-};
-
 export default function ExercisesRead() {
   // 登入檢查
   const { exercise_id } = useParams();
   const navigate = useNavigate();
   const userState = useSelector((state) => state.userState);
 
-  const [exercise, setExercise] = useState(INIT_EXERCISE);
+  const [exercise, setExercise] = useState(null);
   const [answers, setAnswers] = useState([]);
 
   useEffect(() => {
@@ -278,49 +272,59 @@ export default function ExercisesRead() {
         subTitle="書寫習題"
         icon={<MenuBookIcon fontSize="large" />}
       />
-      {!userState.isChecking && (
-        <>
-          <Paper className={classes.pageContent}>
-            <Grid container spacing={3}>
-              <Grid
-                item
-                md={12}
-                className={!exercise.description && classes.questionWrapper}
-              >
+      <OperatorMenu>
+        <Button
+          variant="contained"
+          color="primary"
+          className={classes.menuButton}
+          onClick={() => {
+            navigate("/exercises");
+          }}
+        >
+          回習題管理
+        </Button>
+      </OperatorMenu>
+      {!userState.isChecking && exercise && (
+        <Paper className={classes.pageContent}>
+          <Grid container spacing={3}>
+            <Grid
+              item
+              md={12}
+              className={exercise.description ? "" : classes.questionWrapper}
+            >
+              <Box mx={5}>
+                <h1>{exercise.title}</h1>
+              </Box>
+            </Grid>
+            {exercise.description && (
+              <Grid item md={12} className={classes.questionWrapper}>
                 <Box mx={5}>
-                  <h1>{exercise.title}</h1>
+                  <TextField
+                    id="outlined-basic"
+                    label="試卷備註"
+                    variant="outlined"
+                    type="text"
+                    name="description"
+                    value={exercise.description}
+                    fullWidth
+                    multiline
+                    readOnly
+                  />
                 </Box>
               </Grid>
-              {exercise.description && (
-                <Grid item md={12} className={classes.questionWrapper}>
-                  <Box mx={5}>
-                    <TextField
-                      id="outlined-basic"
-                      label="試卷備註"
-                      variant="outlined"
-                      type="text"
-                      name="description"
-                      value={exercise.description}
-                      fullWidth
-                      multiline
-                      readOnly
-                    />
-                  </Box>
-                </Grid>
-              )}
-              {exercise.questions.map((question) => {
-                return (
-                  <Question
-                    key={question.id}
-                    question={question}
-                    answers={answers}
-                    setAnswers={setAnswers}
-                  />
-                );
-              })}
-            </Grid>
-          </Paper>
-        </>
+            )}
+            {exercise.questions.map((question) => {
+              return (
+                <Question
+                  key={question.id}
+                  question={question}
+                  answers={answers}
+                  setAnswers={setAnswers}
+                />
+              );
+            })}
+          </Grid>
+        </Paper>
       )}
     </>
   );
