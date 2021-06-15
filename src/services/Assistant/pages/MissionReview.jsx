@@ -22,7 +22,6 @@ import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import ErrorIcon from "@material-ui/icons/Error";
 import SaveIcon from "@material-ui/icons/Save";
 import MenuBookIcon from "@material-ui/icons/MenuBook";
-import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 
 import PageHeader from "../../Utility/compmnents/PageHeader";
 import OperatorMenu from "../../Utility/compmnents/OperatorMenu";
@@ -62,23 +61,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Question = ({ question, answers, errors, setErrors }) => {
+const Question = ({
+  question,
+  answers,
+  errors,
+  handleErrorAdd,
+  handleErrorDelete,
+}) => {
   const classes = useStyles();
-
-  const checkAnswer = (question, isCorrectChoice, isSelected) => {
-    console.log("checkAnswer", question, isCorrectChoice, isSelected);
-    if (
-      (isCorrectChoice && isSelected === 1) ||
-      (!isCorrectChoice && isSelected === 0)
-    ) {
-      return true;
-    } else {
-      const clonedSet = errors;
-      setErrors(clonedSet.add(question.id));
-      return false;
-    }
-  };
-
   return (
     <Grid item md={12} className={classes.questionWrapper}>
       <Box p={5}>
@@ -152,7 +142,7 @@ const Question = ({ question, answers, errors, setErrors }) => {
                   />
                 </Grid>
                 <Grid item md={2}>
-                  {errors.has(question.id) ? (
+                  {errors.questions.has(question.id) ? (
                     <Button
                       variant="contained"
                       color="secondary"
@@ -182,9 +172,7 @@ const Question = ({ question, answers, errors, setErrors }) => {
                       className={classes.button}
                       startIcon={<CheckCircleIcon />}
                       onClick={() => {
-                        const clonedSet = new Set(errors);
-                        clonedSet.delete(question.id);
-                        setErrors(clonedSet);
+                        handleErrorDelete(question.id);
                       }}
                     >
                       正解
@@ -196,8 +184,7 @@ const Question = ({ question, answers, errors, setErrors }) => {
                     className={classes.button}
                     startIcon={<ErrorIcon />}
                     onClick={() => {
-                      const clonedSet = new Set(errors);
-                      setErrors(clonedSet.add(question.id));
+                      handleErrorAdd(question.id);
                     }}
                   >
                     錯誤
@@ -243,12 +230,7 @@ const Question = ({ question, answers, errors, setErrors }) => {
                         </Button>
                       </ThemeProvider>
                     )}
-                    {!checkAnswer(
-                      question,
-                      choice.isCorrectAnswer,
-                      answers.filter((answer) => answer.answer === choice.id)
-                        .length
-                    ) && (
+                    {errors.choices.has(choice.id) && (
                       <Button
                         variant="contained"
                         color="secondary"
@@ -274,16 +256,30 @@ const INIT_EXERCISE = {
   questions: [],
 };
 
+const INIT_REVIEW = {
+  comment: "",
+  total: {
+    error: 0,
+    correct: 0,
+    scores: 0,
+  },
+};
+
+const INIT_ERRORS = {
+  questions: new Set([]),
+  choices: new Set([]),
+};
+
 export default function MissionReview() {
   // 登入檢查
   const { mission_id } = useParams();
   const navigate = useNavigate();
   const userState = useSelector((state) => state.userState);
 
-  const [mission, setMission] = useState(null);
   const [exercise, setExercise] = useState(INIT_EXERCISE);
   const [answers, setAnswers] = useState([]);
-  const [errors, setErrors] = useState(new Set([]));
+  const [review, setReview] = useState(INIT_REVIEW);
+  const [errors, setErrors] = useState(INIT_ERRORS);
 
   useEffect(() => {
     if (!userState.user && !userState.isChecking) {
@@ -306,7 +302,6 @@ export default function MissionReview() {
       })
         .then((result) => {
           console.log("已指派任務清單:", result.data);
-          setMission(result.data);
           setAnswers(result.data.answer);
           setExercise({
             ...result.data.content.exercise,
@@ -323,18 +318,134 @@ export default function MissionReview() {
   }, [userState]);
 
   useEffect(() => {
-    console.log("Exercise:", exercise);
-  }, [exercise]);
-
-  useEffect(() => {
-    console.log("Answers:", answers);
-  }, [answers]);
-
-  useEffect(() => {
-    console.log("Errors:", [...errors]);
+    console.log("Errors:", errors);
   }, [errors]);
 
+  useEffect(() => {
+    console.log("Review:", review);
+  }, [review]);
+
+  const checkAnswer = (isCorrectChoice, isSelected) => {
+    if (
+      (isCorrectChoice && isSelected === 1) ||
+      (!isCorrectChoice && isSelected === 0)
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  useEffect(() => {
+    // const temp = new Set([]);
+    const temp = {
+      questions: new Set([]),
+      choices: new Set([]),
+    };
+    exercise.questions.forEach((question) => {
+      if (question.type === "choiceAnswer") {
+        question.choices.forEach((choice) => {
+          const isCorrect = checkAnswer(
+            choice.isCorrectAnswer,
+            answers.filter((answer) => answer.answer === choice.id).length
+          );
+          if (!isCorrect) {
+            temp.questions.add(question.id);
+            temp.choices.add(choice.id);
+          }
+        });
+      }
+    });
+    setErrors(temp);
+  }, [exercise]);
+
   const classes = useStyles();
+
+  const handleInputChange = (event) => {
+    setReview({
+      ...review,
+      [event.target.name]: event.target.value,
+    });
+  };
+
+  const handleErrorAdd = (questionId) => {
+    const clonedQuestionsError = new Set(errors.questions);
+    clonedQuestionsError.add(questionId);
+    setErrors({
+      ...errors,
+      questions: clonedQuestionsError,
+    });
+  };
+
+  const handleErrorDelete = (questionId) => {
+    const clonedQuestionsError = new Set(errors.questions);
+    clonedQuestionsError.delete(questionId);
+    setErrors({
+      ...errors,
+      questions: clonedQuestionsError,
+    });
+  };
+
+  const handleReview = () => {
+    const data = {
+      ...review,
+      errors: {
+        questions: [...errors.questions],
+        choices: [...errors.choices],
+      },
+      total: {
+        scores:
+          Math.round(
+            ((exercise.questions.length - [...errors.questions].length) /
+              exercise.questions.length) *
+              10000
+          ) / 100.0,
+        correct: exercise.questions.length - [...errors.questions].length,
+        wrong: [...errors.questions].length,
+      },
+    };
+    console.log(data);
+    Swal.fire({
+      title: "確定完成任務批閱了嗎?",
+      text: "批閱後將直接通知學生並無法再次更改哦",
+      icon: "question",
+      confirmButtonText: "是",
+      showCloseButton: true,
+      allowOutsideClick: false,
+      width: 700,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // 更新任務完成
+        axios({
+          method: "PUT",
+          url: `${process.env.REACT_APP_ASSISTANT_SERVICE}/mission/content/${mission_id}/review`,
+          headers: {
+            token: `${localStorage.jwt}`,
+            user: `${userState.user._id}`,
+          },
+          data,
+        })
+          .then((result) => {
+            console.log(result.data);
+            Swal.fire({
+              icon: "success",
+              title: "任務批閱完成!",
+              width: 700,
+            }).then(() => {
+              navigate("/missions");
+            });
+          })
+          .catch((err) => {
+            console.error(err);
+            Swal.fire({
+              icon: "error",
+              title: "任務批閱失敗!",
+              width: 700,
+            });
+          });
+      }
+    });
+  };
 
   return (
     <>
@@ -393,19 +504,36 @@ export default function MissionReview() {
                     answers={answers}
                     errors={errors}
                     setAnswers={setAnswers}
-                    setErrors={setErrors}
+                    handleErrorAdd={handleErrorAdd}
+                    handleErrorDelete={handleErrorDelete}
                   />
                 );
               })}
               <Grid item md={12} className={classes.questionWrapper}>
                 <Box mx={5}>
+                  <TextField
+                    id="outlined-basic"
+                    label="教師備註"
+                    variant="outlined"
+                    name="comment"
+                    value={review.comment}
+                    onChange={handleInputChange}
+                    inputProps={{ maxLength: 1000 }}
+                    multiline
+                    fullWidth
+                  />
+                </Box>
+              </Grid>
+              <Grid item md={12} className={classes.questionWrapper}>
+                <Box mx={5}>
                   <h1>總計: </h1>
                   <h2>
                     總題數: {exercise.questions.length}，正確:{" "}
-                    {exercise.questions.length - [...errors].length}，錯誤:{" "}
-                    {[...errors].length}，分數:{" "}
+                    {exercise.questions.length - [...errors.questions].length}
+                    ，錯誤: {[...errors.questions].length}，分數:{" "}
                     {Math.round(
-                      ((exercise.questions.length - [...errors].length) /
+                      ((exercise.questions.length -
+                        [...errors.questions].length) /
                         exercise.questions.length) *
                         10000
                     ) / 100.0}
@@ -419,6 +547,7 @@ export default function MissionReview() {
                     color="primary"
                     className={classes.button}
                     startIcon={<SaveIcon />}
+                    onClick={handleReview}
                   >
                     批閱完成
                   </Button>

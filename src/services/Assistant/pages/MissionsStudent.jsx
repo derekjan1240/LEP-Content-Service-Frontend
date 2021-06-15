@@ -144,20 +144,48 @@ export default function MissionsStudent() {
                       </Typography>
                     )}
                     <Typography variant="h6" gutterBottom>
-                      任務狀態: {mission.is_complated ? "已完成" : "未完成"}
+                      任務狀態:{" "}
+                      {mission.is_complated
+                        ? moment(mission.complated_date).format(
+                            "已完成 (YYYY/MM/DD HH:mm)"
+                          )
+                        : "未完成"}
                     </Typography>
-                    <Box mt={3}>
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        className={classes.menuButton}
-                        onClick={() => {
-                          navigate(`/missions/content/${mission._id}`);
-                        }}
-                      >
-                        前往任務
-                      </Button>
-                    </Box>
+                    <Typography variant="h6" gutterBottom>
+                      批閱狀態:{" "}
+                      {mission.content.type === "Video"
+                        ? "不需批閱"
+                        : mission.is_reviewed
+                        ? `教師已批閱 ${moment(mission.reviewed_date).format(
+                            "(YYYY/MM/DD HH:mm)"
+                          )}`
+                        : "教師尚未批閱"}
+                    </Typography>
+                    {!mission.is_complated && (
+                      <Box mt={3}>
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          className={classes.menuButton}
+                          onClick={() => {
+                            navigate(`/missions/content/${mission._id}`);
+                          }}
+                        >
+                          前往任務
+                        </Button>
+                      </Box>
+                    )}
+                    {mission.is_reviewed && (
+                      <Box mt={3}>
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          className={classes.menuButton}
+                        >
+                          查看結果
+                        </Button>
+                      </Box>
+                    )}
                   </Box>
                 </Grid>
               );

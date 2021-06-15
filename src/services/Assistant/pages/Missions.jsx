@@ -359,7 +359,7 @@ export default function Missions() {
                       <Typography variant="h6" gutterBottom>
                         批閱狀態:{" "}
                         {mission.content.type === "Video"
-                          ? "無須批閱"
+                          ? "不需批閱"
                           : mission.is_reviewed
                           ? `教師已批閱 ${moment(mission.reviewed_date).format(
                               "(YYYY/MM/DD HH:mm)"

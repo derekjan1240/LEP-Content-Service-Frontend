@@ -462,7 +462,7 @@ export default function MissionContent() {
         // 更新任務完成
         axios({
           method: "PUT",
-          url: `${process.env.REACT_APP_ASSISTANT_SERVICE}/mission/content/${mission_id}`,
+          url: `${process.env.REACT_APP_ASSISTANT_SERVICE}/mission/content/${mission_id}/finish`,
           headers: {
             token: `${localStorage.jwt}`,
             user: `${userState.user._id}`,
