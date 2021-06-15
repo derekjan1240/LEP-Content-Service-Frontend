@@ -22,11 +22,21 @@ import MissionForm from "../compmnents/mission/MissionForm";
 import Popup from "../../Utility/compmnents/Popup";
 
 import green from "@material-ui/core/colors/lightGreen";
+import teal from "@material-ui/core/colors/teal";
 
 const successTheme = createMuiTheme({
   palette: {
     primary: {
       main: green[700],
+      contrastText: "#fff",
+    },
+  },
+});
+
+const infoTheme = createMuiTheme({
+  palette: {
+    primary: {
+      main: teal[600],
       contrastText: "#fff",
     },
   },
@@ -292,16 +302,18 @@ export default function Missions() {
                           指派任務
                         </Button>
                         {mission.exercise && (
-                          <Button
-                            variant="contained"
-                            color="primary"
-                            className={classes.menuButton}
-                            onClick={() => {
-                              navigate(`/exercises/${mission.exercise}`);
-                            }}
-                          >
-                            檢視試卷
-                          </Button>
+                          <ThemeProvider theme={infoTheme}>
+                            <Button
+                              variant="contained"
+                              color="primary"
+                              className={classes.menuButton}
+                              onClick={() => {
+                                navigate(`/exercises/${mission.exercise}`);
+                              }}
+                            >
+                              檢視試卷
+                            </Button>
+                          </ThemeProvider>
                         )}
                       </Box>
                     </Box>
@@ -367,7 +379,8 @@ export default function Missions() {
                           : "教師尚未批閱"}
                       </Typography>
                       {mission.content.type === "Exercise" &&
-                        mission.is_complated && (
+                        mission.is_complated &&
+                        !mission.is_reviewed && (
                           <Box mt={3}>
                             <Button
                               variant="contained"
@@ -381,6 +394,22 @@ export default function Missions() {
                             </Button>
                           </Box>
                         )}
+                      {mission.is_reviewed && (
+                        <Box mt={3}>
+                          <ThemeProvider theme={infoTheme}>
+                            <Button
+                              variant="contained"
+                              color="primary"
+                              className={classes.menuButton}
+                              // onClick={() => {
+                              //   navigate(`/missions/review/${mission._id}`);
+                              // }}
+                            >
+                              檢視結果
+                            </Button>
+                          </ThemeProvider>
+                        </Box>
+                      )}
                     </Box>
                   </Grid>
                 );

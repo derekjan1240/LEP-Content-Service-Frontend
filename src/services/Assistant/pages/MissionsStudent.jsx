@@ -19,11 +19,21 @@ import FlagIcon from "@material-ui/icons/Flag";
 import PageHeader from "../../Utility/compmnents/PageHeader";
 
 import green from "@material-ui/core/colors/lightGreen";
+import teal from "@material-ui/core/colors/teal";
 
 const successTheme = createMuiTheme({
   palette: {
     primary: {
       main: green[700],
+      contrastText: "#fff",
+    },
+  },
+});
+
+const infoTheme = createMuiTheme({
+  palette: {
+    primary: {
+      main: teal[600],
       contrastText: "#fff",
     },
   },
@@ -177,13 +187,15 @@ export default function MissionsStudent() {
                     )}
                     {mission.is_reviewed && (
                       <Box mt={3}>
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          className={classes.menuButton}
-                        >
-                          查看結果
-                        </Button>
+                        <ThemeProvider theme={infoTheme}>
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            className={classes.menuButton}
+                          >
+                            查看結果
+                          </Button>
+                        </ThemeProvider>
                       </Box>
                     )}
                   </Box>

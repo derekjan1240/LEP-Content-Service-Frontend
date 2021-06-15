@@ -21,7 +21,7 @@ import FormLabel from "@material-ui/core/FormLabel";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import ErrorIcon from "@material-ui/icons/Error";
 import SaveIcon from "@material-ui/icons/Save";
-import MenuBookIcon from "@material-ui/icons/MenuBook";
+import FlagIcon from "@material-ui/icons/Flag";
 
 import PageHeader from "../../Utility/compmnents/PageHeader";
 import OperatorMenu from "../../Utility/compmnents/OperatorMenu";
@@ -276,6 +276,7 @@ export default function MissionReview() {
   const navigate = useNavigate();
   const userState = useSelector((state) => state.userState);
 
+  const [mission, setMission] = useState(null);
   const [exercise, setExercise] = useState(INIT_EXERCISE);
   const [answers, setAnswers] = useState([]);
   const [review, setReview] = useState(INIT_REVIEW);
@@ -301,7 +302,8 @@ export default function MissionReview() {
         },
       })
         .then((result) => {
-          console.log("已指派任務清單:", result.data);
+          console.log("任務:", result.data);
+          setMission(result.data);
           setAnswers(result.data.answer);
           setExercise({
             ...result.data.content.exercise,
@@ -450,9 +452,9 @@ export default function MissionReview() {
   return (
     <>
       <PageHeader
-        title="習題系統"
-        subTitle="書寫習題"
-        icon={<MenuBookIcon fontSize="large" />}
+        title="任務系統"
+        subTitle="任務批閱"
+        icon={<FlagIcon fontSize="large" />}
       />
       <OperatorMenu>
         <Button
@@ -466,94 +468,108 @@ export default function MissionReview() {
           回任務管理
         </Button>
       </OperatorMenu>
-      {!userState.isChecking && (
+      {!userState.isChecking && mission && (
         <>
           <Paper className={classes.pageContent}>
-            <Grid container spacing={3}>
-              <Grid
-                item
-                md={12}
-                className={!exercise.description && classes.questionWrapper}
-              >
+            <Grid item md={12}>
+              <Box mx={5}>
+                <h1>{mission.content.name}</h1>
+              </Box>
+            </Grid>
+            {mission.is_reviewed && (
+              <Grid item md={12}>
                 <Box mx={5}>
-                  <h1>{exercise.title}</h1>
+                  <h1>此任務已批閱完成!</h1>
                 </Box>
               </Grid>
-              {exercise.description && (
+            )}
+            {!mission.is_reviewed && (
+              <Grid container spacing={3}>
+                <Grid
+                  item
+                  md={12}
+                  className={!exercise.description && classes.questionWrapper}
+                >
+                  <Box mx={5}>
+                    <h1>{exercise.title}</h1>
+                  </Box>
+                </Grid>
+                {exercise.description && (
+                  <Grid item md={12} className={classes.questionWrapper}>
+                    <Box mx={5}>
+                      <TextField
+                        id="outlined-basic"
+                        label="試卷備註"
+                        variant="outlined"
+                        type="text"
+                        name="description"
+                        value={exercise.description}
+                        fullWidth
+                        multiline
+                        readOnly
+                      />
+                    </Box>
+                  </Grid>
+                )}
+                {exercise.questions.map((question) => {
+                  return (
+                    <Question
+                      key={question.id}
+                      question={question}
+                      answers={answers}
+                      errors={errors}
+                      setAnswers={setAnswers}
+                      handleErrorAdd={handleErrorAdd}
+                      handleErrorDelete={handleErrorDelete}
+                    />
+                  );
+                })}
                 <Grid item md={12} className={classes.questionWrapper}>
                   <Box mx={5}>
                     <TextField
                       id="outlined-basic"
-                      label="試卷備註"
+                      label="教師備註"
                       variant="outlined"
-                      type="text"
-                      name="description"
-                      value={exercise.description}
-                      fullWidth
+                      name="comment"
+                      value={review.comment}
+                      onChange={handleInputChange}
+                      inputProps={{ maxLength: 1000 }}
                       multiline
-                      readOnly
+                      fullWidth
                     />
                   </Box>
                 </Grid>
-              )}
-              {exercise.questions.map((question) => {
-                return (
-                  <Question
-                    key={question.id}
-                    question={question}
-                    answers={answers}
-                    errors={errors}
-                    setAnswers={setAnswers}
-                    handleErrorAdd={handleErrorAdd}
-                    handleErrorDelete={handleErrorDelete}
-                  />
-                );
-              })}
-              <Grid item md={12} className={classes.questionWrapper}>
-                <Box mx={5}>
-                  <TextField
-                    id="outlined-basic"
-                    label="教師備註"
-                    variant="outlined"
-                    name="comment"
-                    value={review.comment}
-                    onChange={handleInputChange}
-                    inputProps={{ maxLength: 1000 }}
-                    multiline
-                    fullWidth
-                  />
-                </Box>
+                <Grid item md={12} className={classes.questionWrapper}>
+                  <Box mx={5}>
+                    <h1>總計: </h1>
+                    <h2>
+                      總題數: {exercise.questions.length}，正確:{" "}
+                      {exercise.questions.length - [...errors.questions].length}
+                      ，錯誤: {[...errors.questions].length}，分數:{" "}
+                      {Math.round(
+                        ((exercise.questions.length -
+                          [...errors.questions].length) /
+                          exercise.questions.length) *
+                          10000
+                      ) / 100.0}
+                    </h2>
+                  </Box>
+                </Grid>
+                <Grid item md={12} className={classes.questionWrapper}>
+                  <Box mx={5}>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      className={classes.button}
+                      startIcon={<SaveIcon />}
+                      onClick={handleReview}
+                    >
+                      批閱完成
+                    </Button>
+                  </Box>
+                </Grid>
               </Grid>
-              <Grid item md={12} className={classes.questionWrapper}>
-                <Box mx={5}>
-                  <h1>總計: </h1>
-                  <h2>
-                    總題數: {exercise.questions.length}，正確:{" "}
-                    {exercise.questions.length - [...errors.questions].length}
-                    ，錯誤: {[...errors.questions].length}，分數:{" "}
-                    {Math.round(
-                      ((exercise.questions.length -
-                        [...errors.questions].length) /
-                        exercise.questions.length) *
-                        10000
-                    ) / 100.0}
-                  </h2>
-                </Box>
-              </Grid>
-              <Grid item md={12} className={classes.questionWrapper}>
-                <Box mx={5}>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    className={classes.button}
-                    startIcon={<SaveIcon />}
-                    onClick={handleReview}
-                  >
-                    批閱完成
-                  </Button>
-                </Box>
-              </Grid>
-            </Grid>
+            )}
           </Paper>
         </>
       )}
