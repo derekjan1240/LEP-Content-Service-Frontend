@@ -13,13 +13,14 @@ import {
   Typography,
   makeStyles,
 } from "@material-ui/core";
+
 import { ThemeProvider, createMuiTheme } from "@material-ui/core/styles";
+import green from "@material-ui/core/colors/lightGreen";
+import teal from "@material-ui/core/colors/teal";
+
 import FlagIcon from "@material-ui/icons/Flag";
 
 import PageHeader from "../../Utility/compmnents/PageHeader";
-
-import green from "@material-ui/core/colors/lightGreen";
-import teal from "@material-ui/core/colors/teal";
 
 const successTheme = createMuiTheme({
   palette: {
@@ -192,6 +193,9 @@ export default function MissionsStudent() {
                             variant="contained"
                             color="primary"
                             className={classes.menuButton}
+                            onClick={() => {
+                              navigate(`/missions/result/${mission._id}`);
+                            }}
                           >
                             查看結果
                           </Button>

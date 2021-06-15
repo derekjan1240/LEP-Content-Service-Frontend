@@ -8,26 +8,25 @@ import {
   Grid,
   Box,
   Button,
-  Radio,
-  RadioGroup,
-  FormControlLabel,
-  FormLabel,
   TextField,
   FormControl,
   makeStyles,
 } from "@material-ui/core";
 
 import { ThemeProvider, createMuiTheme } from "@material-ui/core/styles";
-import green from "@material-ui/core/colors/lightGreen";
-import cyan from "@material-ui/core/colors/cyan";
-
+import Radio from "@material-ui/core/Radio";
+import RadioGroup from "@material-ui/core/RadioGroup";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import FormLabel from "@material-ui/core/FormLabel";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import ErrorIcon from "@material-ui/icons/Error";
-import SaveIcon from "@material-ui/icons/Save";
 import FlagIcon from "@material-ui/icons/Flag";
 
 import PageHeader from "../../Utility/compmnents/PageHeader";
 import OperatorMenu from "../../Utility/compmnents/OperatorMenu";
+
+import green from "@material-ui/core/colors/lightGreen";
+import cyan from "@material-ui/core/colors/cyan";
 
 const successTheme = createMuiTheme({
   palette: {
@@ -61,13 +60,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Question = ({
-  question,
-  answers,
-  errors,
-  handleErrorAdd,
-  handleErrorDelete,
-}) => {
+const Question = ({ question, answers, errors }) => {
   const classes = useStyles();
   return (
     <Grid item md={12} className={classes.questionWrapper}>
@@ -164,32 +157,6 @@ const Question = ({
                     </ThemeProvider>
                   )}
                 </Grid>
-                <Grid item md={12}>
-                  <ThemeProvider theme={successTheme}>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      className={classes.button}
-                      startIcon={<CheckCircleIcon />}
-                      onClick={() => {
-                        handleErrorDelete(question.id);
-                      }}
-                    >
-                      正解
-                    </Button>
-                  </ThemeProvider>
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    className={classes.button}
-                    startIcon={<ErrorIcon />}
-                    onClick={() => {
-                      handleErrorAdd(question.id);
-                    }}
-                  >
-                    錯誤
-                  </Button>
-                </Grid>
               </>
             )}
           </Grid>
@@ -260,11 +227,6 @@ const INIT_EXERCISE = {
 
 const INIT_REVIEW = {
   comment: "",
-  total: {
-    error: 0,
-    correct: 0,
-    scores: 0,
-  },
 };
 
 const INIT_ERRORS = {
@@ -272,7 +234,7 @@ const INIT_ERRORS = {
   choices: new Set([]),
 };
 
-export default function MissionReview() {
+export default function MissionResult() {
   // 登入檢查
   const { mission_id } = useParams();
   const navigate = useNavigate();
@@ -290,10 +252,6 @@ export default function MissionReview() {
     }
 
     if (userState.user) {
-      if (userState.user.role === "Student") {
-        navigate("/missions/student");
-      }
-
       // 取得已指派任務清單
       axios({
         method: "GET",
@@ -305,7 +263,17 @@ export default function MissionReview() {
       })
         .then((result) => {
           console.log("任務:", result.data);
+
+          if (!result.data.is_reviewed) {
+            navigate("/missions");
+          }
+
           setMission(result.data);
+          setErrors({
+            questions: new Set(result.data.review.errors.questions),
+            choices: new Set(result.data.review.errors.choices),
+          });
+          setReview(result.data.review);
           setAnswers(result.data.answer);
           setExercise({
             ...result.data.content.exercise,
@@ -321,126 +289,7 @@ export default function MissionReview() {
     }
   }, [userState]);
 
-  const checkAnswer = (isCorrectChoice, isSelected) => {
-    if (
-      (isCorrectChoice && isSelected === 1) ||
-      (!isCorrectChoice && isSelected === 0)
-    ) {
-      return true;
-    } else {
-      return false;
-    }
-  };
-
-  useEffect(() => {
-    // const temp = new Set([]);
-    const temp = {
-      questions: new Set([]),
-      choices: new Set([]),
-    };
-    exercise.questions.forEach((question) => {
-      if (question.type === "choiceAnswer") {
-        question.choices.forEach((choice) => {
-          const isCorrect = checkAnswer(
-            choice.isCorrectAnswer,
-            answers.filter((answer) => answer.answer === choice.id).length
-          );
-          if (!isCorrect) {
-            temp.questions.add(question.id);
-            temp.choices.add(choice.id);
-          }
-        });
-      }
-    });
-    setErrors(temp);
-  }, [exercise]);
-
   const classes = useStyles();
-
-  const handleInputChange = (event) => {
-    setReview({
-      ...review,
-      [event.target.name]: event.target.value,
-    });
-  };
-
-  const handleErrorAdd = (questionId) => {
-    const clonedQuestionsError = new Set(errors.questions);
-    clonedQuestionsError.add(questionId);
-    setErrors({
-      ...errors,
-      questions: clonedQuestionsError,
-    });
-  };
-
-  const handleErrorDelete = (questionId) => {
-    const clonedQuestionsError = new Set(errors.questions);
-    clonedQuestionsError.delete(questionId);
-    setErrors({
-      ...errors,
-      questions: clonedQuestionsError,
-    });
-  };
-
-  const handleReview = () => {
-    const data = {
-      ...review,
-      errors: {
-        questions: [...errors.questions],
-        choices: [...errors.choices],
-      },
-      total: {
-        scores:
-          Math.round(
-            ((exercise.questions.length - [...errors.questions].length) /
-              exercise.questions.length) *
-              10000
-          ) / 100.0,
-        correct: exercise.questions.length - [...errors.questions].length,
-        wrong: [...errors.questions].length,
-      },
-    };
-    Swal.fire({
-      title: "確定完成任務批閱了嗎?",
-      text: "批閱後將直接通知學生並無法再次更改哦",
-      icon: "question",
-      confirmButtonText: "是",
-      showCloseButton: true,
-      allowOutsideClick: false,
-      width: 700,
-    }).then((result) => {
-      if (result.isConfirmed) {
-        // 更新任務完成
-        axios({
-          method: "PUT",
-          url: `${process.env.REACT_APP_ASSISTANT_SERVICE}/mission/content/${mission_id}/review`,
-          headers: {
-            token: `${localStorage.jwt}`,
-            user: `${userState.user._id}`,
-          },
-          data,
-        })
-          .then((result) => {
-            console.log(result.data);
-            Swal.fire({
-              icon: "success",
-              title: "任務批閱完成!",
-              width: 700,
-            }).then(() => {
-              navigate("/missions");
-            });
-          })
-          .catch((err) => {
-            console.error(err);
-            Swal.fire({
-              icon: "error",
-              title: "任務批閱失敗!",
-              width: 700,
-            });
-          });
-      }
-    });
-  };
 
   return (
     <>
@@ -469,56 +318,46 @@ export default function MissionReview() {
                 <h1>{mission.content.name}</h1>
               </Box>
             </Grid>
-            {mission.is_reviewed && (
-              <Grid item md={12}>
+
+            <Grid container spacing={3}>
+              <Grid
+                item
+                md={12}
+                className={exercise.description ? "" : classes.questionWrapper}
+              >
                 <Box mx={5}>
-                  <h1>此任務已批閱完成!</h1>
+                  <h1>{exercise.title}</h1>
                 </Box>
               </Grid>
-            )}
-            {!mission.is_reviewed && (
-              <Grid container spacing={3}>
-                <Grid
-                  item
-                  md={12}
-                  className={
-                    exercise.description ? "" : classes.questionWrapper
-                  }
-                >
+              {exercise.description && (
+                <Grid item md={12} className={classes.questionWrapper}>
                   <Box mx={5}>
-                    <h1>{exercise.title}</h1>
+                    <TextField
+                      id="outlined-basic"
+                      label="試卷備註"
+                      variant="outlined"
+                      type="text"
+                      name="description"
+                      value={exercise.description}
+                      fullWidth
+                      multiline
+                      readOnly
+                    />
                   </Box>
                 </Grid>
-                {exercise.description && (
-                  <Grid item md={12} className={classes.questionWrapper}>
-                    <Box mx={5}>
-                      <TextField
-                        id="outlined-basic"
-                        label="試卷備註"
-                        variant="outlined"
-                        type="text"
-                        name="description"
-                        value={exercise.description}
-                        fullWidth
-                        multiline
-                        readOnly
-                      />
-                    </Box>
-                  </Grid>
-                )}
-                {exercise.questions.map((question) => {
-                  return (
-                    <Question
-                      key={question.id}
-                      question={question}
-                      answers={answers}
-                      errors={errors}
-                      setAnswers={setAnswers}
-                      handleErrorAdd={handleErrorAdd}
-                      handleErrorDelete={handleErrorDelete}
-                    />
-                  );
-                })}
+              )}
+              {exercise.questions.map((question) => {
+                return (
+                  <Question
+                    key={question.id}
+                    question={question}
+                    answers={answers}
+                    errors={errors}
+                    setAnswers={setAnswers}
+                  />
+                );
+              })}
+              {review.comment && (
                 <Grid item md={12} className={classes.questionWrapper}>
                   <Box mx={5}>
                     <TextField
@@ -527,47 +366,34 @@ export default function MissionReview() {
                       variant="outlined"
                       name="comment"
                       value={review.comment}
-                      onChange={handleInputChange}
                       inputProps={{ maxLength: 1000 }}
                       multiline
                       fullWidth
+                      readOnly
                     />
                   </Box>
                 </Grid>
-                <Grid item md={12} className={classes.questionWrapper}>
-                  <Box mx={5}>
-                    <h1>
-                      總計:{" "}
-                      {Math.round(
-                        ((exercise.questions.length -
-                          [...errors.questions].length) /
-                          exercise.questions.length) *
-                          10000
-                      ) / 100.0}{" "}
-                      分
-                    </h1>
-                    <h2>
-                      總題數: {exercise.questions.length}，正確:{" "}
-                      {exercise.questions.length - [...errors.questions].length}
-                      ，錯誤: {[...errors.questions].length}
-                    </h2>
-                  </Box>
-                </Grid>
-                <Grid item md={12} className={classes.questionWrapper}>
-                  <Box mx={5}>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      className={classes.button}
-                      startIcon={<SaveIcon />}
-                      onClick={handleReview}
-                    >
-                      批閱完成
-                    </Button>
-                  </Box>
-                </Grid>
+              )}
+              <Grid item md={12} className={classes.questionWrapper}>
+                <Box mx={5}>
+                  <h1>
+                    總計:{" "}
+                    {Math.round(
+                      ((exercise.questions.length -
+                        [...errors.questions].length) /
+                        exercise.questions.length) *
+                        10000
+                    ) / 100.0}{" "}
+                    分
+                  </h1>
+                  <h2>
+                    總題數: {exercise.questions.length}，正確:{" "}
+                    {exercise.questions.length - [...errors.questions].length}
+                    ，錯誤: {[...errors.questions].length}
+                  </h2>
+                </Box>
               </Grid>
-            )}
+            </Grid>
           </Paper>
         </>
       )}

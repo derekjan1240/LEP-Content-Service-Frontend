@@ -162,7 +162,7 @@ export default function Missions() {
   }, [userState]);
 
   const [openPopup, setOpenPopup] = useState(false);
-  const [display, setDisplay] = useState("1");
+  const [display, setDisplay] = useState("2");
 
   const handleAdd = (newMission, resetForm) => {
     resetForm();
@@ -401,9 +401,9 @@ export default function Missions() {
                               variant="contained"
                               color="primary"
                               className={classes.menuButton}
-                              // onClick={() => {
-                              //   navigate(`/missions/review/${mission._id}`);
-                              // }}
+                              onClick={() => {
+                                navigate(`/missions/result/${mission._id}`);
+                              }}
                             >
                               檢視結果
                             </Button>

@@ -10,26 +10,35 @@ import {
   Button,
   TextField,
   FormControl,
+  Radio,
+  RadioGroup,
+  FormControlLabel,
+  FormLabel,
   makeStyles,
 } from "@material-ui/core";
 
 import { ThemeProvider, createMuiTheme } from "@material-ui/core/styles";
-import Radio from "@material-ui/core/Radio";
-import RadioGroup from "@material-ui/core/RadioGroup";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import FormLabel from "@material-ui/core/FormLabel";
+import green from "@material-ui/core/colors/lightGreen";
+import indigo from "@material-ui/core/colors/indigo";
+
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
-import SaveIcon from "@material-ui/icons/Save";
 import MenuBookIcon from "@material-ui/icons/MenuBook";
 
 import PageHeader from "../../Utility/compmnents/PageHeader";
-
-import green from "@material-ui/core/colors/lightGreen";
 
 const successTheme = createMuiTheme({
   palette: {
     primary: {
       main: green[700],
+      contrastText: "#fff",
+    },
+  },
+});
+
+const correctTheme = createMuiTheme({
+  palette: {
+    primary: {
+      main: indigo[800],
       contrastText: "#fff",
     },
   },
@@ -194,6 +203,18 @@ const Question = ({ question, answers, setAnswers }) => {
                         選擇
                       </Button>
                     </ThemeProvider>
+                    {choice.isCorrectAnswer && (
+                      <ThemeProvider theme={correctTheme}>
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          className={classes.button}
+                          startIcon={<CheckCircleIcon />}
+                        >
+                          正解
+                        </Button>
+                      </ThemeProvider>
+                    )}
                   </Grid>
                 </Grid>
               );
@@ -204,11 +225,20 @@ const Question = ({ question, answers, setAnswers }) => {
   );
 };
 
+const INIT_EXERCISE = {
+  title: "",
+  description: "",
+  questions: [],
+};
+
 export default function ExercisesRead() {
   // 登入檢查
   const { exercise_id } = useParams();
   const navigate = useNavigate();
   const userState = useSelector((state) => state.userState);
+
+  const [exercise, setExercise] = useState(INIT_EXERCISE);
+  const [answers, setAnswers] = useState([]);
 
   useEffect(() => {
     if (!userState.user && !userState.isChecking) {
@@ -219,26 +249,25 @@ export default function ExercisesRead() {
       if (userState.user.role === "Student") {
         navigate("/exercises");
       }
+
+      axios({
+        method: "GET",
+        url: `${process.env.REACT_APP_CONTENT_SERVICE}/exercises/${exercise_id}`,
+        headers: {
+          token: `${localStorage.jwt}`,
+          user: `${userState.user._id}`,
+        },
+      })
+        .then((result) => {
+          console.log("試卷:", result.data);
+          setExercise(result.data);
+        })
+        .catch((error) => {
+          console.error(error);
+          navigate("/exercises");
+        });
     }
   }, [userState]);
-
-  const INIT_EXERCISE = {
-    title: "",
-    description: "",
-    questions: [],
-  };
-
-  const [exercise, setExercise] = useState(INIT_EXERCISE);
-  const [answers, setAnswers] = useState([]);
-
-  useEffect(() => {
-    axios({
-      method: "GET",
-      url: `${process.env.REACT_APP_CONTENT_SERVICE}/exercises/${exercise_id}`,
-    }).then((result) => {
-      setExercise(result.data);
-    });
-  }, []);
 
   const classes = useStyles();
 
