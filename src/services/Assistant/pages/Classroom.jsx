@@ -189,7 +189,7 @@ export default function Classroom() {
   const handleStudentRemove = (removeStudent) => {
     Swal.fire({
       icon: "warning",
-      title: `確定要將該 ${removeStudent.name} 移出班級嗎?`,
+      title: `確定要將該 ${removeStudent.userName} 移出班級嗎?`,
       confirmButtonText: "確定",
       cancelButtonText: "離開",
       showCancelButton: true,
@@ -198,18 +198,7 @@ export default function Classroom() {
       width: 700,
     }).then((result) => {
       if (result.isConfirmed) {
-        const newStudentList = classroom.studentList.filter(
-          (student) => student.id !== removeStudent.id
-        );
-        setClassroom({
-          ...classroom,
-          studentList: newStudentList,
-        });
-        Swal.fire({
-          icon: "success",
-          title: `${removeStudent.name} 移出班級成功`,
-          width: 700,
-        });
+        console.log(removeStudent);
       }
     });
   };
@@ -252,7 +241,6 @@ export default function Classroom() {
       showCloseButton: true,
     }).then((result) => {
       if (result.isConfirmed) {
-        console.log(result);
         axios({
           method: "POST",
           url: `${process.env.REACT_APP_ASSISTANT_SERVICE}/mission`,
@@ -284,6 +272,116 @@ export default function Classroom() {
           });
       }
     });
+  };
+
+  const handleOnlineMeeting = () => {
+    window.open("http://meet.google.com/new", "_blank").focus();
+    Swal.fire({
+      title: "請輸入視訊邀請連結",
+      text: "輸入後班級學生將可以在班級中取得連接並加入視訊!",
+      inputPlaceholder: "https://meet.google.com/XXX-XXXX-XXX",
+      confirmButtonText: "送出",
+      cancelButtonText: "取消",
+      allowOutsideClick: false,
+      showCloseButton: true,
+      showCancelButton: true,
+      input: "text",
+      width: 700,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axios({
+          method: "POST",
+          url: `${process.env.REACT_APP_CONTENT_SERVICE}/classrooms/meetingLink`,
+          headers: {
+            token: `${localStorage.jwt}`,
+            user: `${userState.user._id}`,
+          },
+          data: {
+            classroom: classroom.id,
+            meetingLink: result.value,
+          },
+          withCredentials: true,
+        })
+          .then((result) => {
+            console.log(result.data);
+            setClassroom({
+              ...classroom,
+              meetingLink: result.data.meetingLink,
+            });
+            Swal.fire({
+              title: "成功通知班級學生!",
+              icon: "success",
+              width: 700,
+            });
+          })
+          .catch((err) => {
+            console.error(err);
+            Swal.fire({
+              title: "新增課堂視訊連結失敗",
+              icon: "error",
+              width: 700,
+            });
+          });
+      }
+    });
+  };
+
+  const handleRemoveOnlineMeeting = () => {
+    Swal.fire({
+      title: "是否確定移除課堂視訊",
+      text: `學生將無法看見目前的連結 ${classroom.meetingLink}`,
+      icon: "question",
+      confirmButtonText: "移除視訊連結",
+      width: 700,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axios({
+          method: "POST",
+          url: `${process.env.REACT_APP_CONTENT_SERVICE}/classrooms/meetingLink`,
+          headers: {
+            token: `${localStorage.jwt}`,
+            user: `${userState.user._id}`,
+          },
+          data: {
+            classroom: classroom.id,
+            meetingLink: null,
+          },
+          withCredentials: true,
+        })
+          .then((result) => {
+            setClassroom({
+              ...classroom,
+              meetingLink: result.data.meetingLink,
+            });
+            Swal.fire({
+              title: "成功移除課堂視訊連結!",
+              icon: "success",
+              width: 700,
+            });
+          })
+          .catch((err) => {
+            console.error(err);
+            Swal.fire({
+              title: "移除課堂視訊連結失敗",
+              icon: "error",
+              width: 700,
+            });
+          });
+      }
+    });
+  };
+
+  const handleJoinOnlineMeeting = () => {
+    const link = classroom?.meetingLink;
+    if (!link) {
+      Swal.fire({
+        title: "目前無課堂視訊可參與!",
+        icon: "warning",
+        width: 700,
+      });
+      return;
+    }
+    window.open(link, "_blank").focus();
   };
 
   const handleTabChange = (event, newValue) => {
@@ -349,6 +447,9 @@ export default function Classroom() {
                 classroom={classroom}
                 setPopup={setPopup}
                 setOpenPopup={setOpenPopup}
+                handleOnlineMeeting={handleOnlineMeeting}
+                handleRemoveOnlineMeeting={handleRemoveOnlineMeeting}
+                handleJoinOnlineMeeting={handleJoinOnlineMeeting}
               />
               <Grid item md={12}>
                 <Paper square className={classes.tabsWrapper}>

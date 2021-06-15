@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
-import swal from "sweetalert2";
+import Swal from "sweetalert2";
 import { Grid, Button, Box, makeStyles } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
@@ -8,53 +8,41 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ButtonMenuBar({ classroom, setPopup, setOpenPopup }) {
+export default function ButtonMenuBar({
+  classroom,
+  setPopup,
+  setOpenPopup,
+  handleOnlineMeeting,
+  handleRemoveOnlineMeeting,
+  handleJoinOnlineMeeting,
+}) {
   const classes = useStyles();
   const navigate = useNavigate();
 
-  const handleJoinMeet = () => {
-    swal.fire({
-      title: "加入課堂視訊",
-      input: "text",
-      inputLabel: "輸入課堂視訊代號",
+  const handleRemoveClassroom = () => {
+    Swal.fire({
+      icon: "warning",
+      title: "是否確定要解散該班級?",
+      text: "解散後將無法復原",
       showCancelButton: true,
-      confirmButtonText: "加入",
-      cancelButtonText: "取消",
+      reverseButtons: true,
+      confirmButtonText: "確定",
+      cancelButtonText: "離開",
+      confirmButtonColor: "#c0392b",
       width: 700,
+      input: "text",
+      inputPlaceholder: "請輸入班級名稱",
       inputValidator: (value) => {
-        if (!value) {
-          return "請確實輸入課堂視訊代號!";
+        if (value !== classroom.name) {
+          return "請確實輸入欲刪除的班級名稱!";
         }
       },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // 解散班級
+        navigate("/classroom");
+      }
     });
-  };
-
-  const handleRemoveClassroom = () => {
-    swal
-      .fire({
-        icon: "warning",
-        title: "是否確定要解散該班級?",
-        text: "解散後將無法復原",
-        showCancelButton: true,
-        reverseButtons: true,
-        confirmButtonText: "確定",
-        cancelButtonText: "離開",
-        confirmButtonColor: "#c0392b",
-        width: 700,
-        input: "text",
-        inputPlaceholder: "請輸入班級名稱",
-        inputValidator: (value) => {
-          if (value !== classroom.name) {
-            return "請確實輸入欲刪除的班級名稱!";
-          }
-        },
-      })
-      .then((result) => {
-        if (result.isConfirmed) {
-          // 解散班級
-          navigate("/classroom");
-        }
-      });
   };
 
   return (
@@ -83,15 +71,25 @@ export default function ButtonMenuBar({ classroom, setPopup, setOpenPopup }) {
             >
               發布公告
             </Button>
-            <Button
-              variant="contained"
-              color="primary"
-              className={classes.menuButton}
-              target="_blank"
-              href={`http://meet.google.com/new`}
-            >
-              發起課堂視訊
-            </Button>
+            {classroom.meetingLink ? (
+              <Button
+                variant="contained"
+                color="secondary"
+                className={classes.menuButton}
+                onClick={handleRemoveOnlineMeeting}
+              >
+                關閉課堂視訊
+              </Button>
+            ) : (
+              <Button
+                variant="contained"
+                color="primary"
+                className={classes.menuButton}
+                onClick={handleOnlineMeeting}
+              >
+                發起課堂視訊
+              </Button>
+            )}
             <Button
               variant="contained"
               color="secondary"
@@ -104,15 +102,16 @@ export default function ButtonMenuBar({ classroom, setPopup, setOpenPopup }) {
         )}
         {!classroom.isManager && (
           <>
-            <Button
-              variant="contained"
-              color="primary"
-              className={classes.menuButton}
-              onClick={handleJoinMeet}
-              // href={`https://meet.google.com/lookup/${classroom.invitationCode}`}
-            >
-              加入課堂視訊
-            </Button>
+            {classroom.meetingLink && (
+              <Button
+                variant="contained"
+                color="primary"
+                className={classes.menuButton}
+                onClick={handleJoinOnlineMeeting}
+              >
+                加入課堂視訊
+              </Button>
+            )}
             <Button
               variant="contained"
               color="secondary"
