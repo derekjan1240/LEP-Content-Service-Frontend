@@ -102,7 +102,7 @@ export default function Classroom() {
       })
         .then((result) => {
           console.log("教師任務:", result.data);
-          setMissions(result.data);
+          setTeacherMissions(result.data);
         })
         .catch((err) => {
           console.error(err);
@@ -111,11 +111,36 @@ export default function Classroom() {
             title: "查詢任務失敗!",
           });
         });
+
+      // 取得學生任務資料
+      axios({
+        method: "GET",
+        url: `${process.env.REACT_APP_ASSISTANT_SERVICE}/mission`,
+        headers: {
+          token: `${localStorage.jwt}`,
+          user: `${userState.user._id}`,
+        },
+        params: {
+          classroom: classroom_id,
+        },
+      })
+        .then((result) => {
+          console.log("學生任務:", result.data);
+          setStudentMissions(result.data);
+        })
+        .catch((err) => {
+          console.error(err);
+          Swal.fire({
+            icon: "error",
+            title: "讀取學生任務失敗!",
+          });
+        });
     }
   }, [userState]);
 
   const [classroom, setClassroom] = useState({});
-  const [missions, setMissions] = useState([]);
+  const [teachermissions, setTeacherMissions] = useState([]);
+  const [studentmissions, setStudentMissions] = useState([]);
   const [tabsValue, setTabsValue] = useState("table");
   const [openPopup, setOpenPopup] = useState(false);
   const [popup, setPopup] = useState({
@@ -127,8 +152,35 @@ export default function Classroom() {
     console.log("班級資料更新:", classroom);
   }, [classroom]);
 
+  function a11yProps(index) {
+    return {
+      id: `wrapped-tab-${index}`,
+      "aria-controls": `wrapped-tabpanel-${index}`,
+    };
+  }
+
+  function TabPanel(props) {
+    const { children, value, index, ...other } = props;
+
+    return (
+      <div
+        role="tabpanel"
+        hidden={value !== index}
+        id={`wrapped-tabpanel-${index}`}
+        aria-labelledby={`wrapped-tab-${index}`}
+        {...other}
+      >
+        {value === index && <Box p={3}>{children}</Box>}
+      </div>
+    );
+  }
+
   const handleNavigate = (herf) => {
     navigate(herf);
+  };
+
+  const handleTabChange = (event, newValue) => {
+    setTabsValue(newValue);
   };
 
   const handleClassroomRemove = () => {
@@ -230,17 +282,17 @@ export default function Classroom() {
   };
 
   const handlePersonalMissionAssign = (student) => {
-    console.log(missions, student);
+    console.log(teachermissions, student);
     const inputOption = {
       units: {},
       exercises: {},
     };
-    missions
+    teachermissions
       .filter((mission) => mission.type === "Video")
       .forEach((mission) => {
         inputOption.units[mission._id] = mission.name;
       });
-    missions
+    teachermissions
       .filter((mission) => mission.type === "Exercise")
       .forEach((mission) => {
         inputOption.exercises[mission._id] = mission.name;
@@ -415,33 +467,6 @@ export default function Classroom() {
     window.open(link, "_blank").focus();
   };
 
-  const handleTabChange = (event, newValue) => {
-    setTabsValue(newValue);
-  };
-
-  function a11yProps(index) {
-    return {
-      id: `wrapped-tab-${index}`,
-      "aria-controls": `wrapped-tabpanel-${index}`,
-    };
-  }
-
-  function TabPanel(props) {
-    const { children, value, index, ...other } = props;
-
-    return (
-      <div
-        role="tabpanel"
-        hidden={value !== index}
-        id={`wrapped-tabpanel-${index}`}
-        aria-labelledby={`wrapped-tab-${index}`}
-        {...other}
-      >
-        {value === index && <Box p={3}>{children}</Box>}
-      </div>
-    );
-  }
-
   const classes = useStyles();
 
   return (
@@ -506,6 +531,15 @@ export default function Classroom() {
                       {...a11yProps("groups")}
                       className={classes.tab}
                     />
+                    {userState.user._id === classroom.manager._id && (
+                      <Tab
+                        value="missions"
+                        label="班級任務"
+                        wrapped
+                        {...a11yProps("missions")}
+                        className={classes.tab}
+                      />
+                    )}
                   </Tabs>
                 </Paper>
                 <TabPanel
@@ -532,6 +566,24 @@ export default function Classroom() {
                     isManager={classroom.isManager}
                   />
                 </TabPanel>
+                <TabPanel
+                  value={tabsValue}
+                  index="missions"
+                  className={classes.tabPanel}
+                >
+                  <h1>班級任務</h1>
+                  {studentmissions.map((mission) => {
+                    return (
+                      <>
+                        <p>任務: {mission.content.name}</p>
+                        <p>學生: {mission.assignee.userName}</p>
+                        <p>是否完成: {mission.is_complated ? "是" : "否"}</p>
+                        <p>是否批閱: {mission.is_reviewed ? "是" : "否"}</p>
+                        <hr />
+                      </>
+                    );
+                  })}
+                </TabPanel>
               </Grid>
             </Grid>
           </Paper>
@@ -550,6 +602,7 @@ export default function Classroom() {
               <GroupForm
                 classroom={classroom}
                 handleGroupEdit={handleGroupEdit}
+                studentmissions={studentmissions}
               />
             )}
           </Popup>
