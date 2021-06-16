@@ -52,6 +52,19 @@ export default function Classroom() {
   const navigate = useNavigate();
   const userState = useSelector((state) => state.userState);
 
+  const sortGroupList = (list) => {
+    const compare = (a, b) => {
+      if (a.name < b.name) {
+        return -1;
+      }
+      if (a.name > b.name) {
+        return 1;
+      }
+      return 0;
+    };
+    return list.sort(compare);
+  };
+
   useEffect(() => {
     if (!userState.user && !userState.isChecking) {
       navigate("/auth/login");
@@ -71,16 +84,18 @@ export default function Classroom() {
           setClassroom({
             ...result.data,
             // 帶入學生資料
-            studentGroups: result.data.studentGroups.map((group) => {
-              return {
-                ...group,
-                members: group.members.split(",").map((memberId) => {
-                  return result.data.studentList.filter(
-                    (student) => student._id === memberId
-                  )[0];
-                }),
-              };
-            }),
+            studentGroups: sortGroupList(
+              result.data.studentGroups.map((group) => {
+                return {
+                  ...group,
+                  members: group.members.split(",").map((memberId) => {
+                    return result.data.studentList.filter(
+                      (student) => student._id === memberId
+                    )[0];
+                  }),
+                };
+              })
+            ),
           });
         })
         .catch((err) => {

@@ -314,41 +314,51 @@ export default function GroupForm({
     let numberOfPerGroup = Math.floor(datas.length / state.groupingNumber);
     // 餘數用於判斷幾組要多塞一人
     let remainder = datas.length % state.groupingNumber;
-
+    let groups = [];
+    let tempArr = [];
     if (type === 1) {
       console.log("同質性分組", groupData);
-      let groups = [];
-      let tempArr = [];
-
       for (let index = 0; index < state.groupingNumber; index++) {
         index < remainder
           ? tempArr.push(datas.splice(0, numberOfPerGroup + 1))
           : tempArr.push(datas.splice(0, numberOfPerGroup));
       }
-
-      tempArr.forEach((datas, index) => {
-        groups.push({
-          id: `${new Date().getTime()}`,
-          members: datas.map((data) => data.student),
-          name: `第 ${index + 1} 組`,
-        });
-      });
-
-      setGroupData({
-        groupList: groups,
-        withoutGrouped: withoutGroupedSet,
-      });
     } else {
       console.log("異質性分組", groupData);
+      for (let index = 0; index < state.groupingNumber; index++) {
+        tempArr.push([]);
+      }
+
+      datas.forEach((data, index) => {
+        console.log("tA:", tempArr);
+        if (Math.floor(index / state.groupingNumber) % 2 === 0) {
+          // 奇數輪
+          tempArr[index % state.groupingNumber].push(datas[index]);
+        } else {
+          // 偶數輪
+          tempArr[
+            state.groupingNumber - 1 - (index % state.groupingNumber)
+          ].push(datas[index]);
+        }
+      });
     }
+
+    tempArr.forEach((datas, index) => {
+      groups.push({
+        id: `${new Date().getTime()}`,
+        members: datas.map((data) => data.student),
+        name: `第 ${index + 1} 組`,
+      });
+    });
+
+    setGroupData({
+      groupList: groups,
+      withoutGrouped: withoutGroupedSet,
+    });
 
     setStudentSelected(new Set());
     setState(INIT_STATE);
   };
-
-  useEffect(() => {
-    console.log(groupData);
-  }, [groupData]);
 
   const handleChange = (event) => {
     let value = event.target.value;
@@ -388,7 +398,6 @@ export default function GroupForm({
                   name="missionSelect"
                   value={state.missionSelect}
                   onChange={handleChange}
-                  required
                 >
                   {filterMissions.map((mission) => {
                     return (
