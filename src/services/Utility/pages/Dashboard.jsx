@@ -20,7 +20,7 @@ const services = [
     status: undefined,
   },
   {
-    title: "Assistant",
+    title: "ASSISTANT",
     description: "任務系統、班級系統",
     link: process.env.REACT_APP_ASSISTANT_SERVICE,
     status: undefined,

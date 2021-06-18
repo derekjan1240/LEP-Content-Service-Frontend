@@ -12,15 +12,15 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const isAllowAddItems = [
-  { id: "Open", value: "1", title: "開放" },
-  { id: "Stop", value: "0", title: "停止" },
+  { id: "Open", value: true, title: "開放" },
+  { id: "Stop", value: false, title: "停止" },
 ];
 
 const initialFValues = {
   id: String(new Date().getTime()),
   name: "",
   description: "",
-  isAllowAdd: "1",
+  isAllowAdd: null,
   studentList: [],
   groupList: [],
 };

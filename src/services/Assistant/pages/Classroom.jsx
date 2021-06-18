@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Swal from "sweetalert2";
 import axios from "axios";
+import moment from "moment";
 import {
   Paper,
   Grid,
@@ -10,6 +11,7 @@ import {
   Button,
   Tabs,
   Tab,
+  Typography,
   makeStyles,
 } from "@material-ui/core";
 import SupervisedUserCircleIcon from "@material-ui/icons/SupervisedUserCircle";
@@ -586,14 +588,33 @@ export default function Classroom() {
                   index="missions"
                   className={classes.tabPanel}
                 >
-                  <h1>班級任務</h1>
                   {studentmissions.map((mission) => {
                     return (
                       <>
-                        <p>任務: {mission.content.name}</p>
-                        <p>學生: {mission.assignee.userName}</p>
-                        <p>是否完成: {mission.is_complated ? "是" : "否"}</p>
-                        <p>是否批閱: {mission.is_reviewed ? "是" : "否"}</p>
+                        <Typography variant="h6" gutterBottom>
+                          任務: {mission.content.name}
+                        </Typography>
+                        <Typography variant="h6" gutterBottom>
+                          學生: {mission.assignee.userName}
+                        </Typography>
+                        <Typography variant="h6" gutterBottom>
+                          完成狀態:{" "}
+                          {mission.is_complated
+                            ? `學生已完成 ${moment(
+                                mission.complated_date
+                              ).format("(YYYY/MM/DD HH:mm)")}`
+                            : "學生尚未完成"}
+                        </Typography>
+                        <Typography variant="h6" gutterBottom>
+                          批閱狀態:{" "}
+                          {mission.content.type === "Video"
+                            ? "不需批閱"
+                            : mission.is_reviewed
+                            ? `教師已批閱 ${moment(
+                                mission.reviewed_date
+                              ).format("(YYYY/MM/DD HH:mm)")}`
+                            : "教師尚未批閱"}
+                        </Typography>
                         <hr />
                       </>
                     );

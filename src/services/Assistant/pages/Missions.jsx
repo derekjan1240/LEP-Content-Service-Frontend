@@ -293,6 +293,13 @@ export default function Missions() {
                           任務內容: {getUnitName(mission)}
                         </Typography>
                       )}
+                      {
+                        <Typography variant="h6" gutterBottom>
+                          新增時間:{" "}
+                          {moment(mission.createdAt).format("YYYY/MM/DD HH:mm")}
+                        </Typography>
+                      }
+
                       <Box display="flex" alignItems="center" mt={3}>
                         <Button
                           variant="contained"
