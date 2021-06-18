@@ -5,6 +5,7 @@ import { useRoutes } from "react-router-dom";
 import Home from "./services/Utility/pages/Home";
 import NotFound from "./services/Utility/pages/NotFound";
 import Dashboard from "./services/Utility/pages/Dashboard";
+import Test from "./services/Utility/pages/Test";
 
 /** Authentication Service Pages */
 // 權限系統
@@ -46,6 +47,7 @@ import Units from "./services/Content/pages/Units";
 export default function Routes() {
   return useRoutes([
     { path: "/", element: <Home /> },
+    { path: "/test", element: <Test /> },
     { path: "/auth/login", element: <Login /> },
     {
       path: "/auth/profile",
