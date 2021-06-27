@@ -263,17 +263,17 @@ export default function Questionnaires() {
               >
                 已指派的問卷
               </Button>
-              <Button
+              {/* <Button
                 variant="contained"
                 color="primary"
                 className={classes.menuButton}
-                // onClick={() => {
-                //   addTestQuestionaire();
-                // }}
-                disabled
+                onClick={() => {
+                  addTestQuestionaire();
+                }}
+                // disabled
               >
                 新增測試用問卷
-              </Button>
+              </Button> */}
             </Grid>
             {display === "1" &&
               questionnaires.map((questionnaire) => {
