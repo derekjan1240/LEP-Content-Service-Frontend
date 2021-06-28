@@ -18,6 +18,7 @@ import AccountManagement from "./services/Authentication/pages/AccountManagement
 import Questionnaires from "./services/Questionnaire/pages/Questionnaires";
 import QuestionnairesStudent from "./services/Questionnaire/pages/QuestionnairesStudent";
 import Questionnaire from "./services/Questionnaire/pages/Questionnaire";
+// import QuestionnaireReport from "./services/Questionnaire/pages/QuestionnaireReport";
 
 /** Assistant Service Pages */
 // 任務系統
@@ -40,6 +41,7 @@ import ExercisesRead from "./services/Content/pages/ExerciseRead";
 /** Visualization Service Pages */
 // 資料視覺化系統
 import Visualizations from "./services/Visualization/pages/Visualizations";
+import QuestionnaireReport from "./services/Visualization/pages/QuestionnaireReport";
 
 // 課程系統
 import Stages from "./services/Content/pages/Stages";
@@ -64,6 +66,10 @@ export default function Routes() {
     { path: "/content/units/:lecture_id", element: <Units /> },
     { path: "/questionnaire", element: <Questionnaires /> },
     { path: "/questionnaire/student", element: <QuestionnairesStudent /> },
+    // {
+    //   path: "/questionnaire/:questionnaire_result_id/report",
+    //   element: <QuestionnaireReport />,
+    // },
     {
       path: "/questionnaire/:questionnaire_id",
       element: <Questionnaire />,
@@ -79,6 +85,10 @@ export default function Routes() {
     { path: "/classroom", element: <Classrooms /> },
     { path: "/classroom/:classroom_id", element: <Classroom /> },
     { path: "/visualization", element: <Visualizations /> },
+    {
+      path: "/visualization/questionnaire/:questionnaire_result_id",
+      element: <QuestionnaireReport />,
+    },
     { path: "/dashboard", element: <Dashboard /> },
     // Not found pages
     { path: "*", element: <NotFound /> },

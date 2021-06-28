@@ -150,7 +150,11 @@ export default function Questionnaire() {
               variant="contained"
               color="primary"
               className={classes.menuButton}
-              onClick={() => {}}
+              onClick={() => {
+                navigate(
+                  `/visualization/questionnaire/${questionnaireResult._id}`
+                );
+              }}
             >
               查看分析報告
             </Button>
