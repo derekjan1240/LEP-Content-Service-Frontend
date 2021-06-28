@@ -21,7 +21,7 @@ export default function Home() {
     <>
       <PageHeader
         title="首頁"
-        subTitle="subTitle"
+        subTitle="我是首頁"
         icon={<HomeIcon fontSize="large" />}
       />
       <Paper className={classes.pageContent}>

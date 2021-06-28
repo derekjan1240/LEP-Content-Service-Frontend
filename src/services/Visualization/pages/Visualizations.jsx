@@ -30,7 +30,7 @@ export default function Visualizations() {
     <>
       <PageHeader
         title="資料視覺化系統"
-        subTitle="subTitle"
+        subTitle="圖像化系統數據"
         icon={<BarChartIcon fontSize="large" />}
       />
       {!userState.isChecking && <Paper className={classes.pageContent}></Paper>}

@@ -21,7 +21,7 @@ export default function NotFound() {
     <>
       <PageHeader
         title="頁面不存在!"
-        subTitle="subTitle"
+        subTitle="QQ"
         icon={<ErrorIcon fontSize="large" />}
       />
       <Paper className={classes.pageContent}>

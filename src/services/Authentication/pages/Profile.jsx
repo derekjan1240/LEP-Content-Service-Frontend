@@ -108,7 +108,7 @@ export default function Profile() {
     <>
       <PageHeader
         title="個人檔案"
-        subTitle="subTitle"
+        subTitle="關於我"
         icon={<AccountBoxIcon fontSize="large" />}
       />
       {!userState.isChecking && (
