@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import axios from "axios";
 import {
   Grid,
@@ -92,19 +92,19 @@ function getTabsContent(units, classes) {
   });
 }
 
-function TagButtonGroup(props) {
+function TagButtonGroup({ tags, setVideoCursor }) {
   const classes = useStyles();
   return (
     <Box flexDirection="row">
       <Button
         variant="contained"
         color="secondary"
-        onClick={() => props.setVideoCursor(0)}
+        onClick={() => setVideoCursor(0)}
         className={classes.tagButton}
       >
         回起始點
       </Button>
-      {props.tags
+      {tags
         .sort((a, b) => {
           if (a.time < b.time) {
             return -1;
@@ -119,7 +119,7 @@ function TagButtonGroup(props) {
             <Button
               variant="contained"
               color="primary"
-              onClick={() => props.setVideoCursor(tag.time)}
+              onClick={() => setVideoCursor(tag.time)}
               className={classes.tagButton}
               key={tag.id}
             >
@@ -127,19 +127,6 @@ function TagButtonGroup(props) {
             </Button>
           );
         })}
-      {/* {props.tags.map((tag) => {
-        return (
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => props.setVideoCursor(tag.time)}
-            className={classes.tagButton}
-            key={tag.id}
-          >
-            {tag.title}
-          </Button>
-        );
-      })} */}
     </Box>
   );
 }
@@ -215,10 +202,8 @@ function VideoContent(props) {
 }
 
 // 章節
-function ChaptersTabs({ units }) {
+function ChaptersTabs({ units, value, setValue, videoCursor, setVideoCursor }) {
   const classes = useStyles();
-  const [value, setValue] = useState(0);
-  const [videoCursor, setVideoCursor] = useState(0);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -249,11 +234,13 @@ function ChaptersTabs({ units }) {
 
 export default function Units() {
   const { lecture_id } = useParams();
-
+  const { state } = useLocation();
   const classes = useStyles();
 
   const [lecture, setLecture] = useState({});
   const [units, setUnits] = useState([]);
+  const [value, setValue] = useState(0);
+  const [videoCursor, setVideoCursor] = useState(0);
 
   useEffect(() => {
     axios({
@@ -275,6 +262,20 @@ export default function Units() {
     });
   }, []);
 
+  useEffect(() => {
+    // 設定初始單元影片選擇
+    if (units.length && state) {
+      setValue(
+        units
+          .map((e) => {
+            return e.id;
+          })
+          .indexOf(state.unit)
+      );
+      setVideoCursor(state?.tag || 0);
+    }
+  }, [units, state]);
+
   return (
     <Paper className={classes.pageContent}>
       <Grid container spacing={1} justify="center">
@@ -287,7 +288,13 @@ export default function Units() {
         </Grid>
         <Grid item xs={12}>
           <Box>
-            <ChaptersTabs units={units} />
+            <ChaptersTabs
+              units={units}
+              value={value}
+              setValue={setValue}
+              videoCursor={videoCursor}
+              setVideoCursor={setVideoCursor}
+            />
           </Box>
         </Grid>
       </Grid>

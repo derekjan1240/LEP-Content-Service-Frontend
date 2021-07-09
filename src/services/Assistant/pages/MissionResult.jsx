@@ -8,6 +8,7 @@ import {
   Grid,
   Box,
   Button,
+  Chip,
   TextField,
   FormControl,
   makeStyles,
@@ -27,11 +28,21 @@ import OperatorMenu from "../../Utility/compmnents/OperatorMenu";
 
 import green from "@material-ui/core/colors/lightGreen";
 import cyan from "@material-ui/core/colors/cyan";
+import teal from "@material-ui/core/colors/teal";
 
 const successTheme = createMuiTheme({
   palette: {
     primary: {
       main: green[700],
+      contrastText: "#fff",
+    },
+  },
+});
+
+const infoTheme = createMuiTheme({
+  palette: {
+    primary: {
+      main: teal[600],
       contrastText: "#fff",
     },
   },
@@ -58,10 +69,16 @@ const useStyles = makeStyles((theme) => ({
   questionWrapper: {
     borderBottom: "1px dashed #636e72",
   },
+  chip: {
+    marginRight: theme.spacing(3),
+    letterSpacing: 1.5,
+    fontSize: 14,
+  },
 }));
 
 const Question = ({ question, answers, errors }) => {
   const classes = useStyles();
+  const navigate = useNavigate();
   return (
     <Grid item md={12} className={classes.questionWrapper}>
       <Box p={5}>
@@ -213,6 +230,38 @@ const Question = ({ question, answers, errors }) => {
                 </Grid>
               );
             })}
+        </Box>
+
+        <Box display="flex" alignItems="center" mx={5} mt={3}>
+          <Chip
+            label={question.unit.title}
+            color="primary"
+            className={classes.chip}
+          />
+          <ThemeProvider theme={successTheme}>
+            <Chip
+              label={question?.tag?.title}
+              color="primary"
+              className={classes.chip}
+            />
+          </ThemeProvider>
+          <ThemeProvider theme={infoTheme}>
+            <Button
+              variant="contained"
+              color="primary"
+              className={classes.menuButton}
+              onClick={() => {
+                navigate(`/content/units/${question.unit.lecture.id}`, {
+                  state: {
+                    unit: question.unit.id,
+                    tag: question.tag?.time,
+                  },
+                });
+              }}
+            >
+              前往複習
+            </Button>
+          </ThemeProvider>
         </Box>
       </Box>
     </Grid>

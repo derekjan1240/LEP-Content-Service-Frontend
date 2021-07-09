@@ -54,18 +54,27 @@ const EntryCard = ({ title, image, route }) => {
 };
 
 export default function Stages() {
-  const classes = useStyles();
+  const navigate = useNavigate();
   const user = useSelector((state) => state.userState.user);
+
+  const classes = useStyles();
+
   return (
     <>
       <PageHeader
-        title="內容系統"
+        title="課程系統"
         subTitle="影片教材"
         icon={<MenuBookIcon fontSize="large" />}
       />
       {user?.role === "Admin" && (
         <OperatorMenu>
-          <Button variant="contained" color="primary">
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => {
+              navigate("/content/add");
+            }}
+          >
             新增課程
           </Button>
         </OperatorMenu>
