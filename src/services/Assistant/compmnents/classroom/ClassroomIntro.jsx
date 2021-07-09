@@ -32,7 +32,7 @@ export default function ClassroomIntro({ classroom, setPopup, setOpenPopup }) {
         {classroom.isManager && (
           <Box mt={2}>
             <Typography variant="h5">
-              是否開放學生加入班級: {classroom.isAllowAdd === "1" ? "是" : "否"}
+              是否開放學生加入班級: {classroom.isAllowAdd ? "是" : "否"}
             </Typography>
           </Box>
         )}
@@ -42,7 +42,10 @@ export default function ClassroomIntro({ classroom, setPopup, setOpenPopup }) {
       </Grid>
       <Grid item md={2}>
         <Box display="flex" flexDirection="column" alignItems="center">
-          <QRCode value="https://www.youtube.com/" size={120} />
+          <QRCode
+            value={`https://443897a45ddf.ngrok.io/classroom/student/add/${classroom.id}`}
+            size={120}
+          />
           <Box p={2}>
             <Typography>加入班級</Typography>
           </Box>

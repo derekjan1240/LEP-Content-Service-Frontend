@@ -181,7 +181,7 @@ export default function Classrooms() {
             token: `${localStorage.jwt}`,
             user: `${userState.user._id}`,
           },
-          params: {
+          data: {
             classroom: result.value,
           },
         }).then((result) => {

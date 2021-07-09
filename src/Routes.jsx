@@ -31,6 +31,7 @@ import MissionResult from "./services/Assistant/pages/MissionResult";
 // 班級系統
 import Classrooms from "./services/Assistant/pages/Classrooms";
 import Classroom from "./services/Assistant/pages/Classroom";
+import ClassroomStudentAdd from "./services/Assistant/pages/ClassroomStudentAdd";
 
 /** Content Service Pages */
 // 習題系統
@@ -44,6 +45,7 @@ import Visualizations from "./services/Visualization/pages/Visualizations";
 import QuestionnaireReport from "./services/Visualization/pages/QuestionnaireReport";
 
 // 課程系統
+import ContentAdd from "./services/Content/pages/ContentAdd";
 import Stages from "./services/Content/pages/Stages";
 import Lectures from "./services/Content/pages/Lectures";
 import Units from "./services/Content/pages/Units";
@@ -61,15 +63,12 @@ export default function Routes() {
       path: "/auth/account/management",
       element: <AccountManagement />,
     },
+    { path: "/content/add", element: <ContentAdd /> },
     { path: "/content/stages", element: <Stages /> },
     { path: "/content/stages/:stage_id", element: <Lectures /> },
     { path: "/content/units/:lecture_id", element: <Units /> },
     { path: "/questionnaire", element: <Questionnaires /> },
     { path: "/questionnaire/student", element: <QuestionnairesStudent /> },
-    // {
-    //   path: "/questionnaire/:questionnaire_result_id/report",
-    //   element: <QuestionnaireReport />,
-    // },
     {
       path: "/questionnaire/:questionnaire_id",
       element: <Questionnaire />,
@@ -84,6 +83,10 @@ export default function Routes() {
     { path: "/exercises/:exercise_id", element: <ExercisesRead /> },
     { path: "/classroom", element: <Classrooms /> },
     { path: "/classroom/:classroom_id", element: <Classroom /> },
+    {
+      path: "/classroom/student/add/:classroom_id",
+      element: <ClassroomStudentAdd />,
+    },
     { path: "/visualization", element: <Visualizations /> },
     {
       path: "/visualization/questionnaire/:questionnaire_result_id",
